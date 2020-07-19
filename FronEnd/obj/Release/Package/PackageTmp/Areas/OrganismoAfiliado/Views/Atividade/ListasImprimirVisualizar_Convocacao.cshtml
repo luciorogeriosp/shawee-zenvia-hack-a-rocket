@@ -1,0 +1,233 @@
+﻿@model SAL.MVC.Models.RelatorioModel<SAL.MVC.Areas.OrganismoAfiliado.Models.ListaPresencaAtividadeAbertaModel>
+@{
+    int contador = 1;
+}
+<style>
+    .page {
+        padding-top: 33px;
+    }
+
+    .pageother {
+        padding-top: -30px;
+    }
+
+    .titulo {
+        font-size: 9pt;
+        font-weight: bold;
+    }
+
+    .fundo {
+        background-color: #e7e6e6;
+    }
+
+    .texto {
+        font-size: 9pt;
+    }
+
+    .textop {
+        font-size: 9pt;
+    }
+
+    .textopequeno {
+        font-size: 8pt;
+    }
+
+    .texto-branco {
+        font-size: 9pt;
+        color: white;
+    }
+
+    .texto-left {
+        text-align: left;
+    }
+
+    .texto-right {
+        text-align: right;
+    }
+
+    .texto-center {
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 12pt;
+        text-align: center;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
+    }
+
+    h2 {
+        font-size: 12pt;
+        text-align: center;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
+    }
+
+    .valores {
+        width: 100px;
+        font-size: 9pt;
+        border-bottom-color: #000000;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+    }
+
+    .espaco1 {
+        width: 100px;
+        font-size: 5pt;
+    }
+
+    .ordem {
+        width: 33px;
+    }
+
+    .chave {
+        width: 80px;
+    }
+
+    .nome {
+        width: 200px;
+    }
+
+    .loja {
+        width: 60px;
+    }
+
+    .funcao {
+        width: 100px;
+    }
+
+    .documento {
+        width: 100px;
+    }
+</style>
+@for (int iPaginas = 0; iPaginas < Model.Dados.QuantidadePaginas; iPaginas++)
+{
+    <div class="@(iPaginas == 0 ? "page" : "pageother")">
+        @if (iPaginas == 0)
+        {
+            <h1>@Model.ReportTitle@(string.IsNullOrEmpty(Model.Dados.AnoRC) == false ? Model.Dados.AnoRC : "")</h1>
+            <h2>@Model.Dados.TipoAtividade@(string.IsNullOrEmpty(Model.Dados.NomeAtividade) == false && Model.Dados.NomeAtividade != Model.Dados.TipoAtividade ? ": " + Model.Dados.NomeAtividade : "")</h2>
+            <table class="tabela" cellpadding="4" cellspacing="0" width="100%">
+                <tr>
+                    <td class="texto-center titulo"><span>Data: @SAL.MVC.Helpers.Constantes.DataPorExtenso(Model.Dados.Data)</span></td>
+                </tr>
+                <tr>
+                    <td class="espaco1">&nbsp;</td>
+                </tr>
+            </table>
+            <table class="tabela" cellpadding="8" cellspacing="0" width="100%" border="1">
+                @if (Model.Dados.QtdeDiginitarios > 0)
+                {
+                    <tr>
+                        <td class="titulo texto-center fundo ordem">Seq.</td>
+                        <td class="titulo texto-center fundo funcao">Diginitários</td>
+                        <td class="titulo texto-center fundo nome">Nome</td>
+                        <td class="titulo texto-center fundo loja">Loja</td>
+                        <td class="titulo texto-center fundo chave">Nº Afiliação</td>
+                    </tr>
+                    for (int i = 0; i < Model.Dados.QtdeDiginitarios; i++)
+                    {
+                        <tr>
+                            <td class="texto texto-center ordem">@contador.ToString("00")</td>
+                            <td class="titulo texto-center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                            <td class="titulo texto-center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                            <td class="titulo texto-center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                            <td class="titulo texto-center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                        </tr>
+                        contador++;
+                    }
+                }
+                @if (Model.Dados.Cargos.Count > 0)
+                {
+                    <tr>
+                        <td class="titulo texto-center fundo ordem">Seq.</td>
+                        <td class="titulo texto-center fundo funcao">Oficiais</td>
+                        <td class="titulo texto-center fundo nome">Nome</td>
+                        <td class="titulo texto-center fundo loja">Loja</td>
+                        <td class="titulo texto-center fundo chave">Nº Afiliação</td>
+                    </tr>
+                    for (int i = 0; i < Model.Dados.Cargos.Count; i++)
+                    {
+                        <tr>
+                            <td class="texto texto-center ordem">@contador.ToString("00")</td>
+                            <td class="texto textopequeno texto-left">@Model.Dados.Cargos[i].Funcao </td>
+                            <td class="texto texto-left">@(string.IsNullOrEmpty(Model.Dados.Cargos[i].Nome) == false ? Model.Dados.Cargos[i].Nome.ToUpper() : "")</td>
+                            <td class="textopequeno texto-center">@Model.Dados.Cargos[i].Loja</td>
+                            <td class="texto texto-center">@(string.IsNullOrEmpty(Model.Dados.Cargos[i].NumeroChave) == false ? Convert.ToUInt64(Model.Dados.Cargos[i].NumeroChave).ToString(@"000\.000") : "-")</td>
+                        </tr>
+                        contador++;
+                    }
+                }
+                <tr>
+                    <td class="titulo texto-center fundo ordem">Seq.</td>
+                    <td class="titulo texto-center fundo funcao">Nº Afiliação</td>
+                    <td class="titulo texto-center fundo nome" colspan="2">Nome</td>
+                    <td class="titulo texto-center fundo chave">Loja</td>
+                </tr>
+                @for (int i = 0; i < Model.Dados.Membros.Count; i++)
+                {
+                    <tr>
+                        <td class="texto texto-center ordem">@contador.ToString("00")</td>
+                        <td class="texto texto-center funcao">@(string.IsNullOrEmpty(Model.Dados.Membros[i].NumeroChave) == false ? Convert.ToUInt64(Model.Dados.Membros[i].NumeroChave).ToString(@"000\.000") : "-")</td>
+                        <td class="texto texto-left" colspan="2">@(string.IsNullOrEmpty(Model.Dados.Membros[i].Nome) == false ? Model.Dados.Membros[i].Nome.ToUpper() : "")</td>
+                        <td class="textopequeno texto-center chave">@Model.Dados.Membros[i].Loja</td>
+                    </tr>
+                    contador++;
+                }
+                @{
+                    int contadorFinal = contador + (iPaginas == 0 ? (Model.Dados.Membros.Count == 0 ? 27 : 10) - (Model.Dados.QtdeDiginitarios + (Model.Dados.QtdeDiginitarios > 0 ? 1 : 0) + Model.Dados.Cargos.Count + 1) : 40 - (Model.Dados.Cargos.Count + 2));
+                }
+                @if (Model.Dados.Membros == null || Model.Dados.Membros.Any() == false)
+                {
+                    for (int i = contador; i <= contadorFinal; i++)
+                    {
+                        <tr>
+                            <td class="texto texto-center ordem">@contador.ToString("00")</td>
+                            <td class="titulo texto-center chave">&nbsp;</td>
+                            <td class="titulo texto-center nome">&nbsp;</td>
+                            <td class="titulo texto-center loja">&nbsp;</td>
+                            <td class="titulo texto-center chave">&nbsp;</td>
+                        </tr>
+                        {
+                            contador++;
+                        }
+                    }
+                }
+            </table>
+        }
+        else
+        {
+            <table class="tabela" cellpadding="8" cellspacing="0" width="100%" border="1">
+                <tr>
+                    <td class="titulo texto-center fundo ordem">Seq.</td>
+                    <td class="titulo texto-center fundo funcao">Número Chave</td>
+                    <td class="titulo texto-center fundo nome">Nome</td>
+                    <td class="titulo texto-center fundo loja">Loja</td>
+                    <td class="titulo texto-center fundo chave">Documento</td>
+                </tr>
+                @{
+                    int contadorFinal = contador + 40 - (Model.Dados.Cargos.Count + 2);
+                }
+                @for (int i = contador; i <= contadorFinal; i++)
+                {
+                    <tr>
+                        <td class="texto texto-center ordem">@contador.ToString("00")</td>
+                        <td class="titulo texto-center funcao">&nbsp;</td>
+                        <td class="titulo texto-center nome">&nbsp;</td>
+                        <td class="titulo texto-center loja">&nbsp;</td>
+                        <td class="titulo texto-center chave">&nbsp;</td>
+                    </tr>
+                    {
+                        contador++;
+                    }
+                }
+            </table>
+        }
+    </div>
+    if (Model.Dados.QuantidadePaginas > 1 && (iPaginas + 1) < Model.Dados.QuantidadePaginas)
+    {
+        <div style="page-break-before:always">&nbsp;</div>
+    }
+}

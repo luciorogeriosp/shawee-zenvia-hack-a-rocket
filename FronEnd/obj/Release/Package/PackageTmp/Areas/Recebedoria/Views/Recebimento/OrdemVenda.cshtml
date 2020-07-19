@@ -1,0 +1,110 @@
+﻿@model List<SAL.MVC.Areas.Recebedoria.Models.OrdemVendaModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-money"></i>
+                    Recebedoria | Ordem de Venda
+                </h1>
+            </div>
+        </div>
+        <div class="widget-body" id="OrdeVendaLista">
+
+        </div>
+    </div>
+</div>
+<script>
+    function LoadList() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Recebedoria/Recebimento/OrdemVendaLista',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#OrdeVendaLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Apagar(Id, Nome) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente excluir a Ordem de Venda " + Nome + "?", "ApagarConfirmar(" + Id + ");")
+    }
+
+    function ApagarConfirmar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Recebedoria/Recebimento/OrdemVendaExcluir',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Recebedoria | Ordem de Venda', data.msg);
+                    $("#line_" + Id).remove();
+                }
+                else {
+                    ShowNotify('danger', 'Recebedoria | Ordem de Venda', data.msg);
+                }
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function EfetivarOrdemVenda(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Recebedoria/Recebimento/OrdemVendaEfetivar',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    window.location.href = rootURL + 'Recebedoria/Recebimento/Index?OrdemVenda=1';
+                }
+                else {
+                    OnCompleteForm();
+                    ShowNotify('danger', 'Recebedoria | Ordem de Venda', data.msg);
+                }                
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                //OnCompleteForm();
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        LoadList();
+    });
+</script>

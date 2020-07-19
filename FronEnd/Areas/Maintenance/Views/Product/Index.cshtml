@@ -1,0 +1,208 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-database"></i>
+                    Cadastros | Produtos
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:10px;">
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" onclick="AbrirModalProduto();">
+                        Incluir Produto
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="widget-body" id="ProdutoLista">
+
+        </div>
+    </div>
+</div>
+<div id="myModalProduto" title="Formulário de Produto" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalProdutoContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogProduto();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmDialogProduto();" id="btnConfirmar">Confirmar</button>
+    </div>
+</div>
+<script>
+    var dialogProduto;
+
+    function CloseDialogProduto() {
+        dialogProduto.dialog("close");
+    }
+
+    function LoadList() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Maintenance/Product/Lista',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#ProdutoLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmDialogProduto() {
+        ClearNotify();
+        $("#btnConfirmar").attr("disabled", "disabled");
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Maintenance/Product/Form',
+            data: $.param($("#frmProduct").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalProdutoContent").html("");
+                $("#myModalProdutoContent").html(data);
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfigureDialogProduto() {
+        dialogProduto = $("#myModalProduto").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()),
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' })
+            }
+        });
+    }
+    
+    function AbrirModalProduto() {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Maintenance/Product/Form',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalProdutoContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogProduto.dialog("open");
+                dialogProduto.dialog("moveToTop");
+
+                $("#myModalProdutoContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Editar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Maintenance/Product/Form',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalProdutoContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogProduto.dialog("open");
+                dialogProduto.dialog("moveToTop");
+
+                $("#myModalProdutoContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Apagar(Id, Nome) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente excluir o Produto " + Nome + "?", "ApagarConfirmar(" + Id + ");")
+    }
+
+    function ApagarConfirmar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Maintenance/Product/Excluir',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Biblioteca | Produto', data.msg);
+                    $("#line_" + Id).remove();
+                }
+                else {
+                    ShowNotify('danger', 'Biblioteca | Produto', data.msg);
+                }
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    $(window).resize(function () {
+        ConfigureDialogProduto();
+    });
+
+    $(document).ready(function () {
+        ConfigureDialogProduto();
+        LoadList();
+    });
+</script>

@@ -1,0 +1,102 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.NovoMembroFormModel
+<form class="smart-form" id="frmNovoMembro" onsubmit="return false">
+    <div class="row">
+        <section class="col col-6">
+            <label class="label">@Html.LabelFor(m => m.OrganismoAfiliadoId) <span class="font-xs text-danger">*</span></label>
+            <label class="input">
+                @Html.DropDownListFor(m => m.OrganismoAfiliadoId, new SelectList(Model.ListaOrganismoAfiliado, "Id", "Text", Model.OrganismoAfiliadoId), (Model.ListaOrganismoAfiliado != null && Model.ListaOrganismoAfiliado.Count > 1 ? "Selecione" : null), new { @class = "form-control", onchange="SelecionaNovoMembro()" })
+                @Html.Raw(Model.ReturnAttribute.GetError("OrganismoAfiliadoId"))
+            </label>
+        </section>
+        <section class="col col-4">
+            <label class="label">@Html.LabelFor(m => m.NumeroAfiliacao) <span class="font-xs text-danger">*</span></label>
+            <label class="input">
+                @Html.HiddenFor(m => m.NumeroAfiliacao)
+                @Html.TextBox("NumeroAfiliacaoDisabled", "", new { @class = "form-control", MaxLength = "10", @disabled = "disabled" })
+                @Html.Raw(Model.ReturnAttribute.GetError("NumeroAfiliacao"))
+            </label>
+        </section>
+        <section class="col col-2">
+            <label class="label"><label for="OrganismoAfiliadoId"></label> </label>
+            <label style="width:100%">
+                <button type="button" class="btn btn-default" style="height:33px; width:100%;" onclick="BuscarNovoMembro();">
+                    <i class="fa fa-search"></i> Buscar
+                </button>
+            </label>
+        </section>
+    </div>
+    <section>
+        <label class="label">@Html.LabelFor(m => m.ddlNomeMembro) <span class="font-xs text-danger">*</span></label>
+        <label class="select">
+            <select class="form-control" id="ddlNomeMembro" name="ddlNomeMembro" onchange="SelecionaNovoMembro()">
+                @if (ViewBag.ItemMembro != null)
+                {
+                <option value="@(((SAL.MVC.Models.ListItemModel)ViewBag.ItemMembro).Id)">@(((SAL.MVC.Models.ListItemModel)ViewBag.ItemMembro).Text)</option>
+                }
+            </select> <i></i>
+            @Html.Raw(Model.ReturnAttribute.GetError("ddlNomeMembro"))
+            @Html.TextBoxFor(m => m.PrimeiroNome, new { style = "display:none;" })
+        </label>
+    </section>
+    <div class="row">
+        <section class="col col-6">
+            <label class="label">@Html.LabelFor(m => m.DataInscricao)</label>
+            <label class="input">
+                @Html.TextBoxFor(m => m.DataInscricao, new { @class = "form-control datepicker-input", MaxLength = "10", type = "date", onkeypress = "OnEnter(event, 'ConfirmaNovoMembro(this);');" })
+                @Html.Raw(Model.ReturnAttribute.GetError("DataInscricao"))
+            </label>
+        </section>
+        <section class="col col-6">
+            <label class="label">@Html.LabelFor(m => m.DataAdmissao)</label>
+            <label class="input">
+                @Html.TextBoxFor(m => m.DataAdmissao, new { @class = "form-control datepicker-input", MaxLength = "10", type = "date", onkeypress = "OnEnter(event, 'ConfirmaNovoMembro(this);');" })
+                @Html.Raw(Model.ReturnAttribute.GetError("DataAdmissao"))
+            </label>
+        </section>
+    </div>
+    <div class="note">
+        Apenas os campos marcados com (<span class="text-danger">*</span>) são obrigatórios.
+    </div>
+</form>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmNovoMembro"))
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        $("#btnConfirmarNovoMembro").hide();
+    </script>
+}
+else if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Informacao || Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Erro || Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Alerta)
+{
+    <script>
+        $("#btnConfirmarNovoMembro").show();
+    </script>
+}
+@if (Model.ddlNomeMembro > 0)
+{
+    <script>
+        $("#btnConfirmarNovoMembro").removeAttr("disabled");
+    </script>
+
+}
+else
+{
+    <script>
+        $("#btnConfirmarNovoMembro").attr("disabled", "disabled");
+    </script>
+}
+<script>
+    $("#DataInscricao").datepicker({
+        format: 'dd/mm/yyyy',
+        language: 'pt-BR'
+    });
+
+    $("#DataAfiliacao").datepicker({
+        format: 'dd/mm/yyyy',
+        language: 'pt-BR'
+    });
+    if ($("#OrganismoAfiliadoId option").size() == 2) {
+        $("#PrimeiroNome").focus();
+    } else {
+        $("#OrganismoAfiliadoId").focus();
+    }
+</script>

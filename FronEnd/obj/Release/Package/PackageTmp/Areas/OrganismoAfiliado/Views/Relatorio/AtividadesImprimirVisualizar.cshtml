@@ -1,0 +1,171 @@
+﻿@model SAL.MVC.Models.RelatorioModel<List<SAL.MVC.Areas.OrganismoAfiliado.Models.RelatorioAtividadesModel>>
+<style>
+    .page {
+        padding-top: 33px;
+    }
+
+    .pageother {
+        padding-top: -30px;
+    }
+
+    .titulo {
+        font-size: 9pt;
+        font-weight: bold;
+    }
+
+    .subtitulo {
+        font-size: 7pt;
+        font-weight: bold;
+    }
+
+    .texto {
+        font-size: 9pt;
+    }
+
+    .textop {
+        font-size: 9pt;
+    }
+
+    .texto-branco {
+        font-size: 9pt;
+        color: white;
+    }
+
+    .texto-left {
+        text-align: left;
+    }
+
+    .texto-right {
+        text-align: right;
+    }
+
+    .texto-center {
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 12pt;
+        text-align: center;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
+    }
+
+    h2 {
+        font-size: 10pt;
+        text-align: center;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
+    }
+
+    .valores {
+        font-size: 7pt;
+    }
+
+    .espaco1 {
+        font-size: 5pt;
+    }
+
+    .data {
+        width: 60px;
+        font-size: 7pt;
+    }
+
+    .frequencia {
+        width: 50px;
+    }
+
+    .visitas {
+        width: 50px;
+    }
+
+    .responsavel {
+        width: 250px;
+    }
+
+    .descricao {
+        width: 250px;
+    }
+
+    .tabela {
+        border: 1px solid black;
+    }
+
+    .tabela th {
+        border: 0.5px solid black;
+    }
+
+    .tabela td {
+        border: 0.5px solid black;
+    }
+</style>
+
+<div class="page">
+    <h1>@Model.ReportTitle</h1>
+    <h1>@Model.ReportSubitle</h1>
+    @if (Model.Dados != null && Model.Dados.Where(w => w.Ritualistica).Any())
+    {
+        <table cellpadding="0" cellspacing="0" width="100%" border="0">
+            <tr>
+                <td class="espaco1">&nbsp;</td>
+            </tr>
+        </table>
+        <table cellpadding="4" cellspacing="0" width="100%" border="0" class="tabela">
+            <caption>REUNIÕES RITUALÍSTICAS, REVISÕES E INICIAÇÕES</caption>
+            <thead>
+                <tr>
+                    <td class="titulo texto-center data">Data</td>
+                    <td class="titulo texto-center frequencia">Frequência</td>
+                    <td class="titulo texto-center visitas">Visitas</td>
+                    <td class="titulo texto-center responsavel">Responsável</td>
+                    <td class="titulo texto-center descricao">Descrição do Evento</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Dados.Where(w => w.Ritualistica).OrderBy(o => o.Data))
+                {
+                    <tr>
+                        <td class="texto texto-center data">@item.Data.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="texto texto-center frequencia">@item.FrequenciaTotal</td>
+                        <td class="texto texto-center visitas">@item.FrequenciaVisitantes</td>
+                        <td class="texto texto-left responsavel">@item.Responsavel</td>
+                        <td class="texto texto-left descricao">@item.Descricao</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    @if (Model.Dados != null && Model.Dados.Where(w => w.Ritualistica == false).Any())
+    {
+        <table cellpadding="0" cellspacing="0" width="100%" border="0">
+            <tr>
+                <td class="espaco1">&nbsp;</td>
+            </tr>
+        </table>
+        <table cellpadding="4" cellspacing="0" width="100%" border="0" class="tabela">
+            <caption>OUTRAS ATIVIDADES</caption>
+            <thead>
+                <tr>
+                    <td class="titulo texto-center data">Data</td>
+                    <td class="titulo texto-center frequencia">Frequência</td>
+                    <td class="titulo texto-center visitas">Visitas</td>
+                    <td class="titulo texto-center responsavel">Responsável</td>
+                    <td class="titulo texto-center descricao">Descrição do Evento</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Dados.Where(w => w.Ritualistica == false).OrderBy(o => o.Data))
+                {
+                    <tr>
+                        <td class="texto texto-center data">@item.Data.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="texto texto-center frequencia">@item.FrequenciaTotal</td>
+                        <td class="texto texto-center visitas">@item.FrequenciaVisitantes</td>
+                        <td class="texto texto-left responsavel">@item.Responsavel</td>
+                        <td class="texto texto-left descricao">@item.Descricao</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

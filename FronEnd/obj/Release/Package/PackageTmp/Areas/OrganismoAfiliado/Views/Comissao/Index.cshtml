@@ -1,0 +1,208 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-book"></i>
+                    Organismo Afiliado | Comissões
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:10px;">
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" onclick="AbrirModalComissao();">
+                        Incluir Comissão
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="widget-body" id="ComissaoLista">
+
+        </div>
+    </div>
+</div>
+<div id="myModalComissao" title="Formulário de Comissão" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalComissaoContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogComissao();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmDialogComissao();" id="btnConfirmar">Confirmar</button>
+    </div>
+</div>
+<script>
+    var dialogComissao;
+
+    function CloseDialogComissao() {
+        dialogComissao.dialog("close");
+    }
+
+    function LoadList() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Comissao/Lista',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#ComissaoLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmDialogComissao() {
+        ClearNotify();
+        $("#btnConfirmar").attr("disabled", "disabled");
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Comissao/Form',
+            data: $.param($("#frmComissao").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalComissaoContent").html("");
+                $("#myModalComissaoContent").html(data);
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfigureDialogComissao() {
+        dialogComissao = $("#myModalComissao").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()),
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' })
+            }
+        });
+    }
+    
+    function AbrirModalComissao() {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Comissao/Form',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalComissaoContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogComissao.dialog("open");
+                dialogComissao.dialog("moveToTop");
+
+                $("#myModalComissaoContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Editar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Comissao/Form',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalComissaoContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogComissao.dialog("open");
+                dialogComissao.dialog("moveToTop");
+
+                $("#myModalComissaoContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Apagar(Id, Nome) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente excluir o Comissao " + Nome + "?", "ApagarConfirmar(" + Id + ");")
+    }
+
+    function ApagarConfirmar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Comissao/Excluir',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Biblioteca | Comissao', data.msg);
+                    $("#line_" + Id).remove();
+                }
+                else {
+                    ShowNotify('danger', 'Biblioteca | Comissao', data.msg);
+                }
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    $(window).resize(function () {
+        ConfigureDialogComissao();
+    });
+
+    $(document).ready(function () {
+        ConfigureDialogComissao();
+        LoadList();
+    });
+</script>

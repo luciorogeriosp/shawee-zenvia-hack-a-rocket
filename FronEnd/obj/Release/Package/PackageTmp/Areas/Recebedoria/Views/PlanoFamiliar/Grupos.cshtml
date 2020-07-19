@@ -1,0 +1,53 @@
+﻿@model SAL.MVC.Areas.Recebedoria.Models.PlanoFamiliarViewModel
+@if (Model.ListaPlanos.Any() || (Model.Busca && Model.BuscaPositiva == false))
+{
+    <ul>
+        @foreach (var item in Model.ListaPlanos)
+        {
+            <li class="padding-10" style="border-bottom: 1px solid #bfbfbf;">
+                <span><i class="fa fa-lg fa-folder-open"></i> Família @item.Numero</span>
+                <ul>
+                    @foreach (var itemMembro in item.ListaMembros)
+                    {
+                        <li>
+                            <span><i class="icon-leaf"></i> @itemMembro.NumeroAfiliacao - @itemMembro.Nome <a href="javascript:ExcluirMembroPlanoFamiliar(@item.Numero, @itemMembro.Id, '@itemMembro.NumeroAfiliacao - @itemMembro.Nome')"><i class="fa fa-minus txt-color-red"></i></a></span>
+                        </li>
+                    }
+                    @if (Model.Busca && Model.BuscaPositiva == false)
+                    {
+                        <li>
+                            <span><i class="icon-leaf"></i> @Model.BuscaMembroNumeroAfiliacao - @Model.BuscaNome <a href="javascript:AdicionarMembroPlanoFamiliar(@item.Numero, @Model.BuscaMembroId, '@Model.BuscaMembroNumeroAfiliacao - @Model.BuscaNome')"><i class="fa fa-plus txt-color-green"></i></a></span>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+        @if (Model.Busca && Model.BuscaPositiva == false)
+        {
+            <li class="padding-10">
+                <span><i class="fa fa-lg fa-folder-open"></i> Adicionar Nova Família <a href="javascript:AdicionarMembroPlanoFamiliarNovo(@Model.BuscaMembroId, '@Model.BuscaMembroNumeroAfiliacao - @Model.BuscaNome')"><i class="fa fa-plus-circle txt-color-green"></i></a></span>
+            </li>
+        }
+    </ul>
+    <script type="text/javascript">
+        $('.tree > ul').attr('role', 'tree').find('ul').attr('role', 'group');
+        $('.tree').find('li:has(ul)').addClass('parent_li').attr('role', 'treeitem').find(' > span').attr('title', 'Collapse this branch').on('click', function (e) {
+            var children = $(this).parent('li.parent_li').find(' > ul > li');
+            if (children.is(':visible')) {
+                children.hide('fast');
+                $(this).attr('title', 'Expand this branch').find(' > i').removeClass().addClass('fa fa-lg fa-plus-circle');
+            } else {
+                children.show('fast');
+                $(this).attr('title', 'Collapse this branch').find(' > i').removeClass().addClass('fa fa-lg fa-minus-circle');
+            }
+            e.stopPropagation();
+        });
+    </script>
+}
+else
+{
+    <text>
+    Não existem planos cadastrados no momento.
+    </text>
+}
+

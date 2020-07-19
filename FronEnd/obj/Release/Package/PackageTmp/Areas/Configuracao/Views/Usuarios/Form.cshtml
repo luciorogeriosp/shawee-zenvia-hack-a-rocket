@@ -1,0 +1,104 @@
+﻿@model SAL.MVC.Areas.Configuracao.Models.UsuarioViewModel
+<div role="content">
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body no-padding">
+
+        <!-- Error states for elements -->
+        <form class="smart-form" id="frmUsuario">
+            @Html.HiddenFor(m => m.Usuario.Id)
+            <ul id="myTab1" class="nav nav-tabs bordered">
+                <li class="active">
+                    <a href="#pnlDadosAcesso" data-toggle="tab">Dados de Acesso</a>
+                </li>
+                <li class="">
+                    <a href="#pnlPerfil" data-toggle="tab">Perfil de Acesso</a>
+                </li>
+            </ul>
+            <div id="myTabContent1" class="tab-content padding-10">
+                <div class="tab-pane fade active in" id="pnlDadosAcesso">
+                    <section>
+                        <label class="label" for="Usuario_Nome">Nome</label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.Usuario.Nome, new { @class = "input-xs", maxlength = 60 })
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label" for="Usuario_Email">E-mail</label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.Usuario.Email, new { @class = "input-xs", maxlength = 255 })
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label" for="Usuario_PasswordTemp">Senha</label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.Usuario.PasswordTemp, new { @class = "input-xs", maxlength = 20 })
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label" for="Usuario_Ativo">Ativo</label>
+                        <label class="pure-checkbox">
+                            @Html.CheckBoxFor(m => m.Usuario.Ativo)
+                        </label>
+                    </section>
+                </div>
+                <div class="tab-pane fade" id="pnlPerfil">
+                    <section>
+                        <label class="label" for="TipoPerfilIdSelect">Tipo de Acesso</label>
+                        <label class="select">
+                            @Html.DropDownListFor(m => m.TipoPerfilIdSelect, Model.TipoPerfilLista, "Selecione", new { onchange = "SelecionaTipoPerfil();" })
+                            <i></i>
+                        </label>
+                    </section>
+                    <section id="pnlPerfilRegiao" style="display:@(Model.RegiaoLista.Any() == false ? "none" : "block");">
+                        <label class="label" for="RegiaoIdSelect">Região</label>
+                        <label class="select">
+                            @Html.DropDownListFor(m => m.RegiaoIdSelect, Model.RegiaoLista, "Selecione", new { onchange = "SelecionaRegiao();" })
+                            <i></i>
+                        </label>
+                    </section>
+                    <section id="pnlPerfilOrganismo" style="display:@(Model.OrganismoLista.Any() == false ? "none" : "block");">
+                        <label class="label" for="OrganismoIdSelect">Organismo</label>
+                        <label class="select">
+                            @Html.DropDownListFor(m => m.OrganismoIdSelect, Model.OrganismoLista, "Selecione")
+                            <i></i>
+                        </label>
+                    </section>
+                    <section id="pnlPerfilPerfil" style="display:@(Model.PerfilLista.Any() == false ? "none" : "block");">
+                        <label class="label" for="PerfilIdSelect">Perfil</label>
+                        <label class="select">
+                            @Html.DropDownListFor(m => m.PerfilIdSelect, Model.PerfilLista, "Selecione")
+                            <i></i>
+                        </label>
+                    </section>
+                </div>
+            </div>
+        </form>
+        <!--/ Error states for elements -->
+    </div>
+    <!-- end widget content -->
+</div>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmUsuario"))
+@if (String.IsNullOrEmpty(Model.Usuario.Id))
+{
+    <script>
+        $("#QuantidadeEstoque").removeAttr("disabled");
+        $("#QuantidadeMinima").removeAttr("disabled");
+    </script>
+}
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        if ($("#line_@(Model.Usuario.Id.Trim())").length == 0) {
+            LoadList();
+        } else {
+            $("#line_@(Model.Usuario.Id.Trim())").children()[0].innerText = $("#Usuario_Nome").val();
+            $("#line_@(Model.Usuario.Id.Trim())").children()[1].innerText = $("#Usuario_Email").val();
+            $("#line_@(Model.Usuario.Id.Trim())").children()[2].innerText = $("#Usuario_Ativo").is(":checked") ? "Sim" : "Não";
+        }
+    </script>
+}

@@ -1,0 +1,608 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-cut"></i>
+                    Tesouraria | Agendamento
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:10px;">
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" onclick="AbrirModalAgendamentoNovaConta();">
+                        Incluir Agendamento
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="widget-body">
+                    <ul id="myTab1" class="nav nav-tabs bordered">
+                        <li class="active">
+                            <a href="#pnlAgendamentoListaContaP" onclick="AgendamentoListaPorLancamento('P');" data-toggle="tab">Contas a pagar <span class="badge bg-color-red txt-color-white" id="pnlAgendamentoContadorContaP" style="display:none;">12</span></a>
+                        </li>
+                        <li class="">
+                            <a href="#pnlAgendamentoListaContaR" onclick="AgendamentoListaPorLancamento('R');" data-toggle="tab">Contas a receber <span class="badge bg-color-blue txt-color-white" id="pnlAgendamentoContadorContaR" style="display:none;">12</span></a>
+                        </li>
+                    </ul>
+
+                    <div id="myTabContent1" class="tab-content padding-10">
+                        <div class="tab-pane fade active in" id="pnlAgendamentoListaContaP">
+                            @{
+                                Html.RenderAction("ListaAgendamento", new { TipoLancamento = "P" });
+                            }
+                        </div>
+                        <div class="tab-pane fade" id="pnlAgendamentoListaContaR">
+                            @{
+                                Html.RenderAction("ListaAgendamento", new { TipoLancamento = "R" });
+                            }
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModalAgendamentoFormConta" title="Formulário de Agendamento" class="no-padding">
+    <div class="modal-body" id="myModalAgendamentoFormContaContent">
+        <div role="content">
+
+            <!-- widget edit box -->
+            <div class="jarviswidget-editbox">
+                <!-- This area used as dropdown edit box -->
+
+            </div>
+            <!-- end widget edit box -->
+            <!-- widget content -->
+            <div class="widget-body no-padding">
+
+                <!-- Error states for elements -->
+                <form class="smart-form" id="frmTesourariaAgendamento">
+                    <input type="hidden" id="AgendamentoId" />
+                    <fieldset>
+                        <div class="row">
+                            <section class="col col-6">
+                                <label class="label">&nbsp;</label>
+                                <div class="inline-group">
+                                    <label class="radio">
+                                        <input type="radio" name="Agendamento" id="AgendamentoContasPagar" value="P" onclick="SelecionaAgendamento(this);">
+                                        <i></i>Contas a Pagar
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="Agendamento" id="AgendamentoContasReceber" value="R" onclick="SelecionaAgendamento(this);">
+                                        <i></i>Contas a Receber
+                                    </label>
+                                </div>
+                            </section>
+                            <section class="col col-6">
+                                <label class="label">
+                                    <label for="AgendamentoTipo">Tipo de Controle</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="select">
+                                    <select onchange="SelecionaAgendamentoTipo(this);" id="AgendamentoTipo">
+                                        <option value="">Selecione</option>
+                                        <option value="R">Recorrente</option>
+                                        <option value="P">Parcelamento</option>
+                                        <option value="U">Lançamento Único</option>
+                                    </select>
+                                    <i></i>
+                                </label>
+                            </section>
+                        </div>
+                        <section>
+                            <label class="label">
+                                <label for="AgendamentoContaAutoComplete">Conta</label>
+                                <span class="font-xs text-danger">*</span>
+                            </label>
+                            <label class="input">
+                                <a href="javascript:void(null);" onclick="AgendamentoFiltroContasClean();"><i class="icon-append glyphicon glyphicon-list-alt"></i></a>
+                                <input type="hidden" id="AgendamentoContaId">
+                                <input type="text" id="AgendamentoContaAutoComplete" onkeyup="AgendamentoFiltroContas()">
+                            </label>
+                            <div id="pnlConta" style="height:150px; overflow-y:scroll; border-left:1px solid #BDBDBD; border-bottom:1px solid #BDBDBD; border-right:1px solid #BDBDBD; width:100%;"></div>
+                        </section>
+                        <div class="row">
+                            <section class="col col-3" id="pnlDataInicio">
+                                <label class="label">
+                                    <label for="AgendamentoDataInicio">Data de Início</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    <input type="date" id="AgendamentoDataInicio"> @*onchange="AgendamentoSelecionaData(this);"*@
+                                </label>
+                            </section>
+                            <section class="col col-3" id="pnlVencimento">
+                                <label class="label">
+                                    <label for="AgendamentoVencimento">Vencimento</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="select">
+                                    <select id="AgendamentoVencimento">
+                                        <option value="">Selecione</option>
+                                        @for (int i = 1; i <= 25; i++)
+                                        {
+                                            <option value="@(i)">@(i)</option>
+                                        }
+                                    </select>
+                                </label>
+                            </section>
+                            <section class="col col-6" id="pnlPeriodicidade">
+                                <label class="label">
+                                    <label for="AgendamentoPeriodicidade">Periodicidade</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="select">
+                                    <select id="AgendamentoPeriodicidade">
+                                        <option value="">Selecione</option>
+                                        <option value="1">Mensal</option>
+                                        <option value="2">Bimestral</option>
+                                        <option value="3">Trimestral</option>
+                                        <option value="4">Quadrimestral</option>
+                                        <option value="6">Semestral</option>
+                                        <option value="12">Anual</option>
+                                    </select>
+                                    <i></i>
+                                </label>
+                            </section>
+                            <section class="col col-6" id="pnlParcelas" style="display:none;">
+                                <label class="label">
+                                    <label for="AgendamentoParcelas">Parcelas</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    <input type="number" id="AgendamentoParcelas">
+                                </label>
+                            </section>
+                        </div>
+                        <div class="row">
+                            <section class="col col-3">
+                                <label class="label">
+                                    <label for="AgendamentoValor">Valor</label>
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="AgendamentoValor" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);">
+                                </label>
+                            </section>
+                            <section class="col col-3">
+                                <label class="label">
+                                    <label for="AgendamentoDebitoAutomatico">Débito Automático</label>
+                                </label>
+                                <label class="pure-checkbox">
+                                    <input type="checkbox" id="AgendamentoDebitoAutomatico">
+                                </label>
+                            </section>
+                            <section class="col col-6">
+                                <label class="label">
+                                    <label for="AgendamentoDocumento">Documento</label>
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="AgendamentoDocumento" style="text-transform: uppercase">
+                                </label>
+                            </section>
+                        </div>
+                        <section>
+                            <label class="label">
+                                <label for="AgendamentoObservacao">Detalhamento</label>
+                            </label>
+                            <label class="input">
+                                <input type="text" id="AgendamentoObservacao" style="text-transform: uppercase">
+                            </label>
+                        </section>
+                        <section>
+                            <label class="label">
+                                <label for="AgendamentoNomeRazaoSocial">Nome / Razão Social</label>
+                                <span class="font-xs text-danger">*</span>
+                            </label>
+                            <label class="input">
+                                <input type="text" id="AgendamentoNomeRazaoSocial" style="text-transform: uppercase">
+                            </label>
+                        </section>
+                        <section>
+                            <label class="label">
+                                <label for="AgendamentoCPFCNPJ">CPF / CNPJ</label>
+                                <span class="font-xs text-danger">*</span>
+                            </label>
+                            <label class="input">
+                                <input type="text" id="AgendamentoCPFCNPJ">
+                            </label>
+                        </section>
+                        <section>
+                            <label class="checkbox">
+                                <input type="checkbox" id="AgendamentoAtivo" />
+                                <i></i>Ativo
+                            </label>
+                        </section>
+                    </fieldset>
+                </form>
+                <!--/ Error states for elements -->
+
+            </div>
+            <!-- end widget content -->
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogAgendamentoFormConta();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmDialogAgendamentoFormConta();">Confirmar</button>
+    </div>
+</div>
+
+<script>
+    var dialogAgendamentoFormConta = null;
+    var blnLimparContas = true;
+
+    $(window).resize(function () {
+        ConfigureDialogTesouraria();
+    });
+
+    $(document).ready(function () {
+        ConfigureDialogTesouraria();
+    });
+
+    function ConfigureDialogTesouraria() {
+        dialogAgendamentoFormConta = $("#myModalAgendamentoFormConta").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()),
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' })
+            }
+        });
+    }
+
+    function AbrirModalAgendamentoNovaConta() {
+        $("#frmTesourariaAgendamento")[0].reset();
+        $("#AgendamentoId").val("0");
+
+        $("#AgendamentoContaAutoComplete").attr("disabled", "disabled");
+
+        $(".alert").remove();
+        $("#pnlConta").hide();
+        $("#pnlDataInicio").show();
+        $("#pnlVencimento").hide();
+        $("#pnlPeriodicidade").hide();
+
+        $("body").css({ overflow: 'hidden' });
+        dialogAgendamentoFormConta.dialog("open");
+        dialogAgendamentoFormConta.dialog("moveToTop");
+    }
+
+
+    function CloseDialogAgendamentoFormConta() {
+        dialogAgendamentoFormConta.dialog("close");
+    }
+
+    function ConfirmDialogAgendamentoFormConta() {
+        $(".alert").remove();
+
+        var form = {
+            Id: $("#AgendamentoId").val(),
+            ContaId: $("#AgendamentoContaId").val(),
+            TipoControleId: $("#AgendamentoTipo").val(),
+            DataInicioTexto: $("#AgendamentoDataInicio").val(),
+            Vencimento: $("#AgendamentoVencimento").val(),
+            Periodicidade: $("#AgendamentoPeriodicidade").val(),
+            QtdeParcelas: $("#AgendamentoParcelas").val(),
+            Valor: $("#AgendamentoValor").val().replace(".", ","),
+            Documento: encodeURIComponent($("#AgendamentoDocumento").val()),
+            NomeRazaoSocial: encodeURIComponent($("#AgendamentoNomeRazaoSocial").val()),
+            CPFCNPJ: $("#AgendamentoCPFCNPJ").val(),
+            Situacao: $("#AgendamentoAtivo").is(":checked") ? "A" : "I",
+            Observacao: encodeURIComponent($("#AgendamentoObservacao").val()),
+            DebitoAutomatico: $("#AgendamentoDebitoAutomatico").is(":checked")
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Tesouraria/Agendamento/Gravar',
+            data: form,
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Agendamento', 'Conta gravada com sucesso!', 'myModalAgendamentoFormContaContent');
+                    $("#AgendamentoId").val(data.Id);
+                    if ($("#AgendamentoContasPagar").is(":checked")) {
+                        AgendamentoListaPorLancamento('P');
+                    } else {
+                        AgendamentoListaPorLancamento('R');
+                    }
+                } else {
+                    ShowNotify('danger', 'Agendamento', data.msg, 'myModalAgendamentoFormContaContent');
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+                $("#AgendamentoContaAutoComplete").focus();
+            }
+        });
+
+        //dialogAgendamentoFormConta.dialog("close");
+    }
+
+    function SelecionaAgendamento(objAgendamento) {
+        $(".alert").remove();
+
+        var objAgendamentoValue = objAgendamento.value;
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Tesouraria/Agendamento/ListaContas',
+            data: { Tipo: objAgendamentoValue },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.msg != undefined) {
+                    ShowNotify('danger', 'Agendamento', data.msg, 'myModalAgendamentoFormContaContent');
+                } else {
+                    $("#pnlConta").html(data);
+                    if (blnLimparContas) {
+                        AgendamentoFiltroContasClean();
+                    }
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+                $("#AgendamentoContaAutoComplete").focus();
+                blnLimparContas = true;
+            }
+        });
+    }
+
+    function SelecionaAgendamentoTipo(objAgendamentoTipo) {
+        var objAgendamentoTipoValue = objAgendamentoTipo.options[objAgendamentoTipo.selectedIndex].value;
+        SelecionaAgendamentoTipoByValue(objAgendamentoTipoValue);
+    }
+
+    function SelecionaAgendamentoTipoByValue(value) {
+        $("#pnlVencimento").hide();
+        $("#pnlPeriodicidade").hide();
+        $("#pnlParcelas").hide();
+
+        switch (value) {
+            case "R":
+                $("#pnlVencimento").show();
+                $("#pnlPeriodicidade").show();
+                break;
+            case "P":
+                $("#pnlVencimento").show();
+                $("#pnlParcelas").show();
+                break;
+            case "P":
+
+                break;
+        }
+
+        if (value != "") {
+
+        }
+    }
+
+    function AgendamentoFiltroContas() {
+        $("#tblAgendamentoListaContas tr").show();
+
+        var AgendamentoContaAutoCompleteValue = stripVowelAccent($("#AgendamentoContaAutoComplete").val().trim()).toLowerCase();
+
+        if (AgendamentoContaAutoCompleteValue != "") {
+
+            var blnExiste = false;
+            $("#tblAgendamentoListaContas tbody tr").each(function (index, element) {
+                blnExiste = false;
+                for (var i = 0; i < $(this).children().length; i++) {
+                    if (stripVowelAccent($($(this).children()[i]).text()).toLowerCase().indexOf(AgendamentoContaAutoCompleteValue) > -1) {
+                        blnExiste = true;
+                        break;
+                    }
+                }
+
+                if (!blnExiste) {
+                    $(this).hide();
+                }
+            });
+        }
+    }
+
+    function AgendamentoFiltroContasClean() {
+        $("#pnlConta").show();
+
+        $("AgendamentoContaId").val("");
+        $("#AgendamentoContaAutoComplete").val("");
+        $("#AgendamentoContaAutoComplete").removeAttr("disabled");
+        $("#AgendamentoContaAutoComplete").focus();
+        AgendamentoFiltroContas();
+    }
+
+    function AgendamentoSelecionaConta(Id, Texto) {
+        $("#AgendamentoContaAutoComplete").val(Texto);
+        $("#AgendamentoContaAutoComplete").attr("disabled", "disabled");
+
+        $("#AgendamentoContaId").val(Id);
+        AgendamentoFiltroContas();
+
+        $("#pnlConta").hide();
+    }
+
+    function AgendamentoSelecionaData(objData) {
+        $(".alert").remove();
+
+        try {
+            var dtSelect = new Date(objData.value);
+
+            if (dtSelect < new Date()) {
+                $("#AgendamentoDataInicio").val("");
+                $("#AgendamentoVencimento").val("");
+
+                ShowNotify('danger', 'Agendamento', 'A data de início deve ser maior que data de hoje.', 'myModalAgendamentoFormContaContent');
+            } else {
+                $("#AgendamentoVencimento").val(dtSelect.getDate() + 1);
+            }
+        } catch (e) {
+
+        }
+    }
+
+    function AgendamentoListaPorLancamento(TipoLancamento) {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Tesouraria/Agendamento/ListaAgendamento',
+            data: { TipoLancamento: TipoLancamento },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.msg != undefined) {
+                    ShowNotify('danger', 'Agendamento', data.msg, 'myModalAgendamentoFormContaContent');
+                } else {
+                    $("#pnlAgendamentoListaConta" + TipoLancamento).html(data);
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+                $("#AgendamentoContaAutoComplete").focus();
+            }
+        });
+    }
+
+    function AgendamentoEditar(Id) {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Tesouraria/Agendamento/Editar',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.msg != undefined) {
+                    ShowNotify('danger', 'Agendamento', data.msg, 'myModalAgendamentoFormContaContent');
+                } else {
+                    $("#frmTesourariaAgendamento")[0].reset();
+                    $("#AgendamentoId").val(data.Lancamento.Id);
+
+                    $("#AgendamentoContaId").val(data.Lancamento.ContaId);
+                    $("#AgendamentoContaAutoComplete").val(data.Lancamento.ContaNome);
+                    $("#AgendamentoContaAutoComplete").attr("disabled", "disabled");
+
+                    $("#pnlConta").hide();
+                    blnLimparContas = false;
+
+                    if (data.Lancamento.TipoLancamentoId == "P") {
+                        $("#AgendamentoContasPagar").click();
+                    } else {
+                        $("#AgendamentoContasReceber").click();
+                    }
+
+                    $("#AgendamentoTipo").val(data.Lancamento.TipoControleId);
+                    $("#AgendamentoDataInicio").val(data.Lancamento.DataInicioTexto);
+                    $("#AgendamentoVencimento").val(data.Lancamento.Vencimento);
+
+                    SelecionaAgendamentoTipoByValue(data.Lancamento.TipoControleId);
+
+                    if (data.Lancamento.Periodicidade != null) {
+                        $("#AgendamentoPeriodicidade").val(data.Lancamento.Periodicidade);
+                    }
+                    if (data.Lancamento.QtdeParcelas != null) {
+                        $("#AgendamentoParcelas").val(data.Lancamento.QtdeParcelas);
+                    }
+                    if (data.Lancamento.Valor != null) {
+                        $("#AgendamentoValor").val(data.Lancamento.Valor);
+                    }
+                    if (data.Lancamento.Documento != null) {
+                        $("#AgendamentoDocumento").val(data.Lancamento.Documento);
+                    }
+                    if (data.Lancamento.Observacao != null) {
+                        $("#AgendamentoObservacao").val(data.Lancamento.Observacao);
+                    }
+
+                    if (data.Lancamento.DebitoAutomatico) {
+                        $("#AgendamentoDebitoAutomatico").prop('checked', true);
+                    } else {
+                        $("#AgendamentoDebitoAutomatico").prop('checked', false);
+                    }                    
+
+                    $("#AgendamentoNomeRazaoSocial").val(data.Lancamento.NomeRazaoSocial);
+                    $("#AgendamentoCPFCNPJ").val(data.Lancamento.CPFCNPJ);
+                    $("#AgendamentoAtivo").prop("checked", data.Lancamento.Situacao == "A");                       
+
+                    $(".alert").remove();
+
+                    dialogAgendamentoFormConta.dialog("open");
+                    dialogAgendamentoFormConta.dialog("moveToTop");
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+                $("#AgendamentoContaAutoComplete").focus();
+            }
+        });
+    }
+
+
+
+    function ApagarAgendamento(Id, Nome) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente excluir o Agendamento " + Nome + "?", "ApagarAgendamentoConfirmar(" + Id + ", '" + Nome + "');")
+        
+    }
+
+    function ApagarAgendamentoConfirmar(Id, Nome) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Tesouraria/Agendamento/ApagarAgendamento',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.msg != undefined) {
+                    ShowNotify('danger', 'Agendamento', data.msg, 'pnlAgendamentoListaContaP');
+                } else {
+                    ShowNotify('success', 'Agendamento', 'Agendamento excluído com sucesso!', 'pnlAgendamentoListaContaP');
+
+                    $("#row_agendamento_" + Id).remove();
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+</script>

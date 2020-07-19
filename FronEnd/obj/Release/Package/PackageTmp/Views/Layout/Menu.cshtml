@@ -1,0 +1,920 @@
+﻿@using SAL.MVC.Helpers;
+@{
+    Layout = null;
+
+    bool OA_Martinista = false;
+    bool HabilitaOrdemVenda = false;
+    bool HabilitarPlanoFamiliar = false;
+
+    String host = HttpContext.Current.Request.ServerVariables["HTTP_HOST"].ToString().ToLower();
+    int PerfilId = 0;
+
+    Tropical.Infrastructure.Model.User user = null;
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado") != null)
+    {
+        user = (Tropical.Infrastructure.Model.User)Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado");
+    }
+
+    SAL.MVC.Models.UsuarioClientePerfilModel perfilSelecionado = null;
+
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado") != null)
+    {
+        perfilSelecionado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+
+        OA_Martinista = perfilSelecionado.Cliente.OrganismoAfiliadoTipo == SAL.MVC.Util.GLP.TipoOrganismoAfiliado.AtriumMartinista || perfilSelecionado.Cliente.OrganismoAfiliadoTipo == SAL.MVC.Util.GLP.TipoOrganismoAfiliado.HeptadaMartinista;
+
+        PerfilId = perfilSelecionado.PerfilId;
+
+        HabilitaOrdemVenda = perfilSelecionado.Cliente.HabilitarOrdemVenda;
+
+        HabilitarPlanoFamiliar = perfilSelecionado.Cliente.HabilitarPlanoFamiliar;
+    }
+
+    var strPageUrl = Request.RawUrl.ToLower();
+
+    string MenuOrganismoAfiliado = "";
+    string MenuOrganismoAfiliadoMembros = "";
+    string MenuOrganismoAfiliadoRecepcao = "";
+    string MenuOrganismoAfiliadoComissoes = "";
+    string MenuOrganismoAfiliadoAtividades = "";
+    string MenuOrganismoAfiliadoAgendaIniciacao = "";
+    string MenuOrganismoAfiliadoInventario = "";
+    string MenuOrganismoAfiliadoInventarioBens = "";
+    string MenuOrganismoAfiliadoInventarioAmbientes = "";
+    string MenuOrganismoAfiliadoRelatorios = "";
+    string MenuOrganismoAfiliadoRelatoriosMembrosAtivos = "";
+    string MenuOrganismoAfiliadoRelatoriosAutorizacaoTemplo = "";
+    string MenuOrganismoAfiliadoRelatoriosAtividades = "";
+    string MenuOrganismoAfiliadoRelatoriosComissoes = "";
+    string MenuOrganismoAfiliadoRelatoriosClasses = "";
+    string MenuOrganismoAfiliadoRelatoriosIniciacoes = "";
+
+    string MenuRecebedoria = "";
+    string MenuRecebedoriaDia = "";
+    string MenuRecebedoriaOrdemVenda = "";
+    string MenuRecebedoriaLancamentoRetroativo = "";
+    string MenuRecebedoriaCadastro = "";
+    string MenuRecebedoriaPlanoFamiliar = "";
+    string MenuRecebedoriaHistorico = "";
+    string MenuRecebedoriaRelatorioDiario = "";
+
+    string MenuTesouraria = "";
+    string MenuTesourariaPagamentoRecebimento = "";
+    string MenuTesourariaAgendamento = "";
+    string MenuTesourariaRemessa = "";
+    string MenuTesourariaFechamento = "";
+    string MenuTesourariaFechamentoAnual = "";
+    string MenuTesourariaRelatorio = "";
+    string MenuTesourariaRelatorioCaixa = "";
+    string MenuTesourariaRelatorioResumoFinanceiroMensal = "";
+    string MenuTesourariaRelatorioResumoFinanceiroAnual = "";
+    string MenuTesourariaRelatorioConferenciaFinanceiroMensal = "";
+    string MenuTesourariaRelatorioListagemPagamento = "";
+    string MenuTesourariaRelatorioMapaFinanceiroMensal = "";
+    string MenuTesourariaRelatorioMapaFinanceiroAnual = "";
+    string MenuTesourariaRelatorioFechamentoAnual = "";
+
+    string MenuSuprimento = "";
+    string MenuSuprimentoCadastro = "";
+    //string MenuSuprimentoGLP = "";
+    string MenuSuprimentoFornecedores = "";
+    string MenuSuprimentoRelatorio = "";
+    string MenuSuprimentoRelatorioVendasPorFornecedor = "";
+    string MenuSuprimentoRelatorioLucroReal = "";
+
+    string MenuBiblioteca = "";
+    string MenuBibliotecaEmprestimo = "";
+    string MenuBibliotecaCadastro = "";
+    string MenuBibliotecaAutor = "";
+    string MenuBibliotecaCategoria = "";
+    string MenuBibliotecaLocal = "";
+    string MenuBibliotecaConfiguracao = "";
+    string MenuBibliotecaRelatorio = "";
+
+    string MenuDashboard = "";
+
+    string MenuFerramenta = "";
+    string MenuFerramentaImportacao = "";
+    string MenuFerramentaImportacaoMembro = "";
+    string MenuFerramentaImportacaoBiblioteca = "";
+    string MenuFerramentaExportacao = "";
+    string MenuFerramentaExportacaoMembro = "";
+
+    string MenuConfiguracao = "";
+    string MenuConfiguracaoOrganismoAfiliado = "";
+    string MenuConfiguracaoUsuarios = "";
+
+    if (strPageUrl.Contains("/organismoafiliado/"))
+    {
+        MenuOrganismoAfiliado = " style=\"display:block\"";
+
+        if (strPageUrl.Contains("/organismoafiliado/membro"))
+        {
+            MenuOrganismoAfiliadoMembros = " class=\"active\"";
+        }
+
+        if (strPageUrl.Contains("/organismoafiliado/recepcao"))
+        {
+            MenuOrganismoAfiliadoRecepcao = " class=\"active\"";
+        }
+
+        if (strPageUrl.Contains("/organismoafiliado/atividade"))
+        {
+            MenuOrganismoAfiliadoAtividades = " class=\"active\"";
+        }
+
+        if (strPageUrl.Contains("/organismoafiliado/agendainiciacao"))
+        {
+            MenuOrganismoAfiliadoAgendaIniciacao = " class=\"active\"";
+        }
+
+        if (strPageUrl.Contains("/organismoafiliado/comissao"))
+        {
+            MenuOrganismoAfiliadoComissoes = " class=\"active\"";
+        }
+
+
+        if (strPageUrl.Contains("/organismoafiliado/relatorio/") || strPageUrl.Contains("/organismoafiliado/inventario/"))
+        {
+            if (strPageUrl.Contains("/organismoafiliado/relatorio/"))
+            {
+                MenuOrganismoAfiliadoRelatorios = " style=\"display:block\"";
+
+                if (strPageUrl.Contains("/organismoafiliado/relatorio/membrosativos"))
+                {
+                    MenuOrganismoAfiliadoRelatoriosMembrosAtivos = " class=\"active\"";
+                }
+
+                if (strPageUrl.Contains("/organismoafiliado/relatorio/autorizacaotemplo"))
+                {
+                    MenuOrganismoAfiliadoRelatoriosAutorizacaoTemplo = " class=\"active\"";
+                }
+
+                if (strPageUrl.Contains("/organismoafiliado/relatorio/atividades"))
+                {
+                    MenuOrganismoAfiliadoRelatoriosAtividades = " class=\"active\"";
+                }
+
+                if (strPageUrl.Contains("/organismoafiliado/relatorio/comissoes"))
+                {
+                    MenuOrganismoAfiliadoRelatoriosComissoes = " class=\"active\"";
+                }
+
+                if (strPageUrl.Contains("/organismoafiliado/relatorio/iniciacoes"))
+                {
+                    MenuOrganismoAfiliadoRelatoriosIniciacoes = " class=\"active\"";
+                }
+
+                if (strPageUrl.Contains("/organismoafiliado/relatorio/classes"))
+                {
+                    MenuOrganismoAfiliadoRelatoriosClasses = " class=\"active\"";
+                }
+            }
+
+            if (strPageUrl.Contains("/organismoafiliado/inventario/"))
+            {
+                MenuOrganismoAfiliadoInventario = " style=\"display:block\"";
+
+                if (strPageUrl.Contains("/organismoafiliado/inventario/bens"))
+                {
+                    MenuOrganismoAfiliadoInventarioBens = " class=\"active\"";
+                }
+            }
+        }
+    }
+
+    if (strPageUrl.Contains("/recebedoria/"))
+    {
+        MenuRecebedoria = " style=\"display:block\"";
+
+        if (strPageUrl.Contains("/recebedoria/recebimento"))
+        {
+            if (Request.QueryString["ret"] == null)
+            {
+                MenuRecebedoriaDia = " class=\"active\"";
+            }
+            else
+            {
+                MenuRecebedoriaLancamentoRetroativo = " class=\"active\"";
+            }
+        }
+        if (strPageUrl.Contains("/recebedoria/recebimento/ordemvenda"))
+        {
+            MenuRecebedoriaOrdemVenda = " class=\"active\"";
+        }
+        if (strPageUrl.Contains("/recebedoria/recebimento/cadastro"))
+        {
+            MenuRecebedoriaCadastro = " class=\"active\"";
+        }
+        if (strPageUrl.Contains("/recebedoria/planofamiliar"))
+        {
+            MenuRecebedoriaPlanoFamiliar = " class=\"active\"";
+        }
+        if (strPageUrl.Contains("/recebedoria/recebimento/historico"))
+        {
+            MenuRecebedoriaHistorico = " class=\"active\"";
+        }
+        if (strPageUrl.Contains("/recebedoria/relatorio/diario"))
+        {
+            MenuRecebedoriaRelatorioDiario = " class=\"active\"";
+        }
+    }
+
+    if (strPageUrl.Contains("/tesouraria/"))
+    {
+        MenuTesouraria = " style=\"display:block\"";
+
+        if (strPageUrl.Contains("/tesouraria/pagamentorecebimento"))
+        {
+            MenuTesourariaPagamentoRecebimento = " class=\"active\"";
+        }
+        if (strPageUrl.Contains("/tesouraria/agendamento"))
+        {
+            MenuTesourariaAgendamento = " class=\"active\"";
+        }
+        if (strPageUrl.Contains("/tesouraria/remessa"))
+        {
+            MenuTesourariaRemessa = " class=\"active\"";
+        }
+        if (strPageUrl.Contains("/tesouraria/fechamentoanual"))
+        {
+            MenuTesourariaFechamentoAnual = " class=\"active\"";
+        }
+        else
+        {
+            if (strPageUrl.Contains("/tesouraria/fechamento"))
+            {
+                MenuTesourariaFechamento = " class=\"active\"";
+            }
+        }
+
+        if (strPageUrl.Contains("/tesouraria/relatorio/"))
+        {
+            MenuTesourariaRelatorio = " style=\"display:block\"";
+            if (strPageUrl.Contains("/tesouraria/relatorio/caixa"))
+            {
+                MenuTesourariaRelatorioCaixa = " class=\"active\"";
+            }
+            if (strPageUrl.Contains("/tesouraria/relatorio/resumofinanceiromensal"))
+            {
+                MenuTesourariaRelatorioResumoFinanceiroMensal = " class=\"active\"";
+            }
+            if (strPageUrl.Contains("/tesouraria/relatorio/resumofinanceiroanual"))
+            {
+                MenuTesourariaRelatorioResumoFinanceiroAnual = " class=\"active\"";
+            }
+            if (strPageUrl.Contains("/tesouraria/relatorio/conferenciafinanceiromensal"))
+            {
+                MenuTesourariaRelatorioConferenciaFinanceiroMensal = " class=\"active\"";
+            }
+            if (strPageUrl.Contains("/tesouraria/relatorio/listagempagamento"))
+            {
+                MenuTesourariaRelatorioListagemPagamento = " class=\"active\"";
+            }
+            if (strPageUrl.Contains("/tesouraria/relatorio/mapafinanceiromensal"))
+            {
+                MenuTesourariaRelatorioMapaFinanceiroMensal = " class=\"active\"";
+            }
+            if (strPageUrl.Contains("/tesouraria/relatorio/mapafinanceiroanual"))
+            {
+                MenuTesourariaRelatorioMapaFinanceiroAnual = " class=\"active\"";
+            }
+            if (strPageUrl.Contains("/tesouraria/relatorio/fechamentoanual"))
+            {
+                MenuTesourariaRelatorioFechamentoAnual = " class=\"active\"";
+            }
+        }
+    }
+
+    if (strPageUrl.Contains("/suprimento/"))
+    {
+        MenuSuprimento = " style=\"display:block\"";
+
+        if (strPageUrl.Contains("/suprimento/cadastro"))
+        {
+            MenuSuprimentoCadastro = " class=\"active\"";
+        }
+        //if (strPageUrl.Contains("/suprimento/glp"))
+        //{
+        //    MenuSuprimentoGLP = " class=\"active\"";
+        //}
+        if (strPageUrl.Contains("/suprimento/fornecedor"))
+        {
+            MenuSuprimentoFornecedores = " class=\"active\"";
+        }
+        if (strPageUrl.Contains("/suprimento/relatorio"))
+        {
+            MenuSuprimentoRelatorio = " style=\"display:block\"";
+
+            if (strPageUrl.Contains("/suprimento/relatorio/lucroreal"))
+            {
+                MenuSuprimentoRelatorioLucroReal = " class=\"active\"";
+            }
+
+            if (strPageUrl.Contains("/suprimento/relatorio/VendasPorFornecedor"))
+            {
+                MenuSuprimentoRelatorioVendasPorFornecedor = " class=\"active\"";
+            }
+        }
+    }
+
+    if (strPageUrl.Contains("/biblioteca/"))
+    {
+        MenuBiblioteca = " style=\"display:block\"";
+
+        if (strPageUrl.Contains("/biblioteca/emprestimo"))
+        {
+            MenuBibliotecaEmprestimo = " class=\"active\"";
+        }
+        if (strPageUrl.Contains("/biblioteca/cadastro"))
+        {
+            MenuBibliotecaCadastro = " class=\"active\"";
+        }
+        if (strPageUrl.Contains("/biblioteca/autor"))
+        {
+            MenuBibliotecaAutor = " class=\"active\"";
+        }
+        if (strPageUrl.Contains("/biblioteca/categoria"))
+        {
+            MenuBibliotecaCategoria = " class=\"active\"";
+        }
+        if (strPageUrl.Contains("/biblioteca/local"))
+        {
+            MenuBibliotecaLocal = " class=\"active\"";
+        }
+        if (strPageUrl.Contains("/biblioteca/configuracao"))
+        {
+            MenuBibliotecaConfiguracao = " class=\"active\"";
+        }
+        if (strPageUrl.Contains("/biblioteca/relatorio/"))
+        {
+            MenuBibliotecaRelatorio = " style=\"display:block\"";
+        }
+    }
+
+    if (strPageUrl.Contains("/dashboard"))
+    {
+        MenuDashboard = " class=\"active\"";
+    }
+
+    if (strPageUrl.Contains("/ferramenta/"))
+    {
+        MenuFerramenta = " style=\"display:block\"";
+
+        if (strPageUrl.Contains("/ferramenta/importacao/"))
+        {
+            MenuFerramentaImportacao = " style=\"display:block\"";
+
+            if (strPageUrl.Contains("/ferramenta/importacao/membro"))
+            {
+                MenuFerramentaImportacaoMembro = " class=\"active\"";
+            }
+
+            if (strPageUrl.Contains("/ferramenta/importacao/biblioteca"))
+            {
+                MenuFerramentaImportacaoBiblioteca = " class=\"active\"";
+            }
+        }
+
+        if (strPageUrl.Contains("/ferramenta/exportacao/"))
+        {
+            MenuFerramentaExportacao = " style=\"display:block\"";
+
+            if (strPageUrl.Contains("/ferramenta/exportacao/membro"))
+            {
+                MenuFerramentaExportacaoMembro = " class=\"active\"";
+            }
+        }
+    }
+
+    if (strPageUrl.Contains("/configuracao/"))
+    {
+        MenuConfiguracao = " style=\"display:block\"";
+
+        if (strPageUrl.Contains("/configuracao/organismoafiliado"))
+        {
+            MenuConfiguracaoOrganismoAfiliado = " class=\"active\"";
+        }
+
+        if (strPageUrl.Contains("/configuracao/usuarios"))
+        {
+            MenuConfiguracaoUsuarios = " class=\"active\"";
+        }
+    }
+}
+@if (user != null)
+{
+    <!-- Left panel : Navigation area -->
+    <aside id="left-panel">
+        <!-- User info -->
+        <div class="login-info">
+            <span>
+                <a href="@Url.Action("Profile", "Home")">
+                    @if (perfilSelecionado != null)
+                    {
+                        <img src="@perfilSelecionado.Cliente.Logotipo" alt="@(perfilSelecionado.Cliente.Nome)" class="online" style="border-left:none;" />
+                    }
+                    else
+                    {
+                        <img src="img/avatars/male.png" alt="me" class="online" style="border-left:none;" />
+                    }
+                    <span id="lblTopoUsuarioNome">
+                        @user.Nome
+                    </span>
+                </a>
+            </span>
+        </div>
+        <!-- end user info -->
+        @if (perfilSelecionado != null)
+        {
+            <nav>
+                @if (PerfilId > 0 && PerfilId >= 10 && perfilSelecionado.Oficial == false)
+                {
+                    if (PerfilId == 11) // RECEPCÃO
+                    {
+                        <ul>
+                            <li @Html.Raw(MenuOrganismoAfiliadoRecepcao)>
+                                <a href="@Url.Action("Index", "Recepcao", new { Area = "OrganismoAfiliado" })">Recepção</a>
+                            </li>
+                            <li @Html.Raw(MenuOrganismoAfiliadoAtividades)>
+                                <a href="@Url.Action("Index", "Atividade", new { Area = "OrganismoAfiliado" })">Atividades</a>
+                            </li>
+                            <li @Html.Raw(MenuOrganismoAfiliadoAgendaIniciacao)>
+                                <a href="@Url.Action("Index", "AgendaIniciacao", new { Area = "OrganismoAfiliado" })">Agenda Iniciações</a>
+                            </li>
+                            @if ((perfilSelecionado.Administrador || perfilSelecionado.AdministradorOrganismo || perfilSelecionado.Oficial || perfilSelecionado.Operacional) && perfilSelecionado.SomenteLeitura == false)
+                            {
+
+                                <li>
+                                    <a href="javascript:OpenDialogEntradaTemplo();">Autorização Templo</a>
+                                </li>
+                            }
+                            <li>
+                                <a href="@Url.Action("Logout", "Home", new { Area = "" })" title="Logout" data-action="userLogout" data-logout-msg="Deseja sair do sistema ?"><i class="fa fa-lg fa-sign-out fa-home"></i> <span class="menu-item-parent">Sair do Sistema</span></a>
+                            </li>
+                        </ul>
+                    }
+                    else if (PerfilId == 12) // VERIFICAÇÃO DE CONTAS
+                    {
+                        <ul>
+                            <li>
+                                <a href="javascript:void(0);"><i class="fa fa-lg fa-fw fa-money"></i> <span class="menu-item-parent">Recebedoria</span></a>
+                                <ul @(Html.Raw(MenuRecebedoria))>
+                                    <li @Html.Raw(MenuRecebedoriaRelatorioDiario)>
+                                        <a href="@Url.Action("Diario", "Relatorio", new { Area = "Recebedoria" })">Relatório Diário</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);"><i class="fa fa-lg fa-fw fa-cut"></i> <span class="menu-item-parent">Tesouraria</span></a>
+                                <ul @(Html.Raw(MenuTesouraria))>
+                                    <li @(Html.Raw(MenuTesourariaRelatorioCaixa))>
+                                        <a href="@Url.Action("Caixa", "Relatorio", new { Area = "Tesouraria" })">Caixa</a>
+                                    </li>
+                                    <li @(Html.Raw(MenuTesourariaRelatorioResumoFinanceiroMensal))>
+                                        <a href="@Url.Action("ResumoFinanceiroMensal", "Relatorio", new { Area = "Tesouraria" })">Resumo Mensal</a>
+                                    </li>
+                                    <li @(Html.Raw(MenuTesourariaRelatorioResumoFinanceiroAnual))>
+                                        <a href="@Url.Action("ResumoFinanceiroAnual", "Relatorio", new { Area = "Tesouraria" })">Resumo Anual</a>
+                                    </li>
+                                    <li @(Html.Raw(MenuTesourariaRelatorioConferenciaFinanceiroMensal))>
+                                        <a href="@Url.Action("ConferenciaFinanceiroMensal", "Relatorio", new { Area = "Tesouraria" })">Conferência Mensal</a>
+                                    </li>
+                                    <li @(Html.Raw(MenuTesourariaRelatorioListagemPagamento))>
+                                        <a href="@Url.Action("ListagemPagamento", "Relatorio", new { Area = "Tesouraria" })">Listagem de Pagamentos</a>
+                                    </li>
+                                    <li @(Html.Raw(MenuTesourariaRelatorioMapaFinanceiroMensal))>
+                                        <a href="@Url.Action("MapaFinanceiroMensal", "Relatorio", new { Area = "Tesouraria" })">Mapa Mensal</a>
+                                    </li>
+                                    <li @(Html.Raw(MenuTesourariaRelatorioMapaFinanceiroAnual))>
+                                        <a href="@Url.Action("MapaFinanceiroAnual", "Relatorio", new { Area = "Tesouraria" })">Mapa Anual</a>
+                                    </li>
+                                    <li @(Html.Raw(MenuTesourariaRelatorioFechamentoAnual))>
+                                        <a href="@Url.Action("FechamentoAnual", "Relatorio", new { Area = "Tesouraria" })">Fechamento Anual</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Logout", "Home", new { Area = "" })" title="Logout" data-action="userLogout" data-logout-msg="Deseja sair do sistema ?"><i class="fa fa-lg fa-sign-out fa-home"></i> <span class="menu-item-parent">Sair do Sistema</span></a>
+                            </li>
+                        </ul>
+                    }
+                    else if (PerfilId == 13) // RECEBEDORIA
+                    {
+                        <ul>
+                            <li>
+                                <a href="javascript:void(0);"><i class="fa fa-lg fa-fw fa-money"></i> <span class="menu-item-parent">Recebedoria</span></a>
+                                <ul @(Html.Raw(MenuRecebedoria))>
+                                    @if (perfilSelecionado.SomenteLeitura == false)
+                                    {
+                                        <li @Html.Raw(MenuRecebedoriaDia)>
+                                            <a href="@Url.Action("Index", "Recebimento", new { Area = "Recebedoria" })">Dia</a>
+                                        </li>
+                                        <li @Html.Raw(MenuRecebedoriaLancamentoRetroativo)>
+                                            <a href="@Url.Action("Index", "Recebimento", new { Area = "Recebedoria" })?ret=1">Lançamento retroativo</a>
+                                        </li>
+                                        if (HabilitaOrdemVenda)
+                                        {
+                                            <li @Html.Raw(MenuRecebedoriaOrdemVenda)>
+                                                <a href="@Url.Action("OrdemVenda", "Recebimento", new { Area = "Recebedoria" })">Ordem de Venda</a>
+                                            </li>
+                                        }
+                                    }
+                                    <li @Html.Raw(MenuRecebedoriaCadastro)>
+                                        <a href="@Url.Action("", "Cadastro", new { Area = "Recebedoria" })">Cadastro</a>
+                                    </li>
+                                    @if (HabilitarPlanoFamiliar)
+                                    {
+                                        <li @Html.Raw(MenuRecebedoriaPlanoFamiliar)>
+                                            <a href="@Url.Action("Index", "PlanoFamiliar", new { Area = "Recebedoria" })">Plano Familiar</a>
+                                        </li>
+                                    }
+                                    <li @Html.Raw(MenuRecebedoriaHistorico)>
+                                        <a href="@Url.Action("Historico", "Recebimento", new { Area = "Recebedoria" })">Histórico</a>
+                                    </li>
+                                    <li @Html.Raw(MenuRecebedoriaRelatorioDiario)>
+                                        <a href="@Url.Action("Diario", "Relatorio", new { Area = "Recebedoria" })">Relatório Diário</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Logout", "Home", new { Area = "" })" title="Logout" data-action="userLogout" data-logout-msg="Deseja sair do sistema ?"><i class="fa fa-lg fa-sign-out fa-home"></i> <span class="menu-item-parent">Sair do Sistema</span></a>
+                            </li>
+                        </ul>
+                    }
+                    else if (PerfilId == 14) // BIBLIOTECA
+                    {
+                        <ul>
+                            <li>
+                                <a href="javascript:void(0);" onclick="OpenDialogAbrirMembroGLP(false);"><img src="~/img/ico-amorc.png" width="24" style="margin-right: 5px;" /> <span class="menu-item-parent">Consultar SOA GLP</span></a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);"><i class="fa fa-lg fa-fw fa-book"></i> <span class="menu-item-parent">Biblioteca</span></a>
+                                <ul @(Html.Raw(MenuBiblioteca))>
+                                    @if (perfilSelecionado.SomenteLeitura == false && (perfilSelecionado.Administrador || perfilSelecionado.AdministradorOrganismo || perfilSelecionado.Oficial || perfilSelecionado.Operacional))
+                                    {
+                                        <li @(Html.Raw(MenuBibliotecaEmprestimo))>
+                                            <a href="@Url.Action("Index", "Emprestimo", new { Area = "Biblioteca" })">Empréstimo</a>
+                                        </li>
+                                        <li @(Html.Raw(MenuBibliotecaCadastro))>
+                                            <a href="@Url.Action("Index", "Cadastro", new { Area = "Biblioteca" })">Cadastro</a>
+                                        </li>
+                                        <li @(Html.Raw(MenuBibliotecaAutor))>
+                                            <a href="@Url.Action("Index", "Autor", new { Area = "Biblioteca" })">Autores</a>
+                                        </li>
+                                        <li @(Html.Raw(MenuBibliotecaCategoria))>
+                                            <a href="@Url.Action("Index", "Categoria", new { Area = "Biblioteca" })">Assuntos</a>
+                                        </li>
+                                        <li @(Html.Raw(MenuBibliotecaLocal))>
+                                            <a href="@Url.Action("Index", "Local", new { Area = "Biblioteca" })">Locais</a>
+                                        </li>
+                                        <li @(Html.Raw(MenuBibliotecaConfiguracao))>
+                                            <a href="@Url.Action("Index", "Configuracao", new { Area = "Biblioteca" })">Configurações</a>
+                                        </li>
+                                    }
+                                    <li>
+                                        <a href="javascript:void(0);"><i class="fa fa-lg fa-bar-chart-o"> </i> Relatórios</a>
+                                        <ul @(Html.Raw(MenuBibliotecaRelatorio))>
+                                            <li>
+                                                <a href="javascript:BibliotecaRelatorioItensEmprestados();">Itens Emprestados</a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:BibliotecaRelatorioListagemGeral();">Listagem Geral</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Logout", "Home", new { Area = "" })" title="Logout" data-action="userLogout" data-logout-msg="Deseja sair do sistema ?"><i class="fa fa-lg fa-sign-out fa-home"></i> <span class="menu-item-parent">Sair do Sistema</span></a>
+                            </li>
+                        </ul>
+                    }
+                    else if (PerfilId == 15) // ORDEM DE VENDA
+                    {
+                        <ul>
+                            <li @(Html.Raw(MenuRecebedoriaDia))>
+                                <a href="@Url.Action("Index", "Recebimento", new { Area = "Recebedoria" })"><i class="fa fa-lg fa-fw fa-money"></i> <span class="menu-item-parent">Realizar Venda</span></a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Logout", "Home", new { Area = "" })" title="Logout" data-action="userLogout" data-logout-msg="Deseja sair do sistema ?"><i class="fa fa-lg fa-sign-out fa-home"></i> <span class="menu-item-parent">Sair do Sistema</span></a>
+                            </li>
+                        </ul>
+                    }
+                }
+                else
+                {
+                    <ul>
+                        <li>
+                            <a href="@Url.Action("Index", "Home")" title="Home"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Home</span></a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);" onclick="OpenDialogAbrirMembroGLP(false);"><img src="~/img/ico-amorc.png" width="24" style="margin-right: 5px;" /> <span class="menu-item-parent">Consultar SOA GLP</span></a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);"><i class="fa fa-lg fa-fw fa-university"></i> <span class="menu-item-parent">Organismo Afiliado</span></a>
+                            <ul @(Html.Raw(MenuOrganismoAfiliado))>
+                                <li @Html.Raw(MenuOrganismoAfiliadoRecepcao)>
+                                    <a href="@Url.Action("Index", "Recepcao", new { Area = "OrganismoAfiliado" })">Recepção</a>
+                                </li>
+                                <li @Html.Raw(MenuOrganismoAfiliadoMembros)>
+                                    <a href="@Url.Action("Index", "Membro", new { Area = "OrganismoAfiliado" })">Membros</a>
+                                </li>
+                                @if ((perfilSelecionado.Administrador || perfilSelecionado.AdministradorOrganismo || perfilSelecionado.Oficial || perfilSelecionado.Operacional) && perfilSelecionado.SomenteLeitura == false)
+                                {
+
+                                    <li>
+                                        <a href="javascript:OpenDialogEntradaTemplo();">Autorização Templo</a>
+                                    </li>
+                                    <li @Html.Raw(MenuOrganismoAfiliadoAtividades)>
+                                        <a href="@Url.Action("Index", "Atividade", new { Area = "OrganismoAfiliado" })">Atividades</a>
+                                    </li>
+                                    <li @Html.Raw(MenuOrganismoAfiliadoAgendaIniciacao)>
+                                        <a href="@Url.Action("Index", "AgendaIniciacao", new { Area = "OrganismoAfiliado" })">Agenda Iniciações</a>
+                                    </li>
+                                    <li @Html.Raw(MenuOrganismoAfiliadoComissoes)>
+                                        <a href="@Url.Action("Index", "Comissao", new { Area = "OrganismoAfiliado" })">Comissões</a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);"><span class="menu-item-parent">Inventário</span></a>
+                                        <ul @(Html.Raw(MenuOrganismoAfiliadoInventario))>
+                                            <li @Html.Raw(MenuOrganismoAfiliadoInventarioBens)>
+                                                <a href="@Url.Action("Bens", "Inventario", new { Area = "OrganismoAfiliado" })">Bens</a>
+                                            </li>
+                                            <li @Html.Raw(MenuOrganismoAfiliadoInventarioAmbientes)>
+                                                <a href="@Url.Action("Ambientes", "Inventario", new { Area = "OrganismoAfiliado" })">Ambientes</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    if (OA_Martinista)
+                                    {
+                                        <li>
+                                            <a href="@Url.Action("Index", "Classe", new { Area = "OrganismoAfiliado" })" @Html.Raw(MenuOrganismoAfiliadoRelatoriosClasses)>Classes</a>
+                                        </li>
+                                    }
+                                }
+                                @if (perfilSelecionado.Atendimento == false)
+                                {
+                                    <li>
+                                        <a href="javascript:void(0);"><i class="fa fa-lg fa-bar-chart-o"> </i> Relatórios</a>
+                                        <ul @(Html.Raw(MenuOrganismoAfiliadoRelatorios))>
+                                            <li @Html.Raw(MenuOrganismoAfiliadoRelatoriosMembrosAtivos)>
+                                                <a href="@Url.Action("MembrosAtivos", "Relatorio", new { Area = "OrganismoAfiliado" })">Membros Ativos</a>
+                                            </li>
+                                            <li @(Html.Raw(MenuOrganismoAfiliadoRelatoriosAutorizacaoTemplo))>
+                                                <a href="@Url.Action("AutorizacaoTemplo", "Relatorio", new { Area = "OrganismoAfiliado" })">Autorização Templo</a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:OrganismoAfiliadoRelatorioRelacaoBens();">Relação de Bens</a>
+                                            </li>
+                                            <li @Html.Raw(MenuOrganismoAfiliadoRelatoriosAtividades)>
+                                                <a href="@Url.Action("Atividades", "Relatorio", new { Area = "OrganismoAfiliado" })">Atividades</a>
+                                            </li>
+                                            <li @Html.Raw(MenuOrganismoAfiliadoRelatoriosComissoes)>
+                                                <a href="@Url.Action("Comissoes", "Relatorio", new { Area = "OrganismoAfiliado" })">Comissões</a>
+                                            </li>
+                                            <li @Html.Raw(MenuOrganismoAfiliadoRelatoriosIniciacoes)>
+                                                <a href="@Url.Action("Iniciacoes", "Relatorio", new { Area = "OrganismoAfiliado" })">Iniciações</a>
+                                            </li>
+                                            @if (OA_Martinista)
+                                            {
+                                                <li @Html.Raw(MenuOrganismoAfiliadoRelatoriosClasses)>
+                                                    <a href="@Url.Action("Classes", "Relatorio", new { Area = "OrganismoAfiliado" })">Classes</a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);"><i class="fa fa-lg fa-fw fa-money"></i> <span class="menu-item-parent">Recebedoria</span></a>
+                            <ul @(Html.Raw(MenuRecebedoria))>
+                                @if (perfilSelecionado.SomenteLeitura == false)
+                                {
+                                    <li @Html.Raw(MenuRecebedoriaDia)>
+                                        <a href="@Url.Action("Index", "Recebimento", new { Area = "Recebedoria" })">Dia</a>
+                                    </li>
+                                    <li @Html.Raw(MenuRecebedoriaLancamentoRetroativo)>
+                                        <a href="@Url.Action("Index", "Recebimento", new { Area = "Recebedoria" })?ret=1">Lançamento retroativo</a>
+                                    </li>
+                                    if (HabilitaOrdemVenda)
+                                    {
+                                        <li @Html.Raw(MenuRecebedoriaOrdemVenda)>
+                                            <a href="@Url.Action("OrdemVenda", "Recebimento", new { Area = "Recebedoria" })">Ordem de Venda</a>
+                                        </li>
+                                    }
+                                }
+                                <li @Html.Raw(MenuRecebedoriaCadastro)>
+                                    <a href="@Url.Action("", "Cadastro", new { Area = "Recebedoria" })">Cadastro</a>
+                                </li>
+                                @if (HabilitarPlanoFamiliar)
+                                {
+                                    <li @Html.Raw(MenuRecebedoriaPlanoFamiliar)>
+                                        <a href="@Url.Action("Index", "PlanoFamiliar", new { Area = "Recebedoria" })">Plano Familiar</a>
+                                    </li>
+                                }
+                                <li @Html.Raw(MenuRecebedoriaHistorico)>
+                                    <a href="@Url.Action("Historico", "Recebimento", new { Area = "Recebedoria" })">Histórico</a>
+                                </li>
+                                <li @Html.Raw(MenuRecebedoriaRelatorioDiario)>
+                                    <a href="@Url.Action("Diario", "Relatorio", new { Area = "Recebedoria" })">Relatório Diário</a>
+                                </li>
+                            </ul>
+                        </li>
+                        @if (perfilSelecionado.Atendimento == false)
+                        {
+                            <li>
+                                <a href="javascript:void(0);"><i class="fa fa-lg fa-fw fa-cut"></i> <span class="menu-item-parent">Tesouraria</span></a>
+                                <ul @(Html.Raw(MenuTesouraria))>
+                                    @if ((perfilSelecionado.Oficial || perfilSelecionado.Operacional || perfilSelecionado.AdministradorOrganismo || perfilSelecionado.Administrador) && perfilSelecionado.SomenteLeitura == false)
+                                    {
+                                        <li @(Html.Raw(MenuTesourariaPagamentoRecebimento))>
+                                            <a href="@Url.Action("Index", "PagamentoRecebimento", new { Area = "Tesouraria" })">Pagamentos e Recebimentos</a>
+                                        </li>
+                                        <li @(Html.Raw(MenuTesourariaAgendamento))>
+                                            <a href="@Url.Action("Index", "Agendamento", new { Area = "Tesouraria" })">Agendamento</a>
+                                        </li>
+                                        <li @(Html.Raw(MenuTesourariaRemessa))>
+                                            <a href="@Url.Action("Index", "Remessa", new { Area = "Tesouraria" })">Remessas</a>
+                                        </li>
+                                        <li @(Html.Raw(MenuTesourariaFechamento))>
+                                            <a href="@Url.Action("Index", "Fechamento", new { Area = "Tesouraria" })">Fechamento Mensal</a>
+                                        </li>
+                                        <li @(Html.Raw(MenuTesourariaFechamentoAnual))>
+                                            <a href="@Url.Action("Index", "FechamentoAnual", new { Area = "Tesouraria" })">Fechamento Anual</a>
+                                        </li>
+                                    }
+                                    <li>
+                                        <a href="javascript:void(0);"><i class="fa fa-lg fa-bar-chart-o"> </i> Relatórios</a>
+                                        <ul @(Html.Raw(MenuTesourariaRelatorio))>
+                                            <li @(Html.Raw(MenuTesourariaRelatorioCaixa))>
+                                                <a href="@Url.Action("Caixa", "Relatorio", new { Area = "Tesouraria" })">Caixa</a>
+                                            </li>
+                                            <li @(Html.Raw(MenuTesourariaRelatorioResumoFinanceiroMensal))>
+                                                <a href="@Url.Action("ResumoFinanceiroMensal", "Relatorio", new { Area = "Tesouraria" })">Resumo Mensal</a>
+                                            </li>
+                                            <li @(Html.Raw(MenuTesourariaRelatorioResumoFinanceiroAnual))>
+                                                <a href="@Url.Action("ResumoFinanceiroAnual", "Relatorio", new { Area = "Tesouraria" })">Resumo Anual</a>
+                                            </li>
+                                            <li @(Html.Raw(MenuTesourariaRelatorioConferenciaFinanceiroMensal))>
+                                                <a href="@Url.Action("ConferenciaFinanceiroMensal", "Relatorio", new { Area = "Tesouraria" })">Conferência Mensal</a>
+                                            </li>
+                                            <li @(Html.Raw(MenuTesourariaRelatorioListagemPagamento))>
+                                                <a href="@Url.Action("ListagemPagamento", "Relatorio", new { Area = "Tesouraria" })">Listagem de Pagamentos</a>
+                                            </li>
+                                            <li @(Html.Raw(MenuTesourariaRelatorioMapaFinanceiroMensal))>
+                                                <a href="@Url.Action("MapaFinanceiroMensal", "Relatorio", new { Area = "Tesouraria" })">Mapa Mensal</a>
+                                            </li>
+                                            <li @(Html.Raw(MenuTesourariaRelatorioMapaFinanceiroAnual))>
+                                                <a href="@Url.Action("MapaFinanceiroAnual", "Relatorio", new { Area = "Tesouraria" })">Mapa Anual</a>
+                                            </li>
+                                            <li @(Html.Raw(MenuTesourariaRelatorioFechamentoAnual))>
+                                                <a href="@Url.Action("FechamentoAnual", "Relatorio", new { Area = "Tesouraria" })">Fechamento Anual</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    @*
+                                        <li>
+                                            <a href="#">Lançamento de Extrato Bancário</a>
+                                        </li>
+                                        <li>
+                                            <a href="#">Fluxo de Caixa</a>
+                                        </li>
+                                    *@
+                                </ul>
+                            </li>
+                        }
+                        @if (perfilSelecionado.Atendimento == false)
+                        {
+                            <li>
+                                <a href="javascript:void(0);"><i class="fa fa-lg fa-fw fa-list-alt"></i> <span class="menu-item-parent">Suprimentos</span></a>
+                                <ul @(Html.Raw(MenuSuprimento))>
+                                    @if ((perfilSelecionado.Administrador || perfilSelecionado.AdministradorOrganismo || perfilSelecionado.Oficial || perfilSelecionado.Operacional) && perfilSelecionado.SomenteLeitura == false)
+                                    {
+                                        <li @(Html.Raw(MenuSuprimentoCadastro))>
+                                            <a href="@Url.Action("Index", "Cadastro", new { Area = "Suprimento" })">Cadastro / Estoque</a>
+                                        </li>
+                                        @*<li @(Html.Raw(MenuSuprimentoGLP))>
+                                                <a href="@Url.Action("Index", "GLP", new { Area = "Suprimento" })">GLP</a>
+                                            </li>*@
+                                        <li @(Html.Raw(MenuSuprimentoFornecedores))>
+                                            <a href="@Url.Action("Index", "Fornecedor", new { Area = "Suprimento" })">Fornecedores</a>
+                                        </li>
+                                    }
+                                    <li>
+                                        <a href="javascript:void(0);"><i class="fa fa-lg fa-bar-chart-o"> </i> Relatórios</a>
+                                        <ul @(Html.Raw(MenuSuprimentoRelatorio))>
+                                            <li>
+                                                <a href="javascript:SuprimentoRelatorioEstoqueAtual();">Estoque Atual</a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:SuprimentoRelatorioAvisoEstoqueMinimo();">Aviso Estoque Mínimo</a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:SuprimentoRelatorioInventario();">Inventário</a>
+                                            </li>
+                                            <li @(Html.Raw(MenuSuprimentoRelatorioLucroReal))>
+                                                <a href="@Url.Action("LucroReal", "Relatorio", new { Area = "Suprimento" })">Lucro Estimado</a>
+                                            </li>
+                                            <li @(Html.Raw(MenuSuprimentoRelatorioVendasPorFornecedor))>
+                                                <a href="@Url.Action("VendasPorFornecedor", "Relatorio", new { Area = "Suprimento" })">Vendas Por Fornecedor</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        <li>
+                            <a href="javascript:void(0);"><i class="fa fa-lg fa-fw fa-book"></i> <span class="menu-item-parent">Biblioteca</span></a>
+                            <ul @(Html.Raw(MenuBiblioteca))>
+                                @if (perfilSelecionado.SomenteLeitura == false && (perfilSelecionado.Administrador || perfilSelecionado.AdministradorOrganismo || perfilSelecionado.Oficial || perfilSelecionado.Operacional))
+                                {
+                                    <li @(Html.Raw(MenuBibliotecaEmprestimo))>
+                                        <a href="@Url.Action("Index", "Emprestimo", new { Area = "Biblioteca" })">Empréstimo</a>
+                                    </li>
+                                    <li @(Html.Raw(MenuBibliotecaCadastro))>
+                                        <a href="@Url.Action("Index", "Cadastro", new { Area = "Biblioteca" })">Cadastro</a>
+                                    </li>
+                                    <li @(Html.Raw(MenuBibliotecaAutor))>
+                                        <a href="@Url.Action("Index", "Autor", new { Area = "Biblioteca" })">Autores</a>
+                                    </li>
+                                    <li @(Html.Raw(MenuBibliotecaCategoria))>
+                                        <a href="@Url.Action("Index", "Categoria", new { Area = "Biblioteca" })">Assuntos</a>
+                                    </li>
+                                    <li @(Html.Raw(MenuBibliotecaLocal))>
+                                        <a href="@Url.Action("Index", "Local", new { Area = "Biblioteca" })">Locais</a>
+                                    </li>
+                                    <li @(Html.Raw(MenuBibliotecaConfiguracao))>
+                                        <a href="@Url.Action("Index", "Configuracao", new { Area = "Biblioteca" })">Configurações</a>
+                                    </li>
+                                }
+                                <li>
+                                    <a href="javascript:void(0);"><i class="fa fa-lg fa-bar-chart-o"> </i> Relatórios</a>
+                                    <ul @(Html.Raw(MenuBibliotecaRelatorio))>
+                                        <li>
+                                            <a href="javascript:BibliotecaRelatorioItensEmprestados();">Itens Emprestados</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:BibliotecaRelatorioListagemGeral();">Listagem Geral</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li @(Html.Raw(MenuDashboard))>
+                            <a href="@Url.Action("Index", "Dashboard")" title="Dashboard"><i class="fa fa-lg fa-fw fa-bar-chart-o"></i> <span class="menu-item-parent">Dashboard</span></a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);"><i class="fa fa-lg fa-fw fa-gear"></i> <span class="menu-item-parent">Ferramentas</span></a>
+                            <ul @(Html.Raw(MenuFerramenta))>
+                                <li>
+                                    <a href="javascript:void(0);"> <span class="menu-item-parent">Importação de Dados</span></a>
+                                    <ul @(Html.Raw(MenuFerramentaImportacao))>
+                                        <li @(Html.Raw(MenuFerramentaImportacaoMembro))>
+                                            <a href="@Url.Action("Membro", "Importacao", new { Area = "Ferramenta" })">Membros</a>
+                                        </li>
+                                        <li @(Html.Raw(MenuFerramentaImportacaoBiblioteca))>
+                                            <a href="@Url.Action("Biblioteca", "Importacao", new { Area = "Ferramenta" })">Biblioteca</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);"> <span class="menu-item-parent">Exportação de Dados</span></a>
+                                    <ul @(Html.Raw(MenuFerramentaExportacao))>
+                                        <li @(Html.Raw(MenuFerramentaExportacaoMembro))>
+                                            <a href="@Url.Action("Membro", "Exportacao", new { Area = "Ferramenta" })">Membros</a>
+                                        </li>
+
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        @if (perfilSelecionado.SomenteLeitura == false && (perfilSelecionado.Administrador || perfilSelecionado.AdministradorSegmento || perfilSelecionado.AdministradorRegiao || perfilSelecionado.AdministradorOrganismo || perfilSelecionado.Oficial || perfilSelecionado.Operacional))
+                        {
+                            <li>
+                                <a href="javascript:void(0);"><i class="fa fa-lg fa-fw fa-desktop"></i> <span class="menu-item-parent">Configurações</span></a>
+                                <ul @(Html.Raw(MenuConfiguracao))>
+                                    <li @(Html.Raw(MenuConfiguracaoOrganismoAfiliado))>
+                                        <a href="@Url.Action("Index", "OrganismoAfiliado", new { Area = "Configuracao" })">Organismo Afiliado</a>
+                                    </li>
+                                    <li @(Html.Raw(MenuConfiguracaoUsuarios))>
+                                        <a href="@Url.Action("Index", "Usuarios", new { Area = "Configuracao" })">Usuários</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        <li>
+                            <a href="@Url.Action("Logout", "Home", new { Area = "" })" title="Logout" data-action="userLogout" data-logout-msg="Deseja sair do sistema ?"><i class="fa fa-lg fa-sign-out fa-home"></i> <span class="menu-item-parent">Sair do Sistema</span></a>
+                        </li>
+                    </ul>
+                }
+
+            </nav>
+            <span class="minifyme" data-action="minifyMenu">
+                <i class="fa fa-arrow-circle-left hit"></i>
+            </span>
+        }
+    </aside>
+    <!-- END NAVIGATION -->
+}

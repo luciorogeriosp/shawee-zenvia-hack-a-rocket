@@ -1,0 +1,247 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main" style="margin-left:0px;">
+    <!-- MAIN CONTENT -->
+    <div id="content" class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 hidden-xs hidden-sm">
+                <h1 class="txt-color-red login-header-big">Bem-vindo(a)</h1>
+                <h4 class="paragraph-header">ao Sistema Administrativo de Loja!<br /><br />Informe seus dados ao lado para acessar o painel de controle.</h4>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="well no-padding" id="pnlFormLogin">
+                    @{
+                        Html.RenderAction("FormLogin");
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <h1 class="txt-color-blue"><strong>&nbsp;&nbsp;&nbsp;<i class="fa fa-terminal"></i> Conheça o SAL 2.0</strong></h1>
+        </div>
+        <div class="row hidden-xs hidden-sm">
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                <div class="jarviswidget jarviswidget-color-darken" data-widget-sortable="false" data-widget-colorbutton="false" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-deletebutton="false" role="widget" style="">
+                    <header role="heading">
+                        <h2>Mobilidade </h2>
+                    </header>
+
+                    <!-- widget div-->
+                    <div role="content">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body">
+                            <center>
+                                <img src="img/compatibility.png" alt="" style="width:70%;">
+                            </center>
+                            <br />
+                            <p>
+                                Acesse os dados através de qualquer dispositivo com acesso a internet, e obtenha de forma rápida, e fácil toda informação de que precisa para atender os membros.<br />
+                                Os dispositivos compatíveis são:<br />
+                                <ul>
+                                    <li>PC</li>
+                                    <li>Tablet</li>
+                                    <li>Celular</li>
+                                </ul>
+                            </p>
+                        </div>
+                        <!-- end widget content -->
+                    </div>
+                    <!-- end widget div -->
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                <div class="jarviswidget jarviswidget-color-darken" data-widget-sortable="false" data-widget-colorbutton="false" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-deletebutton="false" role="widget" style="">
+                    <header role="heading">
+                        <h2>Integração com o SOA </h2>
+                    </header>
+
+                    <!-- widget div-->
+                    <div role="content">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body">
+                            <center>
+                                <img src="img/integration-solutions.png" style="width:70%;">
+                            </center>
+                            <br />
+                            <p>
+                                Obtenha dados atualizados dos membros diretamente da GLP.<br />
+                                As informações disponibilizadas são:<br />
+                                <ul>
+                                    <li>Dados de contato</li>
+                                    <li>Iniciações R+C</li>
+                                    <li>Iniciações TOM</li>
+                                    <li>Iniciações OGG</li>
+                                    <li>Quitações</li>
+                                </ul>
+                            </p>
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+                    <!-- end widget div -->
+
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 hidden-xs hidden-sm">
+                <div class="jarviswidget jarviswidget-color-darken" data-widget-sortable="false" data-widget-colorbutton="false" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-deletebutton="false" role="widget" style="">
+                    <header role="heading">
+                        <h2>Controle Financeiro </h2>
+                    </header>
+
+                    <!-- widget div-->
+                    <div role="content">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body">
+                            <center>
+                                <img src="img/financeiro.png" style="width:70%;">
+                            </center>
+                            <br />
+                            <p>
+                                Tenho o controle total das finanças do Organismo, desde o estoque até a recebedoria de valores e controle de tesouraria.<br />
+                                Os módulos que compões o financeiro são:<br />
+                                <ul>
+                                    <li>Recebedoria</li>
+                                    <li>Suprimentos</li>
+                                    <li>Tesouraria</li>
+                                    <li>Relatórios</li>
+                                </ul>
+                            </p>
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+                    <!-- end widget div -->
+
+                </div>
+            </div>
+
+        </div>
+        <div class="row hidden-xs hidden-sm">
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                <div class="jarviswidget jarviswidget-color-darken" data-widget-sortable="false" data-widget-colorbutton="false" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-deletebutton="false" role="widget" style="">
+                    <header role="heading">
+                        <h2>Biblioteca </h2>
+                    </header>
+
+                    <!-- widget div-->
+                    <div role="content">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body">
+                            <center>
+                                <img src="img/books.png" alt="" style="width:70%;">
+                            </center>
+                            <br />
+                            <p>
+                                E se você pudesse controlar todos os livros, autores e assuntos do seu Organismo em um só lugar, e saber se algum livro está emprestado, e com qual membro este livro está. Gostou? No SAL é possível através dos módulos:<br />
+                                <ul>
+                                    <li>Cadastro de Itens (Livro, Revista, Manual, Vídeo e Áudio)</li>
+                                    <li>Autores</li>
+                                    <li>Assuntos</li>
+                                    <li>Locais (estantes)</li>
+                                    <li>Empréstimo/Devolução</li>
+                                    <li>Relatórios</li>
+                                </ul>
+                            </p>
+                        </div>
+                        <!-- end widget content -->
+                    </div>
+                    <!-- end widget div -->
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                <div class="jarviswidget jarviswidget-color-darken" data-widget-sortable="false" data-widget-colorbutton="false" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-deletebutton="false" role="widget" style="">
+                    <header role="heading">
+                        <h2>Calendário de Atividades e Agenda de Iniciações </h2>
+                    </header>
+
+                    <!-- widget div-->
+                    <div role="content">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body">
+                            <center>
+                                <img src="img/iniciacao.png" style="width:70%;">
+                            </center>
+                            <br />
+                            <p>
+                                Nesse módulo é possível cadastrar todas as atividades do organismo, inclusive as iniciações, onde as mesmas através do módulo de Agenda de Iniciação, darao total visão de quais são as próximas iniciações do organismo e quais são os membros já inscritos, bem como os que estão na lista de espera<br />
+                                É possível ainda disparar e-mails ao membro durante as interações, e tudo fica registrado para consultas futuras.
+                            </p>
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+                    <!-- end widget div -->
+
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 hidden-xs hidden-sm">
+                <div class="jarviswidget jarviswidget-color-darken" data-widget-sortable="false" data-widget-colorbutton="false" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-deletebutton="false" role="widget" style="">
+                    <header role="heading">
+                        <h2>Recepção </h2>
+                    </header>
+
+                    <!-- widget div-->
+                    <div role="content">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body">
+                            <center>
+                                <img src="img/recepcao.png" style="width:70%;">
+                            </center>
+                            <br />
+                            <p>
+                                Recepcione os membros e visitantes de forma rápida e fácil.<br />
+                                O sistema vai te dar todas as informações para que você mostre que conhece seus membros e visitantes:<br />
+                            </p>
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+                    <!-- end widget div -->
+                </div>
+            </div>
+        </div>
+        <div class="row hidden-xs hidden-sm">
+            <center>
+                <img src="img/logo-400.png" alt="" style="width:40%;">
+            </center>
+        </div>
+    </div>
+</div>

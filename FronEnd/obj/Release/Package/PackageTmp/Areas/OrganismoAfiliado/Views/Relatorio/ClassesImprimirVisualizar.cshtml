@@ -1,0 +1,176 @@
+﻿@model SAL.MVC.Models.RelatorioModel<SAL.MVC.Areas.OrganismoAfiliado.Models.RelatorioClassesModel>
+@{
+    dynamic ListaOrdemGrau = null;
+
+    if (Model.Dados != null && Model.Dados.ListaAtividades != null)
+    {
+        ListaOrdemGrau = Model.Dados.ListaAtividades.Select(s => new
+        {
+            GrauOrdem = s.GrauOrdem,
+            GrauNome = s.GrauNome
+        }).Distinct().OrderByDescending(o => o.GrauOrdem).ToList();
+    }
+
+    bool MembroFaltou = false;
+    int QuantidadeFaltasMembro = 0;
+}
+<style>
+    .page {
+        padding-top: 33px;
+    }
+
+    .pageother {
+        padding-top: -30px;
+    }
+
+    .titulo {
+        font-size: 9pt;
+        font-weight: bold;
+    }
+
+    .subtitulo {
+        font-size: 7pt;
+        font-weight: bold;
+    }
+
+    .texto {
+        font-size: 9pt;
+    }
+
+    .textop {
+        font-size: 9pt;
+    }
+
+    .texto-branco {
+        font-size: 9pt;
+        color: white;
+    }
+
+    .texto-left {
+        text-align: left;
+    }
+
+    .texto-right {
+        text-align: right;
+    }
+
+    .texto-center {
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 12pt;
+        text-align: center;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
+    }
+
+    h2 {
+        font-size: 12pt;
+        text-align: center;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
+    }
+
+    .valores {
+        font-size: 7pt;
+    }
+
+    .espaco1 {
+        width: 100px;
+        font-size: 5pt;
+    }
+
+    .falta {
+        color:#ff0000;
+    }
+
+    .nome {
+        width: 160px;
+        font-size: 7pt;
+    }
+
+    .tabela {
+        border: 1px solid black;
+    }
+
+    .tabela th {
+        border: 0.5px solid black;
+    }
+
+    .tabela td {
+        border: 0.5px solid black;
+    }
+</style>
+
+<div class="page">
+    <h1>@Model.ReportTitle</h1>
+    <table cellpadding="0" cellspacing="0" width="100%" border="0">
+        <tr>
+            <td colspan="2" class="espaco1"></td>
+        </tr>
+        <tr>
+            <td class="titulo texto-left">@Model.Dados.MestreNome</td>
+            <td class="titulo texto-right">Turma: @Model.Dados.Turma</td>
+        </tr>
+        <tr>
+            <td colspan="2" class="espaco1"></td>
+        </tr>
+    </table>
+    @if (Model.Dados.ListaVinculados != null && Model.Dados.ListaVinculados.Any())
+    {
+        foreach (dynamic itemGrau in ListaOrdemGrau)
+        {
+            <table class="tabela" cellpadding="4" cellspacing="0" width="100%">
+                <caption>PRESENÇA CONVENTÍCULOS - Classe do Grau @(itemGrau.GrauNome) (@(itemGrau.GrauOrdem )º Grau)</caption>
+                <thead>
+                    <tr>
+                        <th class="subtitulo texto-center">Chave</th>
+                        <th class="subtitulo texto-left">Nome</th>
+                        @foreach (var item in Model.Dados.ListaAtividades.Where(w => w.GrauOrdem == itemGrau.GrauOrdem).OrderBy(o => o.Numero))
+                        {
+                        <th class="subtitulo texto-center">M@(item.Numero.ToString().PadLeft(2, '0'))</th>
+                        }
+                        <th class="subtitulo texto-center">FALTAS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var itemMembro in Model.Dados.ListaVinculados)
+                    {
+                        QuantidadeFaltasMembro = 0;
+                        <tr>
+                            <td class="valores texto-center">@itemMembro.AfiliacaoNumero</td>
+                            <td class="nome">@itemMembro.Nome</td>
+                            @foreach (var item in Model.Dados.ListaAtividades.Where(w => w.GrauOrdem == itemGrau.GrauOrdem).OrderBy(o => o.Numero))
+                            {
+                                MembroFaltou = false;
+                                if (item.AtividadeVinculada && item.LiberarPresenca)
+                                {
+                                    MembroFaltou = (!(item.ListaMembroId != null && item.ListaMembroId.Contains(itemMembro.Id)));
+                                }
+                                if (MembroFaltou)
+                                {
+                                    QuantidadeFaltasMembro = QuantidadeFaltasMembro + 1;
+                                }
+                            <td class="valores texto-center@(MembroFaltou ? " falta" : "")">
+                                @if (item.LiberarPresenca)
+                                {
+                                    <text>@(Html.Raw(MembroFaltou == false ? "P" : "F"))</text>
+                                }
+                                else
+                                {
+                                    <text>&nbsp;</text>
+                                }
+                            </td>
+                            }
+                            <td class="valores texto-center">@QuantidadeFaltasMembro</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+    }
+</div>

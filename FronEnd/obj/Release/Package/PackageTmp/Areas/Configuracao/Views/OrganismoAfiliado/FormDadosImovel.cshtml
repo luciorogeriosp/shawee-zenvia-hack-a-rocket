@@ -1,0 +1,279 @@
+﻿@model SAL.MVC.Areas.Configuracao.Models.OrganismoAfiliadoDadosImovelViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+
+    string CEP = string.Empty;
+    if (string.IsNullOrEmpty(Model.EnderecoCEP) == false)
+    {
+        CEP = Convert.ToUInt64(Model.EnderecoCEP.Replace("-", "")).ToString(@"00000\-000");
+    }
+
+}
+<!-- Error states for elements -->
+<form class="smart-form" id="frmDadosImovel">
+    <fieldset>
+        <div class="row">
+            <section class="col col-6">
+                <label class="label" for="Endereco">Endereço</label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.Endereco, new { style = "text-transform: uppercase" })
+                </label>
+            </section>
+            <section class="col col-2">
+                <label class="label" for="EnderecoNumero">Nº</label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.EnderecoNumero)
+                </label>
+            </section>
+            <section class="col col-2">
+                <label class="label" for="EnderecoComplemento">Complemento</label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.EnderecoComplemento)
+                </label>
+            </section>
+            <section class="col col-2">
+                <label class="label" for="CaixaPostal">Caixa Postal</label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.CaixaPostal)
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col col-3">
+                <label class="label" for="EnderecoEstado">Estado</label>
+                <label class="select">
+                    @Html.DropDownListFor(m => m.EnderecoEstado, Model.EnderecoEstadoLista, "Selecione", new { onchange = "CapturaCidades();" })
+                    <i></i>
+                </label>
+            </section>
+            <section class="col col-3">
+                <label class="label" for="CDD_ID">Cidade</label>
+                <label class="select">
+                    @Html.DropDownListFor(m => m.CDD_ID, Model.EnderecoCidadeLista, "Selecione")
+                    <i></i>
+                </label>
+            </section>
+            <section class="col col-3">
+                <label class="label" for="EnderecoBairro">Bairro</label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.EnderecoBairro, new { style = "text-transform: uppercase" })
+                </label>
+            </section>
+            <section class="col col-3">
+                <label class="label" for="EnderecoCEP">CEP</label>
+                <label class="input">
+                    <input type="tel" name="EnderecoCEP" id="EnderecoCEP" data-mask="99999-999" value="@CEP">
+                </label>
+            </section>
+        </div>
+        <section>
+            <label class="label">Natureza do Documento de Propriedade</label>
+            <label class="input">
+                <input type="text" id="NaturezaDocumento" name="NaturezaDocumento" value="@(Model.NaturezaDocumento)">
+            </label>
+        </section>
+        <div class="row">
+            <section class="col col-6">
+                <label class="label center">Situação da Escritura</label>
+                <div class="inline-group">
+                    <label class="radio">
+                        <input type="hidden" name="FlagEscrituraGLP" id="FlagEscrituraGLP" value="@Model.FlagEscrituraGLP" />
+                        <input type="radio" name="SituacaoEscritura" id="SituacaoEscritura_1" value="1" onclick="SelecionaEscritura($(this).val());" @Html.Raw(Model.FlagEscrituraGLP ? " checked=\"checked\"" : "" )>
+                        <i></i>Em nome da Grande Loja
+                    </label>
+                    <label class="radio">
+                        <input type="hidden" name="FlagEscrituraOA" id="FlagEscrituraOA" value="@Model.FlagEscrituraOA" />
+                        <input type="radio" name="SituacaoEscritura" id="SituacaoEscritura_2" value="2" onclick="SelecionaEscritura($(this).val());" @Html.Raw(Model.FlagEscrituraOA ? " checked=\"checked\"" : "" )>
+                        <i></i>Em nome do Organismo Afiliado
+                    </label>
+                    <label class="radio">
+                        <input type="hidden" name="FlagAlugado" id="FlagAlugado" value="@Model.FlagAlugado" />
+                        <input type="radio" name="SituacaoEscritura" id="SituacaoEscritura_3" value="3" onclick="SelecionaEscritura($(this).val());" @Html.Raw(Model.FlagAlugado ? " checked=\"checked\"" : "" )>
+                        <i></i>Imóvel Alugado
+                    </label>
+                </div>
+            </section>
+            <section class="col col-2">
+                <label class="label">
+                    <label for="label">Valor aluguel - mês</label>
+                </label>
+                <label class="input">
+                    <input type="text" id="ValorAluguelMensal" name="ValorAluguelMensal" value="@(Model.ValorAluguelMensal.HasValue ? Model.ValorAluguelMensal.Value.ToString("0.00") : "0,00")" @Html.Raw(Model.FlagAlugado ? "" : " readonly=\"\" style=\"cursor: not-allowed; background-color: #eee !important;\"") onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event)">
+                </label>
+            </section>
+            <section class="col col-4">
+                <label class="label">
+                    <label for="label">Nome Proprietário Anterior</label>
+                </label>
+                <label class="input">
+                    <input type="text" id="NomeProprietarioAnterior" name="NomeProprietarioAnterior" value="@(Model.NomeProprietarioAnterior)">
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col col-6">
+                <label class="label">
+                    <label for="label">Data do Documento</label>
+                </label>
+                <label class="input">
+                    <input type="date" id="DocumentacaoImovelData" name="DocumentacaoImovelData" value="@(Model.DocumentacaoImovelData)">
+                </label>
+            </section>
+            <section class="col col-6">
+                <label class="label">
+                    <label for="label">Registro do Imóvel nº</label>
+                </label>
+                <label class="input">
+                    <input type="text" id="DocumentacaoImovelRegistro" name="DocumentacaoImovelRegistro" value="@(Model.DocumentacaoImovelRegistro)">
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col col-6">
+                <label class="label">
+                    <label for="label">Tabelião</label>
+                </label>
+                <label class="input">
+                    <input type="text" id="DocumentacaoImovelTabeliao" name="DocumentacaoImovelTabeliao" value="@(Model.DocumentacaoImovelTabeliao)">
+                </label>
+            </section>
+            <section class="col col-3">
+                <label class="label">
+                    <label for="label">Livro</label>
+                </label>
+                <label class="input">
+                    <input type="text" id="DocumentacaoImovelLivro" name="DocumentacaoImovelLivro" value="@(Model.DocumentacaoImovelLivro)">
+                </label>
+            </section>
+            <section class="col col-3">
+                <label class="label">
+                    <label for="label">Fls</label>
+                </label>
+                <label class="input">
+                    <input type="text" id="DocumentacaoImovelFolhas" name="DocumentacaoImovelFolhas" value="@(Model.DocumentacaoImovelFolhas)">
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col col-6">
+                <label class="label">
+                    <label for="label">Área do Terreno m²</label>
+                </label>
+                <label class="input">
+                    <input type="text" id="AreaTerreno" name="AreaTerreno" value="@(Model.AreaTerreno)">
+                </label>
+            </section>
+            <section class="col col-6">
+                <label class="label">
+                    <label for="label">Área Construída m²</label>
+                </label>
+                <label class="input">
+                    <input type="text" id="AreaConstruida" name="AreaConstruida" value="@(Model.AreaConstruida)">
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col col-6">
+                <label class="label center">Construção em Andamento</label>
+                <div class="inline-group">
+                    <label class="radio">
+                        @Html.RadioButtonFor(m => m.FlagConstrucaoEmAndamento, "true")
+                        <i></i>Sim
+                    </label>
+                    <label class="radio">
+                        @Html.RadioButtonFor(m => m.FlagConstrucaoEmAndamento, "false")
+                        <i></i>Não
+                    </label>
+                </div>
+            </section>
+            <section class="col col-6">
+                <label class="label center">Habite-se</label>
+                <div class="inline-group">
+                    <label class="radio">
+                        @Html.RadioButtonFor(m => m.FlagHabiteSe, "true")
+                        <i></i>Sim
+                    </label>
+                    <label class="radio">
+                        @Html.RadioButtonFor(m => m.FlagHabiteSe, "false")
+                        <i></i>Não
+                    </label>
+                </div>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col col-6">
+                <label class="label">
+                    <label for="label">Valor de Aquisição</label>
+                </label>
+                <label class="input">
+                    <input type="text" id="ValorImovelAquisicao" name="ValorImovelAquisicao" value="@(Model.ValorImovelAquisicao.HasValue ? Model.ValorImovelAquisicao.Value.ToString("0.00") : "0,00")" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" />
+                </label>
+            </section>
+            <section class="col col-6">
+                <label class="label">
+                    <label for="label">Valor Atual</label>
+                </label>
+                <label class="input">
+                    <input type="text" id="ValorImovelAtual" name="ValorImovelAtual" value="@(Model.ValorImovelAtual.HasValue ? Model.ValorImovelAtual.Value.ToString("0.00") : "0,00")" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" />
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col col-6">
+                <label class="label center">Imposição de Construção</label>
+                <div class="inline-group">
+                    <label class="radio">
+                        @Html.RadioButtonFor(m => m.FlagImposicaoConstrucao, "true", new { onclick = "SelecionaImposicaoConstrucao($(this).val());" })
+                        <i></i>Sim
+                    </label>
+                    <label class="radio">
+                        @Html.RadioButtonFor(m => m.FlagImposicaoConstrucao, "false", new { onclick = "SelecionaImposicaoConstrucao($(this).val());" })
+                        <i></i>Não
+                    </label>
+                </div>
+            </section>
+            <section class="col col-6">
+                <label class="label">Prazo</label>
+                <label class="input">
+                    <input type="text" id="ImposicaoConstrucaoPrazo" name="ImposicaoConstrucaoPrazo" value="@(Model.ImposicaoConstrucaoPrazo)" @Html.Raw(Model.FlagImposicaoConstrucao ? "" : " readonly=\"\" style=\"cursor: not-allowed; background-color: #eee !important;\"")>
+                </label>
+            </section>
+        </div>
+    </fieldset>    
+    <footer>
+        <button type="submit" class="btn btn-primary">
+            Gravar Dados do Imóvel
+        </button>
+    </footer>
+</form>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmDadosImovel"))
+<script>
+    $("[data-mask]").each(function () { var a = $(this), b = a.attr("data-mask") || "error...", c = a.attr("data-mask-placeholder") || "X"; a.mask(b, { placeholder: c }), a = null });
+
+    $("#frmDadosImovel").submit(function (e) {
+        var postData = $(this).serializeArray();
+
+        $("#frmDadosImovel button").prop("disabled", true);
+
+        $.ajax(
+        {
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosImovel',
+            type: "POST",
+            data: postData,
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data, textStatus, jqXHR) {
+                $("#pnlDadosImovel").html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                OnCompleteForm();
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+        e.preventDefault(); //STOP default action
+    });
+</script>

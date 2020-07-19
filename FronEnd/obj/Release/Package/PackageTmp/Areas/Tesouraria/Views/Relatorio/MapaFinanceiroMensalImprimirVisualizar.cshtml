@@ -1,0 +1,360 @@
+﻿@model SAL.MVC.Models.RelatorioModel<SAL.MVC.Areas.Tesouraria.Models.RelatorioMapaFinanceiroMensalModel>
+@{
+    double valorTotalConta = 0;
+    double valorTotalTipo = 0;
+    decimal valorSaldoCaixa = 0;
+    if (Model.Dados.SaldoCaixa.HasValue)
+    {
+        valorSaldoCaixa = Model.Dados.SaldoCaixa.Value;
+    }
+
+    int ColunaAtual = 0;
+    decimal valorEntrada = 0;
+    decimal valorSaida = 0;
+    decimal valorCorrente = 0;
+    decimal valorPoupanca = 0;
+    decimal valorAplicacao = 0;
+    decimal valorSaldoContaCorrente = 0;
+    if (Model.Dados.SaldoContaCorrente.HasValue)
+    {
+        valorSaldoContaCorrente = Model.Dados.SaldoContaCorrente.Value;
+    }
+    decimal valorSaldoContaPoupanca = 0;
+    if (Model.Dados.SaldoPoupanca.HasValue)
+    {
+        valorSaldoContaPoupanca = Model.Dados.SaldoPoupanca.Value;
+    }
+    decimal valorSaldoAplicacao = 0;
+    if (Model.Dados.SaldoAplicacao.HasValue)
+    {
+        valorSaldoAplicacao = Model.Dados.SaldoAplicacao.Value;
+    }
+    decimal valorSaldoTopo = 0;
+}
+<html>
+<head>
+    <meta charset="utf-8">
+    <!--<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">-->
+
+    <title>@Model.ReportTitle</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <base href="@Url.Content("~")">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script>
+        if (!window.jQuery) {
+            document.write('<script src="js/libs/jquery-2.0.2.min.js"><\/script>');
+        }
+    </script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script>
+        if (!window.jQuery.ui) {
+            document.write('<script src="js/libs/jquery-ui-1.10.3.min.js"><\/script>');
+        }
+    </script>
+    <script>
+        var MsgNaoFoiPossivelCompletarOperacao = "@(SAL.Repository.Comum.Constantes.MsgNaoFoiPossivelCompletarOperacao)";
+        var rootURL = "@Url.Content("~")";
+    </script>
+    <style>
+        @@page {
+            margin: 0;
+            padding: 0;
+            size: auto landscape;
+            margin: 15mm 5mm 5mm 5mm;
+        }
+
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+            body #pnlFundo {
+                background-color: #000;
+            }
+
+        .texto {
+            font-family: Arial;
+            color: #000;
+        }
+
+        .titulo {
+            font-family: Arial;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .bg-white {
+            background-color: #fff;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .texto-codigo {
+            text-align: center;
+            font-family: Arial;
+            color: #fff;
+            background-color: #003300;
+        }
+
+        .texto-total {
+            font-family: Arial;
+            color: #000;
+            background-color: #ccc;
+        }
+
+        table, th, td {
+            border-collapse: collapse;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <h1 class="titulo">@Model.ReportSubitle</h1>
+        <table cellpadding="10" cellspacing="1" border="0" id="pnlMapa">
+            <tr>
+                <td class="bg-white">&nbsp;</td>
+                @foreach (var itemTipo in Model.Dados.ListaTipo.OrderBy(o => o.GrupoTipo))
+                {
+                    <td colspan="@(itemTipo.Total + (itemTipo.ColunaTotal ? 1 : 0) + (itemTipo.ColunaSaldo ? 1 : 0))" class="titulo bg-white text-center">@itemTipo.GrupoTipoNome</td>
+                }
+                <td class="titulo bg-white text-center">Caixa</td>
+            </tr>
+            <tr>
+                <td class="bg-white titulo text-center" rowspan="3">DATA</td>
+                @foreach (var itemTipo in Model.Dados.ListaTipo.OrderBy(o => o.GrupoTipo))
+                {
+                    foreach (var itemGrupo in Model.Dados.ListaGrupo.Where(w => w.GrupoTipo == itemTipo.GrupoTipo).OrderBy(o => o.GrupoTipo).ThenBy(o => o.GrupoOrdem))
+                    {
+                        <td class="titulo text-center" style="background-color:#@(itemGrupo.GrupoCor);" colspan="@(itemGrupo.ListaConta.Count + (itemTipo.ColunaSaldo ? 1 : 0))">@itemGrupo.GrupoNome</td>
+                    }
+                    if (itemTipo.ColunaTotal)
+                    {
+                        <td class="bg-white" style="width:80px;">&nbsp;</td>
+                    }
+                }
+                <td class="titulo text-center" style="background-color:#00ffff">Caixa</td>
+            </tr>
+            <tr>
+                @foreach (var itemTipo in Model.Dados.ListaTipo.OrderBy(o => o.GrupoTipo))
+                {
+                    foreach (var itemGrupo in Model.Dados.ListaGrupo.Where(w => w.GrupoTipo == itemTipo.GrupoTipo).OrderBy(o => o.GrupoTipo).ThenBy(o => o.GrupoOrdem))
+                    {
+                        foreach (var itemDataValor in itemGrupo.ListaConta.OrderBy(o => o.Ordem))
+                        {
+                            <td class="bg-white texto text-center" style="width:80px;" cta_id="@itemDataValor.Id">@itemDataValor.Nome</td>
+                        }
+                    }
+                    if (itemTipo.ColunaTotal)
+                    {
+                        <td class="texto-total text-center" style="width:80px;"><b>TOTAL</b></td>
+                    }
+                    if (itemTipo.ColunaSaldo)
+                    {
+                        <td class="texto-total text-center" style="width:80px;"><b>SALDO</b></td>
+                    }
+                }
+                <td class="texto-total text-center" style="width:80px;"><b>SALDO CAIXA</b></td>
+            </tr>
+            <tr>
+                @foreach (var itemTipo in Model.Dados.ListaTipo.OrderBy(o => o.GrupoTipo))
+                {
+                    foreach (var itemGrupo in Model.Dados.ListaGrupo.Where(w => w.GrupoTipo == itemTipo.GrupoTipo).OrderBy(o => o.GrupoTipo).ThenBy(o => o.GrupoOrdem))
+                    {
+                        foreach (var itemDataValor in itemGrupo.ListaConta.OrderBy(o => o.Ordem))
+                        {
+                            <td class="texto-codigo" style="width:80px;">@itemDataValor.CodCont</td>
+                        }
+                    }
+                    if (itemTipo.ColunaTotal)
+                    {
+                        <td class="texto-total text-center" style="width:80px;">&nbsp;</td>
+                    }
+                    if (itemTipo.ColunaSaldo)
+                    {
+                        valorSaldoTopo = (itemTipo.ContaCorrente ? valorSaldoContaCorrente : itemTipo.ContaPoupanca ? valorSaldoContaPoupanca : valorSaldoAplicacao);
+                        <td class="texto-total text-@(valorSaldoTopo > 0 ? "right" : "center")" style="width:80px;">
+                            @(valorSaldoTopo > 0 ? valorSaldoTopo.ToString("0.00") : " - ")
+                        </td>
+                    }
+                }
+                <td class="texto-total text-right" style="width:80px;">@valorSaldoCaixa.ToString("0.00")</td>
+            </tr>
+            @for (int i = 0; i < Model.Dados.TotalDias; i++)
+            {
+                ColunaAtual = 0;
+                <tr>
+                    <td class="bg-white titulo text-center">@Model.Dados.DataInicial.AddDays(i).ToString("dd/MM/yyyy")</td>
+                    @foreach (var itemTipo in Model.Dados.ListaTipo.OrderBy(o => o.GrupoTipo))
+                    {
+                        valorTotalConta = 0;
+                        foreach (var itemGrupo in Model.Dados.ListaGrupo.Where(w => w.GrupoTipo == itemTipo.GrupoTipo).OrderBy(o => o.GrupoTipo).ThenBy(o => o.GrupoOrdem))
+                        {
+                            foreach (var itemDataValor in itemGrupo.ListaConta.OrderBy(o => o.Ordem))
+                            {
+                                ColunaAtual++;
+                                SAL.MVC.Areas.Tesouraria.Models.RelatorioMapaFinanceiroMensalContaDataValorModel item_data_valor = itemDataValor.ListaDataValor.Where(w => w.Data == Model.Dados.DataInicial.AddDays(i)).FirstOrDefault();
+                                valorTotalConta += item_data_valor.Valor;
+                                <td class="texto text-@(item_data_valor.Valor > 0 ? "right" : "center")" style="width:80px;cursor:pointer;" onclick="selectCell(this, @(ColunaAtual));" ondblclick=" openDialog(this)">@(item_data_valor.Valor > 0 ? item_data_valor.Valor.ToString("0.00") : "-")</td>
+                            }
+                        }
+                        if (itemTipo.ColunaTotal)
+                        {
+                            if (itemTipo.Entrada)
+                            {
+                                valorEntrada = Convert.ToDecimal(valorTotalConta);
+                            }
+                            if (itemTipo.Saida)
+                            {
+                                valorSaida = Convert.ToDecimal(valorTotalConta);
+                            }
+                            ColunaAtual++;
+                            <td class="texto-total text-@(valorTotalConta > 0 ? "right" : "center")" style="width:80px;cursor:pointer;" onclick="selectCell(this, @(ColunaAtual));" ondblclick=" openDialog(this)">@(valorTotalConta > 0 ? valorTotalConta.ToString("0.00") : "-")</td>
+                        }
+                        if (itemTipo.ColunaSaldo)
+                        {
+                            valorTotalTipo = Model.Dados.ListaGrupo.Where(w => w.GrupoTipo == itemTipo.GrupoTipo).FirstOrDefault().ListaValorData.Where(w => w.Data == Model.Dados.DataInicial.AddDays(i)).Sum(s => s.Valor);
+
+                            if (itemTipo.ContaCorrente)
+                            {
+                                valorCorrente = Convert.ToDecimal(valorTotalTipo);
+                                valorSaldoContaCorrente -= valorCorrente;
+                                valorTotalTipo = Convert.ToDouble(valorSaldoContaCorrente);
+                            }
+                            if (itemTipo.ContaPoupanca)
+                            {
+                                valorPoupanca = Convert.ToDecimal(valorTotalTipo);
+                                valorSaldoContaPoupanca -= valorPoupanca;
+                                valorTotalTipo = Convert.ToDouble(valorSaldoContaPoupanca);
+                            }
+                            if (itemTipo.AplicacaoFinanceira)
+                            {
+                                valorAplicacao = Convert.ToDecimal(valorTotalTipo);
+                                valorSaldoAplicacao -= valorAplicacao;
+                                valorTotalTipo = Convert.ToDouble(valorSaldoAplicacao);
+                            }
+                            ColunaAtual++;
+                            <td class="texto-total text-@(valorTotalTipo > 0 ? "right" : "center")" style="width:80px;cursor:pointer;" onclick="selectCell(this, @(ColunaAtual));" ondblclick=" openDialog(this)">@(valorTotalTipo > 0 ? valorTotalTipo.ToString("0.00") : "-")</td>
+                        }
+                    }
+                    @{
+                        valorSaldoCaixa = valorSaldoCaixa + valorEntrada - valorSaida + valorCorrente + valorPoupanca + valorAplicacao;
+                        ColunaAtual++;
+                    }
+                    <td class="texto-total text-right" onclick="selectCell(this, @(ColunaAtual));" ondblclick="openDialog(this)" style="cursor:pointer;">@valorSaldoCaixa.ToString("0.00")</td>
+                </tr>
+                        }
+            <tr>
+                <td class="bg-white titulo text-center">TOTAL</td>
+                @{ ColunaAtual = 0; }
+                @foreach (var itemTipo in Model.Dados.ListaTipo.OrderBy(o => o.GrupoTipo))
+                {
+                    valorTotalTipo = 0;
+                    foreach (var itemGrupo in Model.Dados.ListaGrupo.Where(w => w.GrupoTipo == itemTipo.GrupoTipo).OrderBy(o => o.GrupoTipo).ThenBy(o => o.GrupoOrdem))
+                    {
+                        foreach (var itemDataValor in itemGrupo.ListaConta.OrderBy(o => o.Ordem))
+                        {
+                            ColunaAtual++;
+                            valorTotalConta = itemDataValor.ListaDataValor.Sum(s => s.Valor);
+                            valorTotalTipo += valorTotalConta;
+                            <td class="bg-white texto text-@(valorTotalConta > 0 ? "right" : "center")" style="width:80px;cursor:pointer;" onclick="selectCell(this, @(ColunaAtual));" ondblclick="openDialog(this)">@(valorTotalConta > 0 ? valorTotalConta.ToString("0.00") : "-")</td>
+
+                        }
+                    }
+                    if (itemTipo.ColunaTotal)
+                    {
+                        ColunaAtual++;
+                        <td class="texto-total text-@(valorTotalTipo > 0 ? "right" : "center")" style="width:80px;cursor:pointer;" onclick="selectCell(this, @(ColunaAtual));" ondblclick="openDialog(this)">@(valorTotalTipo > 0 ? valorTotalTipo.ToString("0.00") : "-")</td>                    }
+                    if (itemTipo.ColunaSaldo)
+                    {
+                        if (itemTipo.ContaCorrente)
+                        {
+                            valorTotalTipo = Convert.ToDouble(valorSaldoContaCorrente);
+                        }
+                        if (itemTipo.ContaPoupanca)
+                        {
+                            valorTotalTipo = Convert.ToDouble(valorSaldoContaPoupanca);
+                        }
+                        if (itemTipo.AplicacaoFinanceira)
+                        {
+                            valorTotalTipo = Convert.ToDouble(valorSaldoAplicacao);
+                        }
+                        ColunaAtual++;
+                        <td class="texto-total text-@(valorTotalTipo > 0 ? "right" : "center")" style="width:80px;cursor:pointer;" onclick="selectCell(this, @(ColunaAtual));" ondblclick="openDialog(this)">@(valorTotalTipo > 0 ? valorTotalTipo.ToString("0.00") : "-")</td>
+                    }
+                }
+                @{  ColunaAtual++; }
+                <td class="texto-total text-right" onclick="selectCell(this, @(ColunaAtual));" ondblclick="openDialog(this)" style="cursor:pointer;">@valorSaldoCaixa.ToString("0.00")</td>
+            </tr>
+        </table>
+    </center>
+    <script>
+        var objCellSelected = undefined;
+        var objOld = undefined;
+        var data;
+        var lancamento;
+        var conta;
+
+        function selectCell(objCell, indice) {
+            if (objOld != undefined) {
+                objOld.css("background-color", "");
+            }
+            objOld = $(objCell);
+            $(objOld).css("background-color", "#338fff");
+
+            objCellSelected = $(objCell);
+            data = $($(objCell).parent()[0]).find("td")[0].innerText;
+            conta = $($($(objCell).parent().parent()[0]).find("tr")[2]).find("td")[indice - 1].innerText;
+            lancamento = $(objCell)[0].innerText;
+
+            parent.$("#lblDataSelecionada").html("<strong>Data: </strong>" + data + "<br/>"+
+                "<strong>Conta: </strong>" + conta + "<br/>"+
+                "<strong>Lançamento: </strong>" + lancamento
+            );
+
+            $("#pnlMapaHistorico").html("");
+
+            var cta_id = $($($($(objCell).parent().parent()[0]).find("tr")[2]).find("td")[indice - 1]).attr("cta_id");
+            if (cta_id != undefined) {
+                $.ajax({
+                    type: 'POST',
+                    data: {
+                        Data: data,
+                        Id: cta_id
+                    },
+                    url: rootURL + 'Tesouraria/PagamentoRecebimento/CapturaLancamentoPorDataContaId',
+                    beforeSend: function () {
+                    },
+                    success: function (data) {
+                        parent.$("#pnlMapaHistorico").html(data);
+                    },
+                    error: function (xhr, st, str) {
+
+                    },
+                    complete: function () {
+                    }
+                });
+            }
+        }
+
+        function openDialog(dia) {
+
+        }
+    </script>
+</body>
+</html>

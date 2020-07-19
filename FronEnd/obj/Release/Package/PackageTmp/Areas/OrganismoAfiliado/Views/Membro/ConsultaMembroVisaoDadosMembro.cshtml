@@ -1,0 +1,72 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.ConsultaMembroVisaoGeralModel
+@{ 
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+}
+<div class="panel panel-default visible-sm">
+    <div class="panel-heading">
+        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapseDadosMembro_@(Model.MembroSOA.Identificador)" class="collapsed"> <i class="fa fa-lg fa-angle-down pull-right"></i> <i class="fa fa-lg fa-angle-up pull-right"></i> Dados Membro </a></h4>
+    </div>
+    <div id="collapseDadosMembro_@(Model.MembroSOA.Identificador)" class="panel-collapse collapse">
+        <div class="panel-body no-padding">
+            <table class="table table-bordered table-hover">
+                <tbody>
+                    <tr>
+                        <td class="text-right" width="50%">GLP ativo até</td>
+                        <td  width="50%" class="text-left @(Model.MembroSOA.DataQuitacaoGLP.HasValue ? Model.MembroSOA.DataQuitacaoGLP.Value > dtAtual ? "info" : (Model.MembroSOA.DataQuitacaoGLP.Value.AddMonths(1) > dtAtual ? "warning" : "danger") : "danger") ">@(Model.MembroSOA.DataQuitacaoGLP.HasValue ? Model.MembroSOA.DataQuitacaoGLP.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">TOM ativo até</td>
+                        <td class="text-left @(Model.MembroSOA.DataQuitacaoTOM.HasValue ? Model.MembroSOA.DataQuitacaoTOM.Value > dtAtual ? "info" : (Model.MembroSOA.DataQuitacaoTOM.Value.AddMonths(1) > dtAtual ? "warning" : "danger") : "danger")">@(Model.MembroSOA.DataQuitacaoTOM.HasValue ? Model.MembroSOA.DataQuitacaoTOM.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">O.A. ativo até</td>
+                        <td class="text-left @(Model.MembroSOA.DataQuitacaoOA.HasValue ? Model.MembroSOA.DataQuitacaoOA.Value > dtAtual ? "info" : (Model.MembroSOA.DataQuitacaoOA.Value.AddMonths(1) > dtAtual ? "warning" : "danger") : "danger")">@(Model.MembroSOA.DataQuitacaoOA.HasValue ? Model.MembroSOA.DataQuitacaoOA.Value.ToString("MM/yyyy") : "Não possui")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">Afiliação GLP</td>
+                        <td class="text-left">@(Model.MembroSOA.DataAfiliacaoGLP.HasValue ? Model.MembroSOA.DataAfiliacaoGLP.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">Afiliação TOM</td>
+                        <td class="text-left">@(Model.MembroSOA.DataAfiliacaoTOM.HasValue ? Model.MembroSOA.DataAfiliacaoTOM.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">Afiliação O.A.</td>
+                        <td class="text-left">@(Model.MembroSOA.DataAdmissaoOA.HasValue ? Model.MembroSOA.DataAdmissaoOA.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">Lote Atual</td>
+                        <td class="text-left">@(Model.MembroSOA.LoteAtualGLP)</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">Grau</td>
+                        <td class="text-left">@(Model.MembroSOA.GrauRC)</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">Data SOA</td>
+                        <td class="text-left">
+                            @(Model.MembroSOA.DataAtualizacaoSOA.HasValue ? Model.MembroSOA.DataAtualizacaoSOA.Value.ToString("dd/MM/yyyy") : "Não possui")
+                            @if (Model.MembroSOA.Identificador != Model.MembroSOA.fSeqCadast)
+                            {
+                                <br /><div id="pnlGLPRefresh_@(Model.MembroSOA.Identificador)">
+                                    @if (Model.MembroSOA.DataAtualizacaoSOA.HasValue == false || (Model.MembroSOA.DataAtualizacaoSOA.HasValue && dtAtual.Date != Model.MembroSOA.DataAtualizacaoSOA.Value.Date))
+                                    {
+                                        <a href="javascript:void(0);" onclick="AtualizarMembroGLP(@Model.MembroSOA.Identificador, 'pnlGLPRefresh_@(Model.MembroSOA.Identificador)', 'ConfirmaAbrirMembroGLP');" class="btn btn-primary"> <i class="fa fa-refresh"></i></a>
+                                    }
+                                    else
+                                    {
+                                        <a href="javascript:void(0);" class="btn btn-default"><i class="fa fa-check"></i></a>
+                                    }
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">Atraso Biblioteca</td>
+                        <td class="text-left @(Model.MembroSOA.QuantidadeAtrasoBiblioteca > 0 ? " danger" : "")">@(Model.MembroSOA.QuantidadeAtrasoBiblioteca > 0 ? Model.MembroSOA.QuantidadeAtrasoBiblioteca.ToString() : "OK")</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

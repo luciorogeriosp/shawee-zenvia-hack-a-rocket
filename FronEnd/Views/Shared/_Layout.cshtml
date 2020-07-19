@@ -1,0 +1,1189 @@
+﻿@{
+    Tropical.Infrastructure.Model.User user = new Tropical.Infrastructure.Model.User();
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado") != null)
+    {
+        user = (Tropical.Infrastructure.Model.User)Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado");
+    }
+
+    var AppName = Tropical.Infrastructure.Util.ParameterCollection.GetParamValue("AppName");
+}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <!--<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">-->
+
+    <title> @(AppName) - Painel de Controle </title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <base href="@Url.Content("~")">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- Basic Styles -->
+    @Styles.Render("~/bundles/css")
+    @*
+        <link rel="stylesheet" type="text/css" media="screen" href="css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" media="screen" href="css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" media="screen" href="css/smartadmin-production.min.css">
+        <link rel="stylesheet" type="text/css" media="screen" href="css/smartadmin-skins.min.css">
+        <link rel="stylesheet" type="text/css" media="screen" href="css/demo.min.css">
+        <link rel="stylesheet" type="text/css" media="screen" href="css/your_style.css">
+    *@
+    <!-- FAVICONS -->
+    <link rel="shortcut icon" href="img/favicon/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="img/favicon/favicon.ico" type="image/x-icon">
+
+    <!-- GOOGLE FONT -->
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,300,400,700">
+
+    <!-- Specifying a Webpage Icon for Web Clip
+         Ref: https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html -->
+    <link rel="apple-touch-icon" href="img/splash/sptouch-icon-iphone.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="img/splash/touch-icon-ipad.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="img/splash/touch-icon-iphone-retina.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="img/splash/touch-icon-ipad-retina.png">
+
+    <!-- iOS web-app metas : hides Safari UI Components and Changes Status Bar Appearance -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!-- Startup image for web apps -->
+    <link rel="apple-touch-startup-image" href="img/splash/ipad-landscape.png" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape)">
+    <link rel="apple-touch-startup-image" href="img/splash/ipad-portrait.png" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait)">
+    <link rel="apple-touch-startup-image" href="img/splash/iphone.png" media="screen and (max-device-width: 320px)">
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jquery-ui")
+
+    @*<link rel="stylesheet" href="css/lightbox.min.css">*@
+
+    <!-- PACE LOADER - turn this on if you want ajax loading to show (caution: uses lots of memory on iDevices)-->
+    @*<script data-pace-options='{ "restartOnRequestAfter": true }' src="js/plugin/pace/pace.min.js"></script>*@
+
+    <!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
+    @*
+        <script src="js/jquery.min.js"></script>
+        <script src="js/jquery-ui.min.js"></script>
+    *@
+
+    @*<script>
+            if (!window.jQuery) {
+                document.write('<script src="js/libs/jquery-2.0.2.min.js"><\/script>');
+            }
+        </script>*@
+
+    @*<script>
+            if (!window.jQuery.ui) {
+                document.write('<script src="js/libs/jquery-ui-1.10.3.min.js"><\/script>');
+            }
+        </script>*@
+<script>
+        var MsgNaoFoiPossivelCompletarOperacao = "Não foi possível realizar a operação.";
+        var rootURL = "@Url.Content("~")";
+</script>
+    @Scripts.Render("~/bundles/frontend")
+    @*
+        <script src="js/membro.js"></script>
+        <script src="js/venda.js"></script>
+    *@
+</head>
+<body class="">
+    @{Html.RenderAction("Header", "Layout", new { Area = "" });}
+    @{Html.RenderAction("Menu", "Layout", new { Area = "" });}
+    @RenderBody()
+    @{Html.RenderAction("Footer", "Layout", new { Area = "" });}
+    <div id="myModalLoading" title="@(AppName)" class="no-padding" style="display:none; z-index:10000;">
+        <div class="modal-body">
+            <div class="row">
+                <div class="progress">
+                    <div class="progress progress-striped">
+                        <div class="progress-bar bg-color-blue active" role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row text-center">
+                <h4>Processando, aguarde...</h4>
+                <img src="@Session["LogoLoadingURL"].ToString()" width="250" />
+            </div>
+        </div>
+    </div>
+    <div id="myModalFull" title="@(AppName)" class="no-padding" style="display:none;">
+        <div class="modal-body" id="myModalFullContent">
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="CloseFullDialog();"><i class="fa fa-rotate-left"></i> Voltar</button>
+            <button type="button" class="btn btn-primary" onclick="PrintFullDialog();" id="btnPrintFullDialog" style="display:none;"><i class="fa fa-print"></i> Imprimir</button>
+        </div>
+    </div>
+    <div id="myModalAbrirMembroGLP" title="" class="no-padding" style="display:none;">
+        <div class="modal-body" id="myModalMembroGLPContent">
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="CloseDialogAbrirMembroGLP();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+            <button type="button" class="btn btn-warning" onclick="ClearDialogAbrirMembroGLP();" tabindex="-1">Limpar</button>
+            <button type="button" class="btn btn-success" onclick="ConfirmaAbrirMembroGLP(this);">Pesquisar</button>
+            <br /><br /><br /><br />
+        </div>
+    </div>
+    <div id="myModalExcluir" title="@(AppName) - Excluir Dados" class="no-padding" style="display:none;">
+        <div class="modal-body" id="myModalExcluirContent">
+            <span class="text-danger"><i class="fa fa-trash-o fa-2x"></i></span>
+            <span id="myModalExcluirTitle" class="font-lg"></span>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="CloseDialogExcluir();" tabindex="-1">Não</button>
+            <button type="button" class="btn btn-success" onclick="ConfirmaDialogExcluir(this);"><i class="fa fa-check"></i>&nbsp; SIM</button>
+        </div>
+    </div>
+    <div id="myModalRecibo" title="@(AppName) - Recibo de Venda" class="no-padding" style="display:none;">
+        <div class="modal-body" id="myModalReciboContent">
+            <form action="@Url.Action("EmitirRecibo", "Recebimento", new { Area = "Recebedoria" })" target="iFrameRecibo" method="post" id="frmRecibo" mame="frmRecibo">
+                <input type="hidden" id="VendaId" name="VendaId" />
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="CloseReciboDialog();"><i class="fa fa-rotate-left"></i> Voltar</button>
+            <button type="button" class="btn btn-success" onclick="$('#frmRecibo').submit(); "><i class="fa fa-print"></i> Imprimir</button>
+        </div>
+    </div>
+    <div id="myModalReciboOrdemVenda" title="@(AppName) - Recibo de Venda" class="no-padding" style="display:none;">
+        <div class="modal-body" id="myModalReciboContent">
+            <form action="@Url.Action("OrdemVendaEmitirRecibo", "Recebimento", new { Area = "Recebedoria" })" target="iFrameReciboOrdemVenda" method="post" id="frmReciboOrdemVenda" mame="frmReciboOrdemVenda">
+                <input type="hidden" id="OrdemVendaId" name="OrdemVendaId" />
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="CloseReciboOrdemVendaDialog();"><i class="fa fa-rotate-left"></i> Voltar</button>
+            <button type="button" class="btn btn-success" onclick="$('#frmReciboOrdemVenda').submit(); "><i class="fa fa-print"></i> Imprimir</button>
+        </div>
+    </div>
+    <div id="myModalCancelarVenda" title="@(AppName) - Cancelar Venda" class="no-padding" style="display:none;">
+        <div class="modal-body" id="myModalCancelarVenda">
+            <span class="font-lg">O Cancelamento de Venda não pode ser desfeito<br> Deseja continuar ?</span>
+            <p>Motivo</p>
+            <textarea cols="35" rows="7" id="txtCancelarVenda" style="width:100%; text-transform:uppercase;"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="CloseDialogCancelarVenda();" tabindex="-1">Não</button>
+            <button type="button" class="btn btn-success" id="btnCancelarRecebedoriaim"><i class="fa fa-check"></i>&nbsp; SIM</button>
+        </div>
+    </div>
+    <div id="myModalNovoMembro" title="Incluir Novo Membro" class="no-padding" style="display:none;">
+        <div class="modal-body" id="myModalNovoMembroContent">
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="CloseDialogNovoMembro();" tabindex="-1"><i class="fa fa-rotate-left"></i> Início</button>
+            <button type="button" class="btn btn-success" onclick="ConfirmaNovoMembro(this);" id="btnConfirmarNovoMembro">Confirmar</button>
+            <button type="button" class="btn btn-primary" onclick="AbrirModalNovoMembro();" id="btnAbreNovoMembro">Novo Membro</button>
+        </div>
+    </div>
+    <div id="myModalEntradaTemplo" title="Recebedoria - Autorização de Entrada no Templo" class="no-padding" style="display:none;">
+        <div class="modal-body" id="myModalEntradaTemploContent">
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="dialogEntradaTemplo.dialog('close');" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        </div>
+    </div>
+    <div id="myModalImagem" title="@(AppName) - Preview" class="no-padding" style="display:none;">
+        <div class="modal-body" id="myModalImagemContent">
+            <h3 id="myModalImagemTitle" style="margin-top:0;" class="text-center"></h3>
+            <center><img src="~/img/alpha.png" id="myModalImagemSRC" /></center>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="CloseDialogImagem();" tabindex="-1">Fechar</button>
+        </div>
+    </div>
+    <form action="@Url.Action("Emitir", "AutorizarTemplo", new { Area = "OrganismoAfiliado" })" target="iFrameReciboAutorizacaoTemplo" method="post" id="frmReciboAutorizacaoTemplo" mame="frmReciboAutorizacaoTemplo">
+        <input type="hidden" id="AutorizacaoTemploId" name="AutorizacaoTemploId" />
+    </form>
+    <form action="@Url.Action("ComprovanteQuitacao", "Recebimento", new { Area = "Recebedoria" })" target="iFrameReciboComprovanteQuitacao" method="post" id="frmReciboComprovanteQuitacao" mame="frmReciboComprovanteQuitacao">
+        <input type="hidden" id="NumeroAfiliacao" name="NumeroAfiliacao" />
+        <input type="hidden" id="Nome" name="Nome" />
+    </form>
+    <!-- SHORTCUT AREA : With large tiles (activated via clicking user name tag)
+    Note: These tiles are completely responsive,
+    you can add as many as you like
+    -->
+    @*
+        <div id="shortcut">
+            <ul>
+                <li>
+                    <a href="#inbox.html" class="jarvismetro-tile big-cubes bg-color-blue"> <span class="iconbox"> <i class="fa fa-envelope fa-4x"></i> <span>Mail <span class="label pull-right bg-color-darken">14</span></span> </span> </a>
+                </li>
+                <li>
+                    <a href="#calendar.html" class="jarvismetro-tile big-cubes bg-color-orangeDark"> <span class="iconbox"> <i class="fa fa-calendar fa-4x"></i> <span>Calendar</span> </span> </a>
+                </li>
+                <li>
+                    <a href="#gmap-xml.html" class="jarvismetro-tile big-cubes bg-color-purple"> <span class="iconbox"> <i class="fa fa-map-marker fa-4x"></i> <span>Maps</span> </span> </a>
+                </li>
+                <li>
+                    <a href="#invoice.html" class="jarvismetro-tile big-cubes bg-color-blueDark"> <span class="iconbox"> <i class="fa fa-book fa-4x"></i> <span>Invoice <span class="label pull-right bg-color-darken">99</span></span> </span> </a>
+                </li>
+                <li>
+                    <a href="#gallery.html" class="jarvismetro-tile big-cubes bg-color-greenLight"> <span class="iconbox"> <i class="fa fa-picture-o fa-4x"></i> <span>Gallery </span> </span> </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="jarvismetro-tile big-cubes selected bg-color-pinkDark"> <span class="iconbox"> <i class="fa fa-user fa-4x"></i> <span>My Profile </span> </span> </a>
+                </li>
+            </ul>
+        </div>
+    *@
+    @Scripts.Render("~/bundles/app")
+    <!-- END SHORTCUT AREA -->
+    @*
+                <!--================================================== -->
+
+                <!-- Button modal fullscreen -->
+                <!-- IMPORTANT: APP CONFIG -->
+                <script src="js/app.config.js"></script>
+
+                <!-- JS TOUCH : include this plugin for mobile drag / drop touch events-->
+                <script src="js/plugin/jquery-touch/jquery.ui.touch-punch.min.js"></script>
+
+                <!-- BOOTSTRAP JS -->
+                <script src="js/bootstrap/bootstrap.min.js"></script>
+
+                <!-- CUSTOM NOTIFICATION -->
+                <script src="js/notification/SmartNotification.min.js"></script>
+
+            <!-- JARVIS WIDGETS -->
+            <script src="js/smartwidgets/jarvis.widget.min.js"></script>
+
+            <!-- EASY PIE CHARTS -->
+            <script src="js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js"></script>
+
+            <!-- SPARKLINES -->
+            <script src="js/plugin/sparkline/jquery.sparkline.min.js"></script>
+
+            <!-- JQUERY VALIDATE -->
+            <script src="js/plugin/jquery-validate/jquery.validate.min.js"></script>
+
+            <!-- JQUERY MASKED INPUT -->
+            <script src="js/plugin/masked-input/jquery.maskedinput.min.js"></script>
+
+            <!-- JQUERY SELECT2 INPUT -->
+            <script src="js/plugin/select2/select2.min.js"></script>
+
+            <!-- JQUERY UI + Bootstrap Slider -->
+            <script src="js/plugin/bootstrap-slider/bootstrap-slider.min.js"></script>
+
+            <!-- browser msie issue fix -->
+            <script src="js/plugin/msie-fix/jquery.mb.browser.min.js"></script>
+
+            <!-- FastClick: For mobile devices -->
+            <script src="js/plugin/fastclick/fastclick.min.js"></script>
+
+            <!--[if IE 8]>
+
+            <h1>Your browser is out of date, please update your browser by going to www.microsoft.com/download</h1>
+
+            <![endif]-->
+            <!-- Demo purpose only -->
+            <script src="js/demo.min.js"></script>
+
+            <!-- MAIN APP JS FILE -->
+            <script src="js/app.min.js"></script>
+
+            <!-- ENHANCEMENT PLUGINS : NOT A REQUIREMENT -->
+            <!-- Voice command : plugin -->
+            @*<script src="js/speech/voicecommand.min.js"></script>
+
+        <!-- PAGE RELATED PLUGIN(S)  -->
+        <script src="js/plugin/datatables/jquery.dataTables.min.js"></script>
+        <script src="js/plugin/datatables/dataTables.colVis.min.js"></script>
+        <script src="js/plugin/datatables/dataTables.tableTools.min.js"></script>
+        <script src="js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+        <script src="js/plugin/datatable-responsive/datatables.responsive.min.js"></script>
+
+        <script src="js/plugin/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+        <script src="js/plugin/fullcalendar/jquery.fullcalendar.min.js"></script>
+    *@
+
+    <script type="text/javascript">
+
+        // DO NOT REMOVE : GLOBAL FUNCTIONS!
+
+        var responsiveHelper_datatable_tabletools = undefined;
+
+        var breakpointDefinition = {
+            tablet: 1024,
+            phone: 480
+        };
+
+        $(document).ready(function () {
+
+            pageSetUp();
+
+            ConfiguraModalNovoMembro();
+
+            /*
+            window.onunload = function (e) {
+            var targetHost = new URL(e.target.URL).hostname;
+            if (targetHost != window.location.hostname)
+                ClearSession();
+            else
+                return null;
+            };*/
+
+            //$(document).ajaxComplete(function (event, xhr, settings) {
+            //    if (xhr.responseText.indexOf('top.location.href = \'/\'') > 0) {
+            //        top.location.href = '/';
+            //    }
+            //});
+        });
+
+        /*
+        function ClearSession() {
+            $.ajax({
+                type: 'GET',
+                url: rootURL + 'Home/Logout',
+                beforeSend: function () {
+
+                },
+                success: function (data) {
+                },
+                error: function (xhr, st, str) {
+                },
+                complete: function () {
+
+                }
+            });
+        }*/
+    </script>
+
+    @*
+        <!-- Your GOOGLE ANALYTICS CODE Below -->
+        <script type="text/javascript">
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-XXXXXXXX-X']);
+            _gaq.push(['_trackPageview']);
+
+            (function () {
+                var ga = document.createElement('script');
+                ga.type = 'text/javascript';
+                ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(ga, s);
+            })();
+
+        </script>
+    *@
+
+    @*<script src="js/jquery-1.8.2.js"></script>
+        <script src="js/jquery.unobtrusive-ajax.js"></script>
+        <script src="js/jquery.validate.min.js"></script>*@
+    <script>
+        var dialogLoading = null;
+        var dialogFull = null;
+        var dialogVendaAbrirMembroGLP = null;
+        var dialogImagem = null;
+        var dialogExcluir = null;
+        var dialogRecibo = null;
+        var dialogCancelarVenda = null;
+
+        var consultaMembroAbrir;
+        var consultaMembroAbrirCancel;
+        var consultaMembroSelecionar = false;
+        var consultaMembroSelecionarFuncao;
+
+        var OpcaoFiltroUsuarioLogado = @(user.Filtro);
+
+        var dialogExcluirEval = null;
+
+        var dialogEntradaTemplo = null;
+
+        var blnLoadingShowScroll = true;
+        var siHidden;
+        var dialogLoading
+
+        ConfigureDialog();
+        ConfigureDialogAbrirMembroGLP();
+
+        $(window).resize(function () {
+            ConfigureDialog();
+            ConfigureDialogAbrirMembroGLP();
+        });
+
+        function OnEnter(event, functionName) {
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+
+            if (keycode == '13') {
+                eval(functionName + "(event.srcElement)");
+            }
+        }
+
+        function isDecimal(evt) {
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode != 44 && charCode > 31
+                && (charCode < 48 || charCode > 57))
+                return false;
+
+            return true;
+        }
+
+        function retiraPontos(evt) {
+            if ($(evt.currentTarget).val() != "") {
+                $(evt.currentTarget).val($(evt.currentTarget).val().replace(".", ""));
+            }
+
+            return true;
+        }
+
+        function isNumber(evt) {
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode > 31
+                && (charCode < 48 || charCode > 57))
+                return false;
+
+            return true;
+        }
+
+        function ConfigureDialog() {
+            /*
+            .dialog( "moveToTop" );
+            .dialog( "isOpen" );
+            .dialog( "option", "appendTo", "#someElem" );
+
+            */
+
+            dialogLoading = $("#myModalLoading").dialog({
+                autoOpen: false,
+                width: parseInt($(window).width()),
+                height: parseInt($(window).height()),
+                resizable: false,
+                draggable: false,
+                closeOnEscape: false,
+                modal: true,
+                position: { my: "top top", at: "top top", of: window },
+                beforeClose: function (event, ui) {
+                    //if (blnLoadingShowScroll) {
+                    $("body").css({ overflow: 'inherit' })
+                    //}
+                }
+            });
+
+            dialogImagem = $("#myModalImagem").dialog({
+                autoOpen: false,
+                width: (thisDevice == "mobile") ? parseInt($(window).width()) : parseInt($("#content").css("width")) / 2,
+                resizable: false,
+                modal: true,
+                closeOnEscape: true,
+                position: { my: "center top", at: "center top", of: $("#content") }
+            });
+
+            dialogFull = $("#myModalFull").dialog({
+                autoOpen: false,
+                width: parseInt($(window).width()),
+                height: parseInt($(window).height()),
+                resizable: false,
+                draggable: false,
+                closeOnEscape: true,
+                modal: true,
+                position: { my: "top top", at: "top top", of: window },
+                beforeClose: function (event, ui) {
+                    $("body").css({ overflow: 'inherit' })
+                }, open: function (event, ui) {
+                    siHidden = setInterval(function () {
+                        $("body").css({ overflow: 'hidden' });
+                        clearInterval(siHidden);
+                    }, 300);
+                }
+            });
+
+            dialogExcluir = $("#myModalExcluir").dialog({
+                autoOpen: false,
+                width: (thisDevice == "mobile") ? parseInt($(window).width()) : parseInt($("#content").css("width")) / 2,
+                resizable: false,
+                modal: true,
+                closeOnEscape: true,
+                position: { my: "center top", at: "center top", of: $("#content") }
+            });
+
+            dialogRecibo = $("#myModalRecibo").dialog({
+                autoOpen: false,
+                width: parseInt($(window).width()),
+                height: parseInt($(window).height()),
+                resizable: false,
+                draggable: false,
+                closeOnEscape: true,
+                modal: true,
+                position: { my: "top top", at: "top top", of: window },
+                beforeClose: function (event, ui) {
+                    $("body").css({ overflow: 'inherit' })
+                }
+            });
+
+            dialogCancelarVenda = $("#myModalCancelarVenda").dialog({
+                autoOpen: false,
+                width: (thisDevice == "mobile") ? parseInt($(window).width()) : parseInt($("#content").css("width")) / 2,
+                resizable: false,
+                modal: true,
+                closeOnEscape: true,
+                position: { my: "center top", at: "center top", of: $("#content") }
+            });
+
+            dialogEntradaTemplo = $("#myModalEntradaTemplo").dialog({
+                autoOpen: false,
+                width: (thisDevice == "mobile") ? parseInt($(window).width()) : parseInt($("#content").css("width")) / 2,
+                resizable: false,
+                modal: true,
+                closeOnEscape: true,
+                position: { my: "center top", at: "center top", of: $("#content") }
+            });
+
+            try {
+                $("#iFrameRecibo").css("width", parseInt($("#myModalRecibo").css("width")) - (40 + parseInt($("#myModalRecibo").css("padding-left")) + parseInt($("#myModalRecibo").css("padding-right"))) + "px");
+                $("#iFrameRecibo").css("height", parseInt($("#myModalRecibo").css("height")) - (160) + "px");
+            } catch (e) {
+
+            }
+        }
+
+        function ConfigureDialogAbrirMembroGLP() {
+            dialogVendaAbrirMembroGLP = $("#myModalAbrirMembroGLP").dialog({
+                autoOpen: false,
+                width: parseInt($(window).width()),
+                height: parseInt($(window).height()),
+                resizable: false,
+                draggable: false,
+                closeOnEscape: true,
+                modal: true,
+                position: { my: "top top", at: "top top", of: window },
+                open: function (event, ui) {
+                    $.ajax({
+                        type: 'GET',
+                        data: { Selecionar: consultaMembroSelecionar },
+                        url: rootURL + 'OrganismoAfiliado/Membro/ConsultaMembro',
+                        beforeSend: function () {
+                            $("#myModalMembroGLPContent").html("");
+                            ShowProgress('myModalMembroGLPContent');
+                        },
+                        success: function (data) {
+                            $("#myModalMembroGLPContent").html(data);
+                        },
+                        error: function (xhr, st, str) {
+                            ShowNotify('danger', 'Falha no SOA', MsgNaoFoiPossivelCompletarOperacao, 'pnlResultadoBuscaConsultaMembro');
+                        },
+                        complete: function () {
+                            HideProgress();
+                        }
+                    });
+                },
+                beforeClose: function (event, ui) {
+                    $("body").css({ overflow: 'inherit' });
+
+                    consultaMembroAbrirCancel = true;
+
+                    try {
+                        if (consultaMembroAbrir != null)
+                            consultaMembroAbrir.abort();
+                    } catch (e) {
+
+                    }
+
+                    $.ajax({
+                        type: 'POST',
+                        data: { Selecionar: consultaMembroSelecionar, HtmlResultado: $("#pnlResultadoBuscaConsultaMembro").html() },
+                        url: rootURL + 'OrganismoAfiliado/Membro/GravaResultadoConsultaMembro',
+                        beforeSend: function () {
+
+                        },
+                        success: function (data) {
+
+                        },
+                        error: function (xhr, st, str) {
+
+                        },
+                        complete: function () {
+
+                        }
+                    });
+                }
+            });
+        }
+
+        function OpenDialogAbrirMembroGLP(selecionar) {
+            consultaMembroSelecionar = selecionar;
+
+            //$("#myModalAbrirMembroGLP button.btn-warning, #myModalAbrirMembroGLP button.btn-success").attr("disabled", "disabled");
+            ClearDialogAbrirMembroGLP();
+            dialogVendaAbrirMembroGLP.dialog("open");
+            dialogVendaAbrirMembroGLP.dialog("moveToTop");
+            $("body").css({ overflow: 'hidden' });
+        }
+
+        function ConfirmaAbrirMembroGLP() {
+            if ($("#myModalAbrirMembroGLP button.btn-success").attr("disabled") == undefined) {
+                ClearNotify();
+
+                consultaMembroAbrirCancel = false;
+                consultaMembroAbrir = $.ajax({
+                    type: 'POST',
+                    url: rootURL + 'OrganismoAfiliado/Membro/ConsultaMembro',
+                    data: $.param($("#frmConsultaMembro").serializeArray()),
+                    beforeSend: function () {
+                        $("#pnlResultadoBuscaConsultaMembro").html("");
+                        //$("#myModalAbrirMembroGLP button.btn-warning, #myModalAbrirMembroGLP button.btn-success").attr("disabled", "disabled");
+
+                        ShowProgress("pnlResultadoBuscaConsultaMembro");
+                    },
+                    success: function (data) {
+                        $("#myModalMembroGLPContent").html(data);
+
+                        dialogVendaAbrirMembroGLP.dialog("open");
+                        dialogVendaAbrirMembroGLP.dialog("moveToTop");
+                    },
+                    error: function (xhr, st, str) {
+                        if (!consultaMembroAbrirCancel) {
+                            ShowNotify('danger', 'Falha no SOA', MsgNaoFoiPossivelCompletarOperacao, 'pnlResultadoBuscaConsultaMembro');
+                        }
+
+                        //$("#myModalAbrirMembroGLP button.btn-warning, #myModalAbrirMembroGLP button.btn-success").removeAttr("disabled");
+                        $("#frmConsultaMembro #NumeroAfiliacao")[0].focus();
+                    },
+                    complete: function () {
+                        consultaMembroAbrirCancel = false;
+                        OnCompleteForm();
+                        HideProgress();
+                    }
+                });
+            }
+        }
+
+        function CloseDialogAbrirMembroGLP() {
+            dialogVendaAbrirMembroGLP.dialog("close");
+        }
+
+        function CloseDialogCancelarVenda() {
+            dialogCancelarVenda.dialog("close");
+        }
+
+        function OpenDialogEntradaTemplo(numeroAfiliacao, nome) {
+
+            numeroAfiliacao = (typeof numeroAfiliacao === 'undefined') ? '' : numeroAfiliacao;
+            nome = (typeof nome === 'undefined') ? '' : nome;
+
+            dialogEntradaTemplo.dialog("open");
+            dialogEntradaTemplo.dialog("moveToTop");
+
+            $.ajax({
+                type: 'GET',
+                url: rootURL + 'OrganismoAfiliado/AutorizarTemplo/Index',
+                data: { NumeroAfiliacao: numeroAfiliacao, Nome: nome },
+                beforeSend: function () {
+                    $("#myModalEntradaTemploContent").html("");
+                    ShowProgress('myModalEntradaTemploContent');
+                },
+                success: function (data) {
+                    $("#myModalEntradaTemploContent").html(data);
+                },
+                error: function (xhr, st, str) {
+
+                },
+                complete: function () {
+
+                }
+            });
+        }
+
+        function CloseDialogEntradaTemplo() {
+            dialogEntradaTemplo.dialog("close");
+        }
+
+        function CloseReciboDialog() {
+            $("#iFrameRecibo").attr("src", "about:blank");
+            dialogRecibo.dialog("close");
+        }
+
+        function ClearDialogAbrirMembroGLP() {
+            ClearNotify();
+            $("#pnlResultadoBuscaConsultaMembro").html("");
+            $("#frmConsultaMembro #Nome").val("");
+            $("#frmConsultaMembro #NumeroAfiliacao").val("");
+            try {
+                $("#frmConsultaMembro #NumeroAfiliacao")[0].focus();
+            } catch (e) {
+
+            }
+        }
+
+        function VendaAbrirVisitante() {
+
+        }
+
+        function redirectToURL(url) {
+            window.location.href = url;
+        }
+
+        function ShowNotify(type, title, message, parentObj) {
+            parentObj = (typeof parentObj === 'undefined') ? 'main' : parentObj;
+
+            var notifyStr = "" +
+                "<div class=\"alert alert-" + type + " fade in\">" +
+                "    <a class=\"close\" data-dismiss=\"alert\" href=\"#\">×</a>" +
+                "    <h4 class=\"alert-heading\">" + title + "</h4>" +
+                message +
+                "</div>";
+
+            $("#" + parentObj).prepend(notifyStr).show(); //'slow'
+
+            //try {
+            //    $('html,body').animate({
+            //        scrollTop: $(".alert").offset().top
+            //    }, 'fast');
+            //} catch (e) {
+
+            //}
+        }
+
+        function ShowProgress(parentObj) {
+            var strShowProgress = "" +
+                "<div class=\"progress\">" +
+                "    <div class=\"progress progress-striped\">" +
+                "        <div class=\"progress-bar bg-color-blue active\" role=\"progressbar\" style=\"width: 100%\"></div>" +
+                "    </div>" +
+                "</div>";
+
+            $("#" + parentObj).prepend(strShowProgress).show('slow');
+        }
+
+        function HideProgress() {
+            $(".progress").remove();
+        }
+
+        function ShowError(message) {
+            ShowNotify('danger', 'Falha no sistema', message);
+        }
+
+        function ShowWarning(message) {
+            ShowNotify('warning', 'Atenção', message);
+        }
+
+        function ShowBloqueioPermissao(parentObj) {
+            ClearNotify();
+            ShowNotify('info', 'Bloqueio de permissão', 'Este usuário não tem acesso a essa operação.', parentObj);
+        }
+
+        function OpenFullDialog() {
+            dialogFull.dialog("open");
+            dialogFull.dialog("moveToTop");
+            $("body").css({ overflow: 'hidden' });
+
+            $("#btnPrintFullDialog").hide();
+        }
+
+        function CloseFullDialog() {
+            dialogFull.dialog("close");
+        }
+
+        function OnBeginForm() {
+            blnLoadingShowScroll = $("body").css("overflow") != "hidden";
+
+            $("body").css({ overflow: 'hidden' });
+            dialogLoading.dialog("open");
+            dialogLoading.dialog("moveToTop");
+        }
+
+        function OnCompleteForm() {
+            dialogLoading.dialog("close");
+        }
+
+        function OpenImagemDialog(title, imagem) {
+            $("#myModalImagemTitle").text(title);
+            $("#myModalImagemSRC").attr("src", imagem);
+            dialogImagem.dialog("open");
+        }
+
+        function CloseDialogImagem() {
+            dialogImagem.dialog("close");
+        }
+
+        function OpenDialogExcluir(title, evalFunction) {
+
+            dialogExcluirEval = evalFunction;
+
+            $("#myModalExcluirTitle").html(title);
+
+            dialogExcluir.dialog("open");
+            dialogExcluir.dialog("moveToTop");
+        }
+
+        function CloseDialogExcluir() {
+            dialogExcluir.dialog("close");
+        }
+
+        function ConfirmaDialogExcluir(obj) {
+            dialogExcluir.dialog("close");
+
+            if (dialogExcluirEval != null) {
+                eval(dialogExcluirEval);
+                dialogExcluirEval = null;
+            }
+        }
+
+        function ClearNotify() {
+            $(".alert").remove();
+            $(".alert-warning .alert-danger .fade .in").remove();
+            $(".alert-success .alert-danger .fade .in").remove();
+            $(".alert-danger .alert-danger .fade .in").remove();
+        }
+
+        function stripVowelAccent(str) {
+            var rExps = [
+                { re: /[\xC0-\xC6]/g, ch: 'A' },
+                { re: /[\xE0-\xE6]/g, ch: 'a' },
+                { re: /[\xC8-\xCB]/g, ch: 'E' },
+                { re: /[\xE8-\xEB]/g, ch: 'e' },
+                { re: /[\xCC-\xCF]/g, ch: 'I' },
+                { re: /[\xEC-\xEF]/g, ch: 'i' },
+                { re: /[\xD2-\xD6]/g, ch: 'O' },
+                { re: /[\xF2-\xF6]/g, ch: 'o' },
+                { re: /[\xD9-\xDC]/g, ch: 'U' },
+                { re: /[\xF9-\xFC]/g, ch: 'u' },
+                { re: /[\xD1]/g, ch: 'N' },
+                { re: /[\xF1]/g, ch: 'n' }
+            ];
+
+            for (var i = 0, len = rExps.length; i < len; i++)
+                str = str.replace(rExps[i].re, rExps[i].ch);
+
+            return str;
+        }
+
+        function AtualizarMembroGLP(Id, pnlUpdate, fcCallBack) {
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'OrganismoAfiliado/Membro/AtualizacaoSOA',
+                data: { Id: Id },
+                beforeSend: function () {
+                    $("#" + pnlUpdate).html("<a href=\"javascript:void(0);\" class=\"btn bg-color-red txt-color-white\"><i class=\"fa fa-gear fa-spin\"></i></a>");
+                },
+                success: function (data) {
+                    $("#" + pnlUpdate).html("<a href=\"javascript:void(0);\" class=\"btn bg-color-blue txt-color-white\"><i class=\"fa fa-check\"></i></a>");
+                    if (fcCallBack != undefined) {
+                        eval(fcCallBack + "(data)");
+                    }
+                },
+                error: function (xhr, st, str) {
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                    $("#" + pnlUpdate).html("<a href=\"javascript:void(0);\" class=\"btn bg-color-blueLight txt-color-white\"><i class=\"fa fa-times\"></i></a>");
+                },
+                complete: function () {
+
+                }
+            });
+        }
+
+        function SuprimentoRelatorioEstoqueAtual() {
+            $(".alert").remove();
+
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'Suprimento/Relatorio/EstoqueAtual',
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    if (data.success == undefined) {
+                        $("#myModalFullContent").html(data);
+                        OpenFullDialog();
+                    } else {
+                        ShowNotify('danger', 'Suprimento - Relatório Estoque Atual', data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+        }
+
+        function SuprimentoRelatorioAvisoEstoqueMinimo() {
+            $(".alert").remove();
+
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'Suprimento/Relatorio/AvisoEstoqueMinimo',
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    if (data.success == undefined) {
+                        $("#myModalFullContent").html(data);
+                        OpenFullDialog();
+                    } else {
+                        ShowNotify('danger', 'Suprimento - Relatório Aviso de Estoque Mínimo', data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+        }
+
+        function SuprimentoRelatorioInventario() {
+            $(".alert").remove();
+
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'Suprimento/Relatorio/Inventario',
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    if (data.success == undefined) {
+                        $("#myModalFullContent").html(data);
+                        OpenFullDialog();
+                    } else {
+                        ShowNotify('danger', 'Suprimento - Relatório Inventario', data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+        }
+
+        function BibliotecaRelatorioItensEmprestados() {
+            $(".alert").remove();
+
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'Biblioteca/Relatorio/ItensEmprestados',
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    if (data.success == undefined) {
+                        $("#myModalFullContent").html(data);
+                        OpenFullDialog();
+                    } else {
+                        ShowNotify('danger', 'Biblioteca - Relatório Itens Emprestados', data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+        }
+
+        function OrganismoAfiliadoRelatorioRelacaoBens() {
+            $(".alert").remove();
+
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'OrganismoAfiliado/Relatorio/Inventario',
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    if (data.success == undefined) {
+                        $("#myModalFullContent").html(data);
+                        OpenFullDialog();
+                    } else {
+                        ShowNotify('danger', 'Organismo Afiliado - Relatório Relação de BEns', data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+        }
+
+        function BibliotecaRelatorioListagemGeral() {
+            $(".alert").remove();
+
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'Biblioteca/Relatorio/ListagemGeral',
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    if (data.success == undefined) {
+                        $("#myModalFullContent").html(data);
+                        OpenFullDialog();
+                    } else {
+                        ShowNotify('danger', 'Biblioteca - Relatório Listagem Geral', data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+        }
+
+        function IncluirAutorizacaoTemplo(objButton) {
+            ClearNotify();
+            $("#frmAutorizarTemplo button").attr("disabled", "disabled");
+
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'OrganismoAfiliado/AutorizarTemplo/Gerar',
+                data: $.param($("#frmAutorizarTemplo").serializeArray()),
+                beforeSend: function () {
+                    ShowProgress('frmAutorizarTemplo');
+                },
+                success: function (data) {
+                    $("#pnlEntradaTemploNova").html(data);
+                },
+                error: function (xhr, st, str) {
+                    ClearNotify();
+                    ShowNotify('danger', 'Recebedoria - Autorização Templo', MsgNaoFoiPossivelCompletarOperacao, 'frmAutorizarTemplo');
+                },
+                complete: function () {
+
+                }
+            });
+        }
+
+        function ListaEntradaTemplo(todos) {
+            ClearNotify();
+
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'OrganismoAfiliado/AutorizarTemplo/Listar',
+                data: { todos: todos },
+                beforeSend: function () {
+                    $("#pnlEntradaTemploListar").html("");
+                    ShowProgress('pnlEntradaTemploListar');
+                },
+                success: function (data) {
+                    $("#pnlEntradaTemploListar").html(data);
+                },
+                error: function (xhr, st, str) {
+                    ClearNotify();
+                    ShowNotify('danger', 'Recebedoria - Autorização Templo', MsgNaoFoiPossivelCompletarOperacao, 'pnlEntradaTemploListar');
+                },
+                complete: function () {
+
+                }
+            });
+        }
+
+        function LimparAutorizacaoTemplo() {
+            $("#MembroAfiliacaoNumero").val("");
+            $("#MembroNome").val("");
+            $("#OficialIdSelect").val("");
+            $("#OficialIdSelect").trigger("change");
+            $("#MembroAfiliacaoNumero").focus();
+        }
+
+        function EmitirReciboEntradaTemplo(Id) {
+            $("#iFrameReciboAutorizacaoTemplo").attr("src", "about:blank");
+            $("#AutorizacaoTemploId").val(Id);
+            $("#frmReciboAutorizacaoTemplo").submit();
+        }
+
+        function OpenReciboComprovanteQuitacao(AfiliacaoNumero, Nome) {
+            ClearNotify();
+            OnBeginForm();
+
+            $("#iFrameReciboAutorizacaoTemplo").attr("src", "about:blank");
+            $("#frmReciboComprovanteQuitacao #NumeroAfiliacao").val(AfiliacaoNumero);
+            $("#frmReciboComprovanteQuitacao #Nome").val(Nome);
+            $("#frmReciboComprovanteQuitacao").submit();
+        }
+
+        function LoadCalendario(AnoMes, loadModal) {
+            loadModal = typeof loadModal !== 'undefined' ? loadModal : true;
+
+            if (loadModal) {
+                ClearNotify();
+            }
+
+            $("#pnlCalendario").html("");
+
+            if (AnoMes != "") {
+
+                $.ajax({
+                    type: 'POST',
+                    url: rootURL + 'OrganismoAfiliado/Atividade/Listar',
+                    data: { AnoMes: AnoMes },
+                    beforeSend: function () {
+                        if (loadModal) {
+                            ShowProgress('pnlCalendario');
+                        }
+                    },
+                    success: function (data) {
+                        OnCompleteForm();
+
+                        $("#pnlCalendario").html(data);
+                    },
+                    error: function (xhr, st, str) {
+                        OnCompleteForm();
+                        ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                    },
+                    complete: function () {
+
+                    }
+                });
+            } else {
+
+            }
+        }
+
+        function AgendamentoEmitirRecibo(MovimentoId) {
+            $.ajax({
+                type: 'GET',
+                data: {
+                    MovimentoId: MovimentoId
+                },
+                url: rootURL + 'Tesouraria/PagamentoRecebimento/EmitirRecibo',
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    if (data.success == undefined) {
+                        $("#myModalFullContent").html(data);
+                        OpenFullDialog();
+
+                        $("#btnPrintFullDialog").hide();
+                    } else {
+                        ShowNotify('danger', 'Tesouraria - Emitir Recibo', data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+        }
+
+        function UpdateProgressBar(id, percent) {
+            $("#" + id).attr("aria-valuetransitiongoal", percent);
+            $("#" + id).attr("aria-valuenow", percent);
+            $("#" + id).css("width", percent + "%");
+            $("#" + id).text(percent + "%");
+        }
+    </script>
+    <iframe id="iFrameRecibo" name="iFrameRecibo" src="about:blank" frameborder="0" allowtransparency="true" style="width:1px; height:1px; display:none;"></iframe>
+    <iframe id="iFrameReciboOrdemVenda" name="iFrameReciboOrdemVenda" src="about:blank" frameborder="0" allowtransparency="true" style="width:1px; height:1px; display:none;"></iframe>
+    <iframe id="iFrameReciboAutorizacaoTemplo" name="iFrameReciboAutorizacaoTemplo" src="about:blank" frameborder="0" allowtransparency="true" style="width:1px; height:1px; display:none;"></iframe>
+    <iframe id="iFrameReciboComprovanteQuitacao" name="iFrameReciboComprovanteQuitacao" src="about:blank" frameborder="0" allowtransparency="true" style="width:1px; height:1px; display:none;"></iframe>
+</body>
+</html>

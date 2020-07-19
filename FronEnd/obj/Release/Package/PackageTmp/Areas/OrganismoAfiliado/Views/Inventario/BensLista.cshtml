@@ -1,0 +1,51 @@
+﻿@model List<SAL.MVC.Areas.OrganismoAfiliado.Models.BensModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<table id="datatable_tabletools" class="table table-striped table-bordered table-hover" width="100%" style="display:none;">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Ambiente</th>
+            <th>Quantidade</th>
+            <th>Valor Estimado</th>
+            <th>&nbsp;</th>
+            <th>&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="line_@item.IdBem">
+                <td>@item.Nome</td>
+                <td>@item.AmbienteNome</td>
+                <td class="text-right">@item.Quantidade</td>
+                <td class="text-right">@item.ValorEstimado</td>
+                <td class="text-center" data-hide="print"><a href="javascript:void(0);" onclick="Editar(@item.IdBem);" class="btn btn-default"><i class="fa fa-edit"></i> Editar</a></td>
+                <td class="text-center" data-hide="print"><a href="javascript:void(0);" onclick="Apagar(@item.IdBem, '@item.Nome');" class="btn btn-default"><i class="fa fa-trash-o"></i> Apagar</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $('#datatable_tabletools').dataTable({        
+        "preDrawCallback": function () {
+            // Initialize the responsive datatables helper once.
+            if (!responsiveHelper_datatable_tabletools) {
+                responsiveHelper_datatable_tabletools = new ResponsiveDatatablesHelper($('#datatable_tabletools'), breakpointDefinition);
+            }
+        },
+        "rowCallback": function (nRow) {
+            try {
+                responsiveHelper_datatable_tabletools.createExpandIcon(nRow);
+            } catch (e) {
+
+            }   
+        },
+        "drawCallback": function (oSettings) {
+            $("#datatable_tabletools").show();
+            responsiveHelper_datatable_tabletools.respond();
+        }
+    });
+</script>

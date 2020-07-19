@@ -1,0 +1,87 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.BensModel
+<div role="content">
+
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body no-padding">
+
+        <!-- Error states for elements -->
+        <form class="smart-form" id="frmBem" onsubmit="$('#btnConfirmar').click(); return false;">
+            @Html.HiddenFor(m => m.IdBem)
+            <fieldset>
+                <section>
+                    <label class="label">
+                        @Html.LabelFor(m => m.AmbienteIdSelect)
+                    </label>
+                    <label class="select">
+                        @Html.DropDownListFor(m => m.AmbienteIdSelect, Model.AmbientesLista, "Selecione")
+                        <i></i>
+                    </label>
+                </section>
+                <section>
+                    <label class="label">
+                        @Html.LabelFor(m => m.Nome)
+                        <span class="font-xs text-danger">*</span>
+                    </label>
+                    <label class="input">
+                        @Html.TextBoxFor(m => m.Nome)
+                    </label>
+                </section>
+                <div class="row">
+                    <section class="col col-6">
+                        <label class="label">
+                            @Html.LabelFor(m => m.Quantidade)
+                            <span class="font-xs text-danger">*</span>
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.Quantidade, new { @style  = "number" })
+                        </label>
+                    </section>
+                    <section class="col col-6">
+                        <label class="label">
+                            @Html.LabelFor(m => m.ValorEstimado)
+                            <span class="font-xs text-danger">*</span>
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.ValorEstimado, new { onkeypress = "return isDecimal(event);", onkeyup = "return retiraPontos(event);" })
+                        </label>
+                    </section>
+                </div>
+                <section>
+                    <label class="label">
+                        @Html.LabelFor(m => m.Observacao)
+                    </label>
+                    <label class="textarea">
+                        @Html.TextAreaFor(m => m.Observacao, new { rows="3" })
+                    </label>
+                </section>
+            </fieldset>
+        </form>
+        <!--/ Error states for elements -->
+    </div>
+    <!-- end widget content -->
+</div>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmBem"))
+@if (Model.IdBem == 0)
+{
+    <script>
+
+    </script>
+}
+<script>
+    $("#IdBem").val('@Model.IdBem');
+</script>
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+         LoadList();
+    </script>
+}
+<script>
+    $("#btnConfirmar").removeAttr("disabled");
+</script>

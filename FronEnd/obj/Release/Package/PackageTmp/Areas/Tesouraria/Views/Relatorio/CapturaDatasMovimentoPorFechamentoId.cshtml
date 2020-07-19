@@ -1,0 +1,22 @@
+﻿@model List<SAL.MVC.Areas.Tesouraria.Models.RelatorioCaixaFiltro>
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped table-hover" width="100%">
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr style="cursor:pointer;" onclick="FiltroDataEspecifica('@item.Data.ToString("yyyy-MM-dd")')">
+                    <td class="text-center">@item.Data.ToString("dd/MM/yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <script>
+        $("#txtDataInicial").val('@(Model.Min(m => m.Data).ToString("yyyy-MM-dd"))');
+        $("#txtDataFinal").val('@(Model.Max(m => m.Data).ToString("yyyy-MM-dd"))');
+    </script>
+}
+else
+{
+    <text>Não existem movimentos para a referência selecionada.</text>
+}

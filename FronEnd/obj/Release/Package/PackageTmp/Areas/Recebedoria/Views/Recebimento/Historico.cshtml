@@ -1,0 +1,167 @@
+﻿@{
+    ViewBag.Title = "SAL - Histórico de Recebedoria";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+    DateTime dtSemana = dtAtual.AddDays(-7);
+    DateTime dtQuinzena = dtAtual.AddDays(-15);
+    DateTime dtMes = new DateTime(dtAtual.Year, dtAtual.Month, 1);
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-money fa-fw "></i>
+                    Recebedoria | Histórico
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <article class="col-sm-12 col-md-12 col-lg-12">
+                <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+                    <div role="content" style="border-width: 1px 1px 1px 1px; border-style: solid; border-top-color: #CCC!important;">
+                        <div class="widget-body no-padding">
+                            <form id="frmConsultaHistorico" class="smart-form" novalidate="novalidate" onsubmit="return false">
+                                <header>
+                                    Defina o filtro
+                                </header>
+                                <fieldset>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="input">
+                                                <i class="icon-append fa fa-user"></i>
+                                                <input type="text" name="txtTexto" id="txtTexto" placeholder="Nome do Comprador ou Número de Afiliação ou Número da Venda ou Código do Produto/Contribuição" onkeypress="OnEnter(event, 'SubmitFiltroHistorico')">
+                                            </label>
+                                        </section>
+                                        <section class="col col-6">
+                                            <label class="select">
+                                                <select class="form-control" id="FormaPagamentoId" name="FormaPagamentoId">
+                                                    <option value="0">Selecione</option>
+                                                    @foreach (SAL.MVC.Areas.Recebedoria.Models.FormaPagamentoModel item in ViewBag.ListaFormaPagamento)
+                                                    {
+                                                        <option value="@item.Id">@item.Nome</option>
+                                                    }
+                                                </select>
+                                                <i></i>
+                                            </label>
+                                            <div id="pnlDatasFechamento" style="display:none; height:150px; overflow-y:scroll; border-left:1px solid #BDBDBD; border-bottom:1px solid #BDBDBD; border-right:1px solid #BDBDBD; width:100%;">
+
+                                            </div>
+                                        </section>
+                                    </div>
+
+                                        <div class="row">
+                                            <section class="col col-6">
+                                                <label class="input">
+                                                    <i class="icon-append fa fa-calendar"></i>
+                                                    <input type="date" name="txtDataInicial" id="txtDataInicial" placeholder="Data Inicial" class="hasDatepicker" onkeypress="OnEnter(event, 'SubmitFiltroHistorico')">
+                                                </label>
+                                            </section>
+                                            <section class="col col-6">
+                                                <label class="input">
+                                                    <i class="icon-append fa fa-calendar"></i>
+                                                    <input type="date" name="txtDataFinal" id="txtDataFinal" placeholder="Data Final" class="hasDatepicker" onkeypress="OnEnter(event, 'SubmitFiltroHistorico')">
+                                                </label>
+                                            </section>
+                                        </div>
+                                </fieldset>
+                                <footer>
+                                    <button type="button" class="btn btn-success" onclick="SubmitFiltroHistorico();">
+                                        Buscar
+                                    </button>
+                                    <button type="button" class="btn btn-default" onclick="FiltroMes();">
+                                        Este Mês
+                                    </button>
+                                    <button type="button" class="btn btn-default" onclick="FiltroQuizena();">
+                                        Esta Quinzena
+                                    </button>
+                                    <button type="button" class="btn btn-default" onclick="FiltroSemana();">
+                                        Esta Semana
+                                    </button>
+                                    <button type="button" class="btn btn-default" onclick="FiltroHoje();">
+                                        Hoje
+                                    </button>
+                                </footer>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div class="row" id="pnlHistoricoResult" style="display:none;">
+            <article class="col-sm-12 col-md-12 col-lg-12">
+                <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+                    <div role="content" style="border-width: 1px 1px 1px 1px; border-style: solid; border-top-color: #CCC!important;">
+                        <div class="widget-body no-padding" id="pnlHistoricoContent">
+
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>    
+</div>
+<script>
+    $(document).ready(function () {
+        $("#txtTexto").focus();
+    });
+
+    function FiltroMes() {
+        $("#txtDataInicial").val('@dtMes.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        SubmitFiltroHistorico();
+    }
+
+    function FiltroQuizena() {
+        $("#txtDataInicial").val('@dtQuinzena.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        SubmitFiltroHistorico();
+    }
+
+    function FiltroSemana() {
+        $("#txtDataInicial").val('@dtSemana.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        SubmitFiltroHistorico();
+    }
+
+    function FiltroHoje() {
+        $("#txtDataInicial").val('@dtAtual.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        SubmitFiltroHistorico();
+    }
+
+    function SubmitFiltroHistorico() {
+        $.ajax({
+            type: 'POST',
+            data: {
+                Texto: $("#frmConsultaHistorico #txtTexto").val(),
+                DataInicial: $("#frmConsultaHistorico #txtDataInicial").val(),
+                DataFinal: $("#frmConsultaHistorico #txtDataFinal").val(),
+                FormaPagamentoId: $("#frmConsultaHistorico #FormaPagamentoId").val()
+            },
+            url: rootURL + 'Recebedoria/Recebimento/BuscaHistorico',
+            beforeSend: function () {
+                $("#pnlHistoricoResult").hide();
+
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlHistoricoResult").show();
+                $("#pnlHistoricoContent").html(data);
+                $("[rel=popover-hover]").popover({ trigger: "hover" });
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+</script>

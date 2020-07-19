@@ -1,0 +1,50 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.AmbientesModel
+<div role="content">
+
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body no-padding">
+
+        <!-- Error states for elements -->
+        <form class="smart-form" id="frmAmbiente" onsubmit="$('#btnConfirmar').click(); return false;">
+            @Html.HiddenFor(m => m.IdAmbiente)
+            <fieldset>
+                <section>
+                    <label class="label">
+                        @Html.LabelFor(m => m.Nome)
+                        <span class="font-xs text-danger">*</span>
+                    </label>
+                    <label class="input">
+                        @Html.TextBoxFor(m => m.Nome)
+                    </label>
+                </section>
+            </fieldset>
+        </form>
+        <!--/ Error states for elements -->
+    </div>
+    <!-- end widget content -->
+</div>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmAmbiente"))
+@if (Model.IdAmbiente == 0)
+{
+    <script>
+
+    </script>
+}
+<script>
+    $("#IdAmbiente").val('@Model.IdAmbiente');
+</script>
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+         LoadList();
+    </script>
+}
+<script>
+    $("#btnConfirmar").removeAttr("disabled");
+</script>

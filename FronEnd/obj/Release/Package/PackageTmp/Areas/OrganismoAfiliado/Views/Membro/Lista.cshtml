@@ -1,0 +1,133 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.MembroListaModel
+@{
+    Tropical.Infrastructure.Model.User user = null;
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado") != null)
+    {
+        user = (Tropical.Infrastructure.Model.User)Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado");
+    }
+
+    SAL.MVC.Models.UsuarioClientePerfilModel perfilSelecionado = null;
+
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado") != null)
+    {
+        perfilSelecionado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    }
+
+}
+<div class="row">
+    <div class="col-md-12" style="margin-bottom:10px;">
+        <div class="text-right">
+            @if (perfilSelecionado.SomenteLeitura == false && perfilSelecionado.Atendimento == false)
+            {
+                <button type="button" class="btn btn-primary" onclick="AbrirModalNovoMembro();">
+                    Incluir Novo Membro
+                </button>
+            }
+            <div class="btn-group">
+                <button class="btn btn-default bg-color-blueLight txt-color-blueDark dropdown-toggle" data-toggle="dropdown">
+                    Todos (@(ViewBag.TotalAtivoInativo + ViewBag.TotalDesligado)) <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu multi-level">
+                    <li>
+                        <a href="javascript:void(0);" onclick="ExecutaFiltroMembroBusca();"><i class="glyphicon glyphicon-filter"></i> Filtrar</a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" onclick="ExecutaExportacaoMembroBusca();"><i class="fa fa-gear"></i> Exportar</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                    Ativos/Inativos (@ViewBag.TotalAtivoInativo) <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu multi-level">
+                    <li>
+                        <a href="javascript:void(0);" onclick="ExecutaFiltroMembroBusca(true);"><i class="glyphicon glyphicon-filter"></i> Filtrar</a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" onclick="ExecutaExportacaoMembroBusca(true);"><i class="fa fa-gear"></i> Exportar</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                    Desligados (@ViewBag.TotalDesligado) <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu multi-level">
+                    <li>
+                        <a href="javascript:void(0);" onclick="ExecutaFiltroMembroBusca(false);"><i class="glyphicon glyphicon-filter"></i> Filtrar</a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" onclick="ExecutaExportacaoMembroBusca(false);"><i class="fa fa-gear"></i> Exportar</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.Lista != null && Model.Lista.Any())
+            {
+    <table id="datatable_tabletools" class="table table-striped table-bordered table-hover" width="100%" style="display:none;">
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                <th data-class="expand">Chave</th>
+                <th>Nome</th>
+                @if (perfilSelecionado.Cliente.QuantidadeOA > 1)
+                {
+                    <th data-hide="phone" class="text-center">Sigla O.A.</th>
+                }
+                <th data-hide="phone" class="text-center">GLP ativo até</th>
+                <th data-hide="phone" class="text-center">TOM ativo até </th>
+                <th data-hide="phone" class="text-center">O.A. ativo até</th>
+                <th data-hide="phone" class="text-center">Data SOA</th>
+                @if ((SAL.MVC.Util.GLP.TipoOrganismoAfiliado)perfilSelecionado.Cliente.OrganismoAfiliadoTipoId == SAL.MVC.Util.GLP.TipoOrganismoAfiliado.AtriumMartinista || (SAL.MVC.Util.GLP.TipoOrganismoAfiliado)perfilSelecionado.Cliente.OrganismoAfiliadoTipoId == SAL.MVC.Util.GLP.TipoOrganismoAfiliado.HeptadaMartinista)
+                {
+                    <th data-hide="phone" class="text-center">CFD</th>
+                }
+                <th class="text-center">Situação</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Lista)
+            {
+                <tr id="line_@item.Id">
+                    @{
+                        Html.RenderPartial("ListaLinha", item);
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+    <script>
+        $('#datatable_tabletools').dataTable({
+            "order": [[2, "asc"]],
+            "ordering": true,            
+            "preDrawCallback": function () {
+                // Initialize the responsive datatables helper once.
+                if (!responsiveHelper_datatable_tabletools) {
+                    responsiveHelper_datatable_tabletools = new ResponsiveDatatablesHelper($('#datatable_tabletools'), breakpointDefinition);
+                }
+            },
+            "rowCallback": function (nRow) {
+            try {
+                responsiveHelper_datatable_tabletools.createExpandIcon(nRow);
+            } catch (e) {
+
+            }   
+            },
+            "drawCallback": function (oSettings) {
+                $("#datatable_tabletools").show();
+                responsiveHelper_datatable_tabletools.respond();
+
+                if ("desktop" === thisDevice) {
+                    $("[rel=tooltip]").tooltip();
+                }
+            }
+        });
+    </script>
+                        }
+                        else
+                        {
+                            @Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "ListaMembro"))
+                        }

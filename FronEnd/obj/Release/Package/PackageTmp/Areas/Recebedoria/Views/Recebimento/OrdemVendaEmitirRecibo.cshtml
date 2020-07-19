@@ -1,0 +1,141 @@
+﻿@model SAL.MVC.Areas.Recebedoria.Models.ReciboOrdemVendaModel
+@{
+    int contadorItem = 1;
+}
+<html>
+<head>
+    <title>Recibo</title>
+    <base href="@Url.Content("~")">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script>
+        if (!window.jQuery) {
+            document.write('<script src="@Url.Content("~/js/libs/jquery-2.0.2.min.js")" ><\/script>');
+        }
+    </script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script>
+        if (!window.jQuery.ui) {
+            document.write('<script src="@Url.Content("~/js/libs/jquery-ui-1.10.3.min.js")" ><\/script>');
+        }
+    </script>
+    <style>
+        @@page {
+            margin: 0;
+            padding: 0;
+            size: 80mm 0mm 5.5mm 4mm;
+            size: portrait;
+        }
+
+        html, body {
+            margin:0;
+            padding:0;
+        }
+        .cabecalho {
+            font-family: Arial;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .texto {
+            font-family: Arial;
+            font-size: 9px;
+        }
+
+        .texto_orientacao {
+            font-family: Arial;
+            font-size: 16px;
+        }
+
+        .rodape {
+            font-family: Arial;
+            font-size: 8px;
+        }
+
+        .titulo {
+            font-family: Arial;
+            font-weight: bold;
+            font-size: 9px;
+        }
+
+        .total {
+            font-family: Arial;
+            font-weight: bold;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    @if (Model != null)
+    {<br /><br />
+           <table width="100%">
+               @if (string.IsNullOrEmpty(Model.OrganismoAfiliado.Cliente.Logotipo) == false)
+               {
+                   <tr>
+                       <td align="center" colspan="2"><img src="@(Model.OrganismoAfiliado.Cliente.Logotipo)" width="50" /></td>
+                   </tr>
+               }
+               <tr>
+                   <td align="center" colspan="2" class="cabecalho">@(Model.OrganismoAfiliado.Cliente.Nome.ToUpper())</td>
+               </tr>
+               <tr>
+                   <td align="left" class="texto">CNPJ @(String.Format(@"{0:00\.000\.000\/0000\-00}", Convert.ToInt64(Model.OrganismoAfiliado.Cliente.CNPJ)))</td>
+                   <td align="right" class="texto">@Model.OrganismoAfiliado.Cliente.Email</td>
+               </tr>
+               <tr>
+                   <td align="center" colspan="2" class="texto">@(Model.OrganismoAfiliado.Cliente.Endereco), @(Model.OrganismoAfiliado.Cliente.EnderecoNumero) @Model.OrganismoAfiliado.Cliente.EnderecoBairro - (@Model.OrganismoAfiliado.Cliente.Telefone1DDD) @Model.OrganismoAfiliado.Cliente.Telefone1Numero</td>
+               </tr>
+               <tr>
+                   <td align="center" colspan="2" class="texto">CEP @(String.Format(@"{0:00000-000}", Convert.ToInt64(Model.OrganismoAfiliado.Cliente.EnderecoCEP)))@(string.IsNullOrEmpty(Model.OrganismoAfiliado.Cliente.CaixaPostal) == false ? " - C.P. " + Model.OrganismoAfiliado.Cliente.CaixaPostal : "")</td>
+               </tr>
+               <tr>
+                   <td colspan="2" style="height: 10px;">
+                       <img src="img/spacer_print.png" style="height:10px; width:100%;" />
+                   </td>
+               </tr>
+               <tr>
+                   <td align="left" class="texto">ORDEM DE VENDA: @Model.OrdemVenda.Numero</td>
+                   <td align="right" class="texto">DATA: @Model.OrdemVenda.Data.ToString("dd/MM/yyyy HH:mm")</td>
+               </tr>
+               <tr>
+                   <td colspan="2" class="texto">
+                       COMPRADOR: @Html.Raw(Model.OrdemVenda.Comprador)
+                   </td>
+               </tr>
+               <tr>
+                   <td colspan="2" style="height: 10px;">
+                       <img src="img/spacer_print.png" style="height:10px; width:100%;" />
+                   </td>
+               </tr>
+           </table>
+        <table width="100%">
+            <tr>
+                <td colspan="4" class="rodape">GERADO POR: @Model.OrdemVenda.RecebidoPor.ToUpper()</td>
+            </tr>
+            <tr>
+                <td colspan="4" align="center" class="texto_orientacao">Apresente essa Ordem de Venda à recebedoria para efetivar o pagamento.</td>
+            </tr>
+            <tr>
+                <td colspan="4"><br /><br />&nbsp;</td>
+            </tr>
+        </table>
+    }
+    <script>
+        $(document).ready(function () {
+            try {
+                parent.OnCompleteForm();
+            } catch (e) {
+
+            }
+
+            window.print();
+
+            //try {
+            //    parent.CloseReciboDialog();
+            //} catch (e) {
+
+            //}            
+        });
+    </script>
+</body>
+</html>

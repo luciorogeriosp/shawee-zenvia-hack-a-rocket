@@ -1,0 +1,324 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.CalendarioItemModel
+    <form class="smart-form" id="frmCalendarioCriar">
+        <header>
+            Incluir Atividade
+        </header>
+        <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+        <input type="hidden" id="Iniciacao" name="Iniciacao" value="@Model.Iniciacao.ToString().ToLower()" />
+        <fieldset>
+            <div class="row">
+                <section class="col col-5">
+                    <label class="label">
+                        <label for="DataDia">Data </label>
+                        <span class="font-xs text-danger">*</span>
+                        <note id="pnlDiaSemana"></note>
+                    </label>
+                    <label class="input">
+                        <input type="text" name="DataDia" id="DataDia" value="@Model.DataDia" style="float:left; width:40px;" maxlength="2" onchange="VerificaDiaSemana()" onkeypress="return isNumber(event);">
+                        <span style="float:left;">&nbsp;/&nbsp;</span>
+                        <label class="select" style="float:left; width:120px;">
+                            <select id="DataMes" name="DataMes" onchange="VerificaDiaSemana()">
+                                <option value="">Selecione</option>
+                                @for (int i = 1; i <= 12; i++)
+                                {
+                                    <option value="@i.ToString().PadLeft(2, '0')" @(Convert.ToInt32(Model.DataMes) == i ? " selected" : "")>@SAL.MVC.Helpers.Constantes.DescricaoMes(i)</option>
+                                }
+                            </select>
+                            <i></i>
+                        </label>
+                        <span style="float:left;">&nbsp;/&nbsp;</span>
+                        <label class="select" style="float:left; width:120px;">
+                            <select id="DataAno" name="DataAno" onchange="VerificaDiaSemana()">
+                                <option value="">Selecione</option>
+                                @for (int i = DateTime.Now.AddYears(-21).Year; i <= DateTime.Now.AddYears(1).Year; i++)
+                                {
+                                    <option value="@i.ToString()" @(Convert.ToInt32(Model.DataAno) == i || (string.IsNullOrEmpty(Model.DataAno) && i == DateTime.Now.Year) ? " selected" : "")>@i</option>
+                                }
+                            </select>
+                            <i></i>
+                        </label>
+                    </label>
+                </section>
+                <section class="col col-2">
+                    <label class="label">
+                        <label for="Horario">Horário</label>
+                        <span class="font-xs text-danger">*</span>
+                    </label>
+                    <label class="input">
+                        <input id="Horario" name="Horario" data-mask="99:99" value="@Model.Horario">
+                    </label>
+                </section>
+                <section class="col col-5">
+                    <label class="label">
+                        <label for="TipoId">Tipo de Atividade</label>
+                        <span class="font-xs text-danger">*</span>
+                    </label>
+                    <label class="select">
+                        <select id="TipoId" name="TipoId" onchange="SelecionaTipo();">
+                            @if (Model.TipoLista != null && Model.TipoLista.Count() > 1)
+                            {
+                                <option value="">Selecione</option>
+                            }
+                            @foreach (var item in Model.TipoLista)
+                            {
+                                <option value="@item.Value" @(Model.TipoId == item.Value ? " selected" : "")>@item.Text</option>
+                            }
+                        </select>
+                        <i></i>
+                    </label>
+                </section>
+            </div>
+            <section @(Html.Raw(Model.OrganismoAfiliadoLista != null && Model.OrganismoAfiliadoLista.Count() == 1 ? " style=\"display:none;\"" : ""))>
+                <label class="label">
+                    <label for="OrganismoAfiliadoId">Equipe Responsável</label>
+                </label>
+                <label class="select">
+                    <select id="OrganismoAfiliadoId" name="OrganismoAfiliadoId" onchange="SelecionaTipo();">
+                        @if (Model.OrganismoAfiliadoLista != null && Model.OrganismoAfiliadoLista.Count() > 1)
+                        {
+                            <option value="">Geral</option>
+                        }
+                        @foreach (var item in Model.OrganismoAfiliadoLista)
+                        {
+                            <option value="@item.Value" @(Model.OrganismoAfiliadoId == item.Value ? " selected" : "")>@item.Text</option>
+                        }
+                    </select>
+                    <i></i>
+                </label>
+            </section>
+            <section id="pnlClasse" @(Html.Raw(string.IsNullOrEmpty(Model.ClasseId) ? " style=\"display:none;\"" : ""))>
+                <label class="label">
+                    <label for="ClasseId">Classe</label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="select">
+                    <select id="ClasseId" name="ClasseId" onchange="SelecionaClasse();">
+                        <option value="">Selecione</option>
+                        @if (Model.ClasseLista != null && Model.ClasseLista.Count() > 0)
+                        {
+                            foreach (var item in Model.ClasseLista)
+                            {
+                                <option value="@item.Value" @(Model.ClasseId == item.Value ? " selected" : "")>@item.Text</option>
+                            }
+                        }
+                    </select>
+                    <i></i>
+                </label>
+            </section>
+            <section id="pnlManuscrito" @(Html.Raw(string.IsNullOrEmpty(Model.ClasseId) ? " style=\"display:none;\"" : ""))>
+                <label class="label">
+                    <label for="ManuscritoId">Manuscrito</label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="select">
+                    <select id="ManuscritoId" name="ManuscritoId">
+                        <option value="">Selecione</option>
+                        @if (Model.ManuscritoLista != null && Model.ManuscritoLista.Count() > 0)
+                        {
+                            foreach (var item in Model.ManuscritoLista)
+                            {
+                                <option value="@item.Value" @(Model.ManuscritoId == item.Value ? " selected" : "")>@item.Text</option>
+                            }
+                        }
+                    </select>
+                    <i></i>
+                    <p class="note">(#) indica que esse manuscrito já foi criado para a classe selecionada.</p>
+                </label>
+            </section>
+            <div class="row" id="pnlNomeAtividade" @(Html.Raw(string.IsNullOrEmpty(Model.ClasseId) == false ? " style=\"display:none;\"" : ""))>
+                @if ((Model.ExibirTitulo.HasValue == false && Model.ExibirResponsavel.HasValue == false) || (Model.ExibirTitulo.HasValue && Model.ExibirTitulo.Value && Model.ExibirResponsavel.HasValue && Model.ExibirResponsavel.Value))
+                {
+                    <section class="col col-6" id="pnlIniciacao" @(Html.Raw(Model.Iniciacao == false ? " style=\"display:none;\"" : ""))>
+                        <label class="label">
+                            <label for="IniciacaoId">Iniciação</label>
+                            <span class="font-xs text-danger">*</span>
+                        </label>
+                        <label class="select">
+                            <select id="IniciacaoId" name="IniciacaoId" onchange="SelecionaIniciacao();">
+                                <option value="">Selecione</option>
+                                @if (Model.IniciacaoLista != null && Model.IniciacaoLista.Count() > 0)
+                                {
+                                    foreach (var item in Model.IniciacaoLista)
+                                    {
+                                        <option value="@item.Value" @(Model.IniciacaoId == item.Value ? " selected" : "")>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                            <i></i>
+                        </label>
+                    </section>
+                    <section class="col col-6" id="pnlTitulo" @(Html.Raw(Model.Iniciacao ? " style=\"display:none;\"" : ""))>
+                        <label class="label">
+                            <label for="Titulo">Título</label>
+                        </label>
+                        <label class="input">
+                            <input type="text" id="Titulo" name="Titulo" value="@Model.Titulo" style="text-transform:uppercase;" list="Titulo_DataList" onchange="SelecionaResponsavel();">
+                            <datalist id="Titulo_DataList"></datalist>
+                        </label>
+                    </section>
+                    <section class="col col-6" id="pnlResponsavel">
+                        <label class="label">
+                            <label for="Responsavel">Membro Responsável</label>
+                        </label>
+                        <label class="input">
+                            <input type="text" id="Responsavel" name="Responsavel" value="@Model.Responsavel" list="Responsavel_DataList">
+                            <datalist id="Responsavel_DataList"></datalist>
+                        </label>
+                    </section>
+                }
+                else
+                {
+                    if ((Model.ExibirTitulo.HasValue && Model.ExibirTitulo.Value) || (Model.ExibirResponsavel.HasValue && Model.ExibirResponsavel.Value))
+                    {
+                        if (Model.ExibirTitulo.HasValue && Model.ExibirTitulo.Value && string.IsNullOrEmpty(Model.IniciacaoId))
+                        {
+                            <section id="pnlTitulo" class="col col-10">
+                                <label class="label">
+                                    <label for="Titulo">Título</label>
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="Titulo" name="Titulo" value="@Model.Titulo" style="text-transform:uppercase;" list="Titulo_DataList" onchange="SelecionaResponsavel();">
+                                    <datalist id="Titulo_DataList"></datalist>
+                                </label>
+                            </section>
+                            <section id="pnlResponsavel" style="display:none;">
+                                <label class="label">
+                                    <label for="Responsavel">Membro Responsável</label>
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="Responsavel" name="Responsavel" value="@Model.Responsavel" list="Responsavel_DataList">
+                                    <datalist id="Responsavel_DataList"></datalist>
+                                </label>
+                            </section>
+                        }
+                        if (Model.ExibirResponsavel.HasValue && Model.ExibirResponsavel.Value)
+                        {
+                            <section id="pnlTitulo" style="display:none;">
+                                <label class="label">
+                                    <label for="Titulo">Título</label>
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="Titulo" name="Titulo" value="@Model.Titulo" style="text-transform:uppercase;" list="Titulo_DataList" onchange="SelecionaResponsavel();">
+                                    <datalist id="Titulo_DataList"></datalist>
+                                </label>
+                            </section>
+                            <section id="pnlResponsavel" class="col col-10">
+                                <label class="label">
+                                    <label for="Responsavel">Membro Responsável</label>
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="Responsavel" name="Responsavel" value="@Model.Responsavel" list="Responsavel_DataList">
+                                    <datalist id="Responsavel_DataList"></datalist>
+                                </label>
+                            </section>
+                        }
+                    }
+                }
+            </div>
+            <section id="pnlLinkEvento" style="display:none;">
+                <label class="label">
+                    <label for="Link">Link do Evento</label>
+                </label>
+                <label class="input">
+                    <input type="text" id="Link" name="Link" value="@Model.Link">
+                </label>
+            </section>
+            <section id="pnlDescricao" style="display:none;">
+                <label class="label">
+                    <label for="Descricao">Descrição</label>
+                </label>
+                <label class="textarea">
+                    <textarea id="Descricao" name="Descricao" rows="7">@Model.Descricao</textarea>
+                </label>
+            </section>
+            <section>
+                <label class="checkbox">
+                    <input type="checkbox" id="SomenteMembros" name="SomenteMembros" value="true" @(Html.Raw(Model.SomenteMembros.HasValue && Model.SomenteMembros.Value ? " checked=\"checked\"" : "")) />
+                    <i></i>Somente Membros
+                </label>
+            </section>
+
+        </fieldset>
+        <footer>
+            <button type="submit" class="btn btn-success">
+                Gravar Dados
+            </button>
+            <button type="button" class="btn btn-default" onclick="AbrirFormulario();">
+                Nova Atividade
+            </button>
+        </footer>
+    </form>
+<!-- end widget content -->
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        if ($("#AnoMes option[value='@(Model.DataAno + "-" + Model.DataMes)']").length > 0) {
+            LoadCalendario($("#frmCalendarioFiltrar #AnoMes").val(), false);
+        } else {
+            $.ajax({
+                type: 'GET',
+                url: rootURL + 'OrganismoAfiliado/Atividade/JsonListaAnoMes',
+                beforeSend: function () {
+
+                },
+                success: function (data) {
+                    var dataList = $("#AnoMes");
+                    dataList.empty();
+                    dataList.append($("<option>Selecione</option>").attr("value", ""));
+
+                    if (data.lista.length) {
+                        for (var i = 0; i < data.lista.length; i++) {
+                            var opt = $("<option>" + data.lista[i].Text + "</option>").attr("value", data.lista[i].Id);
+                            dataList.append(opt);
+                        }
+
+                        $("#AnoMes option[value='@(Model.DataAno + "-" + Model.DataMes)']").prop("selected", "selected");
+                        LoadCalendario($("#frmCalendarioFiltrar #AnoMes").val(), false);
+                    }
+                },
+                error: function (xhr, st, str) {
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+
+                }
+            });
+
+        }
+    </script>
+}
+<script>
+    $("[data-mask]").each(function () { var a = $(this), b = a.attr("data-mask") || "error...", c = a.attr("data-mask-placeholder") || "X"; a.mask(b, { placeholder: c }), a = null });
+
+    @if (Model.Id == 0)
+    {
+        <text>SelecionaTipo($("#frmCalendarioCriar #TipoId").val());</text>
+    }
+
+    $("#frmCalendarioCriar").submit(function (e) {
+        var postData = $(this).serializeArray();
+
+        $("#frmCalendarioCriar button").prop("disabled", true);
+
+        $.ajax(
+            {
+            url: rootURL + 'OrganismoAfiliado/Atividade/Form',
+                type: "POST",
+                data: postData,
+                beforeSend: function () {
+                OnBeginForm();
+                },
+                success: function (data, textStatus, jqXHR) {
+                    $("#myModalFullCalendarioContent").html(data);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    OnCompleteForm();
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+        e.preventDefault(); //STOP default action
+    });
+</script>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "myModalFullCalendarioContent"))

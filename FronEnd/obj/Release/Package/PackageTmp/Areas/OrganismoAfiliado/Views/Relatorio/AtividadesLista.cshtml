@@ -1,0 +1,32 @@
+﻿@model List<SAL.MVC.Areas.OrganismoAfiliado.Models.CalendarioItemModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<table id="datatable_tabletools" class="table table-striped table-bordered table-hover" width="100%">
+    <thead>
+        <tr>
+            <th class="text-center">Dia</th>
+            <th class="text-center">Horário</th>
+            <th class="text-center">Atividade</th>
+            <th class="text-center">Título</th>
+            <th class="text-center">Responsável</th>
+            <th class="text-center">Somente Membros</th>
+            <th>&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="line_@item.Id">
+                <td class="text-center">@item.DataDia</td>
+                <td class="text-center">@item.Horario</td>
+                <td class="text-left">@item.TipoNome</td>
+                <td class="text-left">@item.Titulo.ToUpper()</td>
+                <td class="text-left">@(item.OrganismoAfiliadoNome + (string.IsNullOrEmpty(item.OrganismoAfiliadoNome) == false && string.IsNullOrEmpty(item.Responsavel) == false ? " - " : "") + item.Responsavel)</td>
+                <td class="text-center">@(item.SomenteMembros.HasValue ? item.SomenteMembros.Value ? "Sim" : "Não" : "")</td>
+                <td class="text-center" data-hide="print"><a href="javascript:void(0);" onclick="FiltroAnalitico('@item.DataOriginal.ToString("yyyy-MM")', @item.Id);" class="btn btn-default" style="padding:7px;"><i class="fa fa-print"></i> Imprimir</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

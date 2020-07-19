@@ -1,0 +1,184 @@
+﻿@model SAL.MVC.Models.RelatorioModel<SAL.MVC.Areas.Tesouraria.Models.RelatorioConferenciaFinanceiroMensalModel>
+@{ 
+    decimal valorInvestimentosInformacoesComplementares = 0;
+    decimal valorInvestimentosDiferenca = 0;
+
+    valorInvestimentosDiferenca = Model.Dados.InvestimentosTotal - Model.Dados.InvestimentosTotalLancado;
+    valorInvestimentosInformacoesComplementares = Model.Dados.InformacoesComplementaresSaldoCaixaMesSeguinite - Model.Dados.InformacoesComplementaresCaixa; // + Model.Dados.SaldoDividaGLP
+}
+<html>
+<head>
+    <meta charset="utf-8">
+    <!--<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">-->
+
+    <title>@Model.ReportTitle</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <base href="@Url.Content("~")">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script>
+        if (!window.jQuery) {
+            document.write('<script src="js/libs/jquery-2.0.2.min.js"><\/script>');
+        }
+    </script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script>
+        if (!window.jQuery.ui) {
+            document.write('<script src="js/libs/jquery-ui-1.10.3.min.js"><\/script>');
+        }
+    </script>
+    <script>
+        var MsgNaoFoiPossivelCompletarOperacao = "@(SAL.Repository.Comum.Constantes.MsgNaoFoiPossivelCompletarOperacao)";
+        var rootURL = "@Url.Content("~")";
+    </script>
+    <style>
+        @@page {
+            margin: 0;
+            padding: 0;
+            size: A4;
+            margin: 15mm 5mm 5mm 5mm;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;            
+        }
+
+        body {
+            height: 100%;
+            width: 100%;
+            font-size: large;
+        }
+
+            body #pnlFundo {
+                background-color: #000;
+            }
+
+        .texto {
+            font-family: Arial;
+            color: #000;            
+        }
+
+        .titulo {
+            font-family: Arial;
+            font-weight: bold;
+            color: #000;            
+        }
+
+        .bg-white {
+            background-color: #fff;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .texto-codigo {
+            text-align: center;
+            font-family: Arial;
+            color: #fff;
+            background-color: #003300;
+        }
+
+        .texto-total {
+            font-family: Arial;
+            color: #000;
+            background-color: #ccc;
+        }
+
+        table, th, td {
+            border-collapse: collapse;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <h1 class="titulo">@Model.ReportSubitle</h1>
+        <table cellpadding="10" cellspacing="1" border="0">
+            <tr>
+                <td colspan="2" style="background-color:#b8cce4" class="titulo text-center">INFORMAÇÕES COMPLEMENTARES</td>
+            </tr>
+            <tr>
+                <td class="texto">Caixa mês</td>
+                <td class="texto text-right">@(string.Format("{0:N}", Model.Dados.InformacoesComplementaresCaixa))</td>
+            </tr>
+            <tr>
+                <td class="texto">Cartão - Lançamentos futuros</td>
+                <td class="texto text-right">@(string.Format("{0:N}", Model.Dados.InformacoesComplementaresLancamentosFuturos))</td>
+            </tr>
+            <tr>
+                <td class="texto">Cartão - Lançamentos futuros (parcelado)</td>
+                <td class="texto text-right">@(string.Format("{0:N}", Model.Dados.InformacoesComplementaresLancamentosFuturosParcelados))</td>
+            </tr>
+            <tr>
+                <td class="texto">Cartão - D+1</td>
+                <td class="texto text-right">@(string.Format("{0:N}", Model.Dados.InformacoesComplementaresDMais1))</td>
+            </tr>
+            @*<tr>
+                <td class="texto">Dívida GLP</td>
+                <td class="texto text-right">@(Model.Dados.SaldoDividaGLP.ToString("0.00"))</td>
+            </tr>*@
+            <tr>
+                <td class="texto texto-total titulo">Valor em espécie no caixa</td>
+                <td class="texto texto-total titulo text-right">@(string.Format("{0:N}", Model.Dados.InformacoesComplementaresValorEspecieCaixa))</td>
+            </tr>
+            <tr>
+                <td class="texto texto-total titulo">Saldo inicial para o mês seguinte</td>
+                <td class="texto texto-total titulo text-right">@(string.Format("{0:N}", Model.Dados.InformacoesComplementaresSaldoCaixaMesSeguinite))</td>
+            </tr>
+            <tr>
+                <td class="texto texto-total titulo">Diferença saldo</td>
+                <td class="texto texto-total titulo text-right" style="color:#@(valorInvestimentosInformacoesComplementares > 0 ? "0006ff" : valorInvestimentosInformacoesComplementares < 0 ? "ff0000" : "000000")">@(string.Format("{0:N}", valorInvestimentosInformacoesComplementares))</td>
+            </tr>  
+            <tr>
+                <td colspan="2" style="background-color:#b8cce4" class="titulo text-center">INVESTIMENTOS</td>
+            </tr>
+            <tr>
+                <td class="texto">Saldo anterior</td>
+                <td class="texto text-right">@(string.Format("{0:N}", Model.Dados.InvestimentosSaldoAnterior))</td>
+            </tr>
+            <tr>
+                <td class="texto">Rendimento Mês</td>
+                <td class="texto text-right">@(string.Format("{0:N}", Model.Dados.InvestimentosRendimento))</td>
+            </tr>
+            <tr>
+                <td class="texto">Resgate Mês</td>
+                <td class="texto text-right">@(string.Format("{0:N}", Model.Dados.InvestimentosResgate))</td>
+            </tr>
+            <tr>
+                <td class="texto">Imposto de Renda Mês</td>
+                <td class="texto text-right">@(string.Format("{0:N}", Model.Dados.InvestimentosImpostoRenda))</td>
+            </tr>
+            <tr>
+                <td class="texto">Aplicação Mês</td>
+                <td class="texto text-right">@(string.Format("{0:N}", Model.Dados.InvestimentosAplicacao))</td>
+            </tr>
+            <tr>
+                <td class="texto texto-total titulo">Total</td>
+                <td class="texto texto-total titulo text-right">@(string.Format("{0:N}", Model.Dados.InvestimentosSaldoAnterior))</td>
+            </tr>
+            <tr>
+                <td class="texto texto-total titulo">Saldo Anterior + Valor Lançado</td>
+                <td class="texto texto-total titulo text-right">@(string.Format("{0:N}", Model.Dados.InvestimentosTotalLancado))</td>
+            </tr>
+            <tr>
+                <td class="texto texto-total titulo">Diferença</td>
+                <td class="texto texto-total titulo text-right" style="color:#@(valorInvestimentosDiferenca > 0 ? "0006ff" : valorInvestimentosDiferenca < 0 ? "ff0000" : "000000")">@(string.Format("{0:N}", valorInvestimentosDiferenca))</td>
+            </tr>
+        </table>
+    </center>
+</body>
+</html>

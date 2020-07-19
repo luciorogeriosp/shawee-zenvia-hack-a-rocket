@@ -1,0 +1,14 @@
+﻿@model SAL.MVC.Areas.Tesouraria.Models.FechamentoModel
+@{
+    Layout = null;
+}
+<td class="text-right">@SAL.MVC.Helpers.Constantes.DescricaoMes(Convert.ToInt32(Model.AnoMes.ToString().Substring(4, 2))) / @Model.AnoMes.ToString().Substring(0, 4)</td>
+<td class="text-right">@(Model.SaldoInicial.HasValue ? string.Format("{0:N}", Model.SaldoInicial) : "-")</td>
+<td class="text-right">@(Model.SaldoFinal.HasValue ? string.Format("{0:N}", Model.SaldoFinal) : "-")</td>
+<td class="text-right hidden-xs hidden-md">@(Model.SaldoContaCorrente.HasValue ? string.Format("{0:N}", Model.SaldoContaCorrente) : "-")</td>
+<td class="text-right hidden-xs hidden-md">@(Model.SaldoContaPoupanca.HasValue ? string.Format("{0:N}", Model.SaldoContaPoupanca) : "-")</td>
+<td class="text-right hidden-xs hidden-md">@(Model.SaldoContaAplicacao.HasValue ? string.Format("{0:N}", Model.SaldoContaAplicacao) : "-")</td>
+<td class="text-center">@(Model.StatusId == "A" ? "Em Aberto" : Model.StatusId == "V" ? "Em Verificação" : "Fechado")</td>
+<td>
+    <a href="javascript:void(0);" onclick="Detalhes(@Model.Id);" class="btn btn-success"><i class="fa fa-folder-open-o"></i> Detalhes</a>
+</td>

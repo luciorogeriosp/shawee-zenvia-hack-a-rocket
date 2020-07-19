@@ -1,0 +1,29 @@
+﻿@model List<SAL.MVC.Areas.Biblioteca.Models.EmprestimoModel>
+@{
+    Layout = null;
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+}
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped table-bordered table-hover" width="100%">
+        <thead>
+            <tr>
+                <th class="text-center" nowrap="nowrap">Código</th>
+                <th class="text-center" nowrap="nowrap">Tipo</th>
+                <th class="text-center" width="100%">Título</th>
+                <th class="text-center" nowrap="nowrap">Data Devolução</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center" nowrap="nowrap">@item.ItemCodigo</td>
+                    <td class="text-center" nowrap="nowrap">@item.ItemTipo</td>
+                    <td>@item.ItemNome</td>
+                    <td class="text-center @(dtAtual > item.DevolucaoDataEstimada ? "danger" : "")">@item.DevolucaoDataEstimada.ToString("dd/MM/yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

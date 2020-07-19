@@ -1,0 +1,527 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+    DateTime dtSemana = dtAtual.AddDays(-7);
+    DateTime dtQuinzena = dtAtual.AddDays(-15);
+    DateTime dtMes = new DateTime(dtAtual.Year, dtAtual.Month, 1);
+
+    string EmailRemetente = string.Empty;
+    List<SAL.MVC.Models.UsuarioClientePerfilModel> listaPerfil = (List<SAL.MVC.Models.UsuarioClientePerfilModel>)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilLogado");
+    if (listaPerfil != null)
+    {
+        EmailRemetente = listaPerfil[0].Cliente.Email;
+    }
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-cut"></i>
+                    Tesouraria | Remessas
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <article class="col-sm-12 col-md-12 col-lg-12">
+                <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+                    <div role="content" style="border-width: 1px 1px 1px 1px; border-style: solid; border-top-color: #CCC!important;">
+                        <div class="widget-body no-padding">
+                            <form id="frmConsultaRemessa" class="smart-form" novalidate="novalidate" onsubmit="return false">
+                                <header>
+                                    Defina o filtro
+                                </header>
+                                <fieldset>
+                                    <div class="row">
+                                        <section class="col col-4">
+                                            <label class="select">
+                                                <select name="IdSituacao" id="IdSituacao">
+                                                    <option value="0">Todos</option>
+                                                    <option value="1">Em Aberto</option>
+                                                    <option value="2">Aguardando Pagamento</option>
+                                                    <option value="3">Pago</option>
+                                                    <option value="4">Enviado</option>
+                                                </select>
+                                                <i></i>
+                                            </label>
+                                        </section>
+                                        <section class="col col-4">
+                                            <label class="input">
+                                                <i class="icon-append fa fa-calendar"></i>
+                                                <input type="date" name="txtDataInicial" id="txtDataInicial" placeholder="Data Inicial" class="hasDatepicker" onkeypress="OnEnter(event, 'SubmitFiltroRemessa')">
+                                            </label>
+                                        </section>
+                                        <section class="col col-4">
+                                            <label class="input">
+                                                <i class="icon-append fa fa-calendar"></i>
+                                                <input type="date" name="txtDataFinal" id="txtDataFinal" placeholder="Data Final" class="hasDatepicker" onkeypress="OnEnter(event, 'SubmitFiltroRemessa')">
+                                            </label>
+                                        </section>
+                                    </div>
+                                </fieldset>
+                                <footer>
+                                    <button type="button" class="btn btn-success" onclick="SubmitFiltroRemessa();">
+                                        Buscar
+                                    </button>
+                                    <button type="button" class="btn btn-default" onclick="FiltroMes();">
+                                        Este Mês
+                                    </button>
+                                    <button type="button" class="btn btn-default" onclick="FiltroQuizena();">
+                                        Esta Quinzena
+                                    </button>
+                                    <button type="button" class="btn btn-default" onclick="FiltroSemana();">
+                                        Esta Semana
+                                    </button>
+                                    <button type="button" class="btn btn-default" onclick="FiltroHoje();">
+                                        Hoje
+                                    </button>
+                                </footer>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div class="row" id="pnlRemessaResult" style="display:none;">
+            <article class="col-sm-12 col-md-12 col-lg-12">
+                <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+                    <div role="content" style="border-width: 1px 1px 1px 1px; border-style: solid; border-top-color: #CCC!important;">
+                        <div class="widget-body no-padding" id="pnlRemessaContent">
+
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+<div id="myModalConfirmaGerar" title="SAL - Gerar Remessa" class="no-padding" style="display:none;">
+    <div class="modal-body">
+        <span id="myModalConfirmaGerarContent" class="font-lg text-danger"></span><br />
+        <span class="font-lg">Deseja gerar a remessa, e o lançamento de contas a pagar?<br />Essa ação não poderá ser desfeita.</span>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogConfirmaGerar();" tabindex="-1">Não</button>
+        <button type="button" class="btn btn-success" id="btnModalConfirmaGerar"><i class="fa fa-check"></i>&nbsp; SIM</button>
+    </div>
+</div>
+<div id="myModalConfirmaConfirmarPagamento" title="SAL - Confirmar Paggamento da Remessa" class="no-padding" style="display:none;">
+    <div class="modal-body">
+        <form class="smart-form">
+            <span id="myModalConfirmaConfirmarPagamentoContent" class="font-lg text-danger"></span><br />
+            <fieldset>
+                <section>
+                    <label class="label" style="color:#000;">Comprovante</label>
+                    <label class="input">
+                        <input type="file" id="myModalConfirmaConfirmarPagamentoFile" name="myModalConfirmaConfirmarPagamentoFile" />
+                    </label>
+                </section>
+                <section>
+                    <label class="label" style="color:#000;">Data</label>
+                    <label class="input">
+                        <input type="date" id="txtModalConfirmaConfirmarPagamentoData" />
+                    </label>
+                </section>
+            </fieldset>
+            <span class="font-lg" id="myModalConfirmaConfirmarPagamentoTitle" style="display:none;">Deseja confirmar o pagamento dessa remessa?<br />Essa ação não poderá ser desfeita.</span>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogConfirmaConfirmarPagamento();" tabindex="-1">Não</button>
+        <button type="button" class="btn btn-success" id="btnModalConfirmaConfirmarPagamento"><i class="fa fa-check"></i>&nbsp; SIM</button>
+    </div>
+</div>
+<div id="myModalConfirmaEnvio" title="SAL - Envio" class="no-padding" style="display:none;">
+    <div class="modal-body">
+        <form class="smart-form">
+            <span id="myModalConfirmaEnvioContent" class="font-lg text-danger"></span><br />
+            <fieldset>
+                <section class="margin-bottom-10 padding-10 bg-warning">
+                    <label class="label" style="color:#000;"><comment>Será enviada uma cópia para o remetente: @EmailRemetente</comment></label>
+                </section>
+                <section>
+                    <label class="label" style="color:#000;">E-mail <comment>(coloque os e-mails separados por ponto e vírgula)</comment></label>
+                    <label class="input">
+                        <input type="text" id="txtModalConfirmaEnviarEmail" autocomplete="off" value="" />
+                    </label>
+                </section>
+                <section>
+                    <label class="label" style="color:#000;">Observação <comment>(opcional)</comment></label>
+                    <label class="input">
+                        <textarea id="txtModalConfirmaEnviarTexto" rows="7" style="width:100%"></textarea>
+                    </label>
+                </section>
+                <section id="pnlEfetivarRemessa">
+                    <section class="col-md-8">
+                        <label class="checkbox" style="color:#000;">
+                            <input type="checkbox" id="EfetivarRemessa" name="EfetivarRemessa" onclick="if ($(this).is(':checked')) { $('#EfetivacaoData').removeAttr('disabled'); $('#EfetivacaoData').focus(); } else { $('#EfetivacaoData').attr('disabled', 'disabled'); }" />
+                            <i></i>Deseja efetivar este lançamento?
+                        </label>
+                    </section>
+                    <section class="col-md-4">
+                        <label class="label">
+                            <label for="AgendamentoDataInicio">Data de Efetivação</label>
+                            <span class="font-xs text-danger">*</span>
+                        </label>
+                        <label class="input">
+                            <input type="date" id="EfetivacaoData" value="@(dtAtual.ToString("yyyy-MM-dd"))">
+                        </label>
+                    </section>
+                </section>
+            </fieldset>
+            <span class="font-lg" id="myModalConfirmaEnvioTitle">Deseja confirmar o envio dessa remessa?<br />Essa ação não poderá ser desfeita.</span>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogConfirmaEnvio();" tabindex="-1">Não</button>
+        <button type="button" class="btn btn-success" id="btnModalConfirmaEnvio"><i class="fa fa-check"></i>&nbsp; SIM</button>
+    </div>
+</div>
+<script>
+    var dialogConfirmaGerar = null;
+    var dialogConfirmaPagamento = null;
+    var dialogConfirmaEnviar = null;
+
+    var arquivoConfirmaPagamento = "";
+
+    function SubmitFiltroRemessa() {
+        $.ajax({
+            type: 'POST',
+            data: {
+                IdSituacao: $("#frmConsultaRemessa #IdSituacao").val(),
+                DataInicial: $("#frmConsultaRemessa #txtDataInicial").val(),
+                DataFinal: $("#frmConsultaRemessa #txtDataFinal").val()
+            },
+            url: rootURL + 'Tesouraria/Remessa/BuscaRemessa',
+            beforeSend: function () {
+                $("#pnlRemessaResult").hide();
+
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlRemessaResult").show();
+                $("#pnlRemessaContent").html(data);
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function FiltroMes() {
+        $("#txtDataInicial").val('@dtMes.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        SubmitFiltroRemessa();
+    }
+
+    function FiltroQuizena() {
+        $("#txtDataInicial").val('@dtQuinzena.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        SubmitFiltroRemessa();
+    }
+
+    function FiltroSemana() {
+        $("#txtDataInicial").val('@dtSemana.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        SubmitFiltroRemessa();
+    }
+
+    function FiltroHoje() {
+        $("#txtDataInicial").val('@dtAtual.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        SubmitFiltroRemessa();
+    }
+
+    function RemessaGerar(IdRemessa) {
+        $("#btnModalConfirmaGerar").unbind("click");
+        $("#btnModalConfirmaGerar").bind('click', function () {
+            ConfirmaDialogConfirmaGerar(IdRemessa);
+        });
+
+        $("#myModalConfirmaGerarContent").html("Remessa: <b>" + $($("#pnlRemessaCompras_" + IdRemessa).children()[0]).text() + "</b>");
+
+        dialogConfirmaGerar.dialog("open");
+        dialogConfirmaGerar.dialog("moveToTop");
+    }
+
+    function ConfirmaDialogConfirmaGerar(IdRemessa) {
+        $.ajax({
+            type: 'POST',
+            data: {
+                IdRemessa: IdRemessa
+            },
+            url: rootURL + 'Tesouraria/Remessa/Gerar',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlRemessaCompras_" + IdRemessa).html(data);
+                dialogConfirmaGerar.dialog("close");
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                OnCompleteForm();
+                dialogConfirmaGerar.dialog("close");
+            }
+        });
+    }
+
+    function CloseDialogConfirmaGerar() {
+        dialogConfirmaGerar.dialog("close");
+    }
+
+    function RemessaConfirmarPagamento(IdRemessa) {
+        $("#btnModalConfirmaConfirmarPagamento").unbind("click");
+        $("#btnModalConfirmaConfirmarPagamento").bind('click', function () {
+            ConfirmaDialogConfirmaPagamento(IdRemessa);
+        });
+
+        $("#myModalConfirmaConfirmarPagamentoFile").unbind("change");
+        $('#myModalConfirmaConfirmarPagamentoFile').on('change', function (e) {
+            var files = e.target.files;
+            if (files.length > 0) {
+                if (window.FormData !== undefined) {
+                    var data = new FormData();
+                    for (var x = 0; x < files.length; x++) {
+                        data.append("file" + x, files[x]);
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        url: rootURL + 'Tesouraria/Remessa/ConfirmarPagamentoUpload?IdRemessa=' + IdRemessa,
+                        contentType: false,
+                        processData: false,
+                        data: data,
+                        success: function (result) {
+                            if (result.success) {
+                                arquivoConfirmaPagamento = result.arquivo;
+                                $("#btnModalConfirmaConfirmarPagamento").removeAttr("disabled");
+                            } else {
+                                $("#btnModalConfirmaConfirmarPagamento").attr("disabled", "disabled");
+                                ShowNotify('danger', 'Remessa', result.message, 'myModalConfirmaConfirmarPagamento');
+                            }
+                        },
+                        error: function (xhr, status, p3, p4) {
+                            var err = "Error " + " " + status + " " + p3 + " " + p4;
+                            if (xhr.responseText && xhr.responseText[0] == "{")
+                                err = JSON.parse(xhr.responseText).Message;
+                            console.log(err);
+                        }
+                    });
+                } else {
+                    ShowNotify('danger', 'Remessa', "This browser doesn't support HTML5 file uploads!", 'myModalConfirmaConfirmarPagamento');
+                }
+            }
+        });
+
+        $("#myModalConfirmaConfirmarPagamentoContent").html("Remessa: <b>" + $($("#pnlRemessaCompras_" + IdRemessa).children()[0]).text() + "</b>");
+
+        $("#btnModalConfirmaConfirmarPagamento").attr("disabled", "disabled");
+
+        $("#txtModalConfirmaConfirmarPagamentoData").val('@SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual().ToString("yyyy-MM-dd")');
+        $("#myModalConfirmaConfirmarPagamentoFile").val("");
+
+        arquivoConfirmaPagamento = "";
+
+        dialogConfirmaPagamento.dialog("open");
+        dialogConfirmaPagamento.dialog("moveToTop");
+    }
+
+    function ConfirmaDialogConfirmaPagamento(IdRemessa) {
+        $.ajax({
+            type: 'POST',
+            data: {
+                IdRemessa: IdRemessa,
+                Arquivo: arquivoConfirmaPagamento,
+                Data: $("#txtModalConfirmaConfirmarPagamentoData").val()
+            },
+            url: rootURL + 'Tesouraria/Remessa/ConfirmarPagamento',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.msg == undefined) {
+                    $("#pnlRemessaCompras_" + IdRemessa).html(data);
+                    dialogConfirmaPagamento.dialog("close");
+                } else {
+                    OnCompleteForm();
+                    ShowNotify('danger', 'Remessa', data.msg, 'myModalConfirmaConfirmarPagamento');
+                }
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function CloseDialogConfirmaConfirmarPagamento() {
+        dialogConfirmaPagamento.dialog("close");
+    }
+
+    function RemessaEnviar(IdRemessa) {
+        $("#btnModalConfirmaEnvio").unbind("click");
+        $("#btnModalConfirmaEnvio").bind('click', function () {
+            ConfirmaDialogRemessaEnviar(IdRemessa);
+        });
+
+        $("#myModalConfirmaEnvioContent").html("Remessa: <b>" + $($("#pnlRemessaCompras_" + IdRemessa).children()[0]).text() + "</b>");
+
+        $("#txtModalConfirmaEnviarEmail").val("financeiro@amorc.org.br");
+        $("#txtModalConfirmaEnviarTexto").val("");
+
+        $("#EfetivacaoData").attr("disabled", "disabled");
+
+        $.ajax({
+            type: 'POST',
+            data: {
+                IdRemessa: IdRemessa
+            },
+            url: rootURL + 'Tesouraria/Remessa/PodeEfetivar',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data) {
+                    $("#pnlEfetivarRemessa").show();
+                } else {
+                    $("#pnlEfetivarRemessa").hide();
+                }
+
+                dialogConfirmaEnviar.dialog("open");
+                dialogConfirmaEnviar.dialog("moveToTop");
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmaDialogRemessaEnviar(IdRemessa) {
+        $("div.alert").remove();
+
+        $.ajax({
+            type: 'POST',
+            data: {
+                IdRemessa: IdRemessa,
+                Email: $("#txtModalConfirmaEnviarEmail").val(),
+                Texto: $("#txtModalConfirmaEnviarTexto").val(),
+                EfetivarRemessa: $("#EfetivarRemessa").is(':checked'),
+                DataEfetivacao: $("#EfetivacaoData").val()
+            },
+            url: rootURL + 'Tesouraria/Remessa/ConfirmarEnvio',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.msg == undefined) {
+
+                    $.ajax({
+                        type: 'POST',
+                        data: {
+                            IdRemessa: IdRemessa
+                        },
+                        url: rootURL + 'Tesouraria/Remessa/ImprimirPDF',
+                        beforeSend: function () {
+                            OnBeginForm();
+                        },
+                        success: function (data) {
+                            $("#myModalFullContent").html(data);
+                        },
+                        error: function (xhr, st, str) {
+
+                        },
+                        complete: function () {
+
+                        }
+                    });
+
+                } else {
+                    OnCompleteForm();
+                    ShowNotify('danger', 'Remessa', data.msg, 'myModalConfirmaEnvio');
+                }
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+    function CloseDialogConfirmaEnvio() {
+        dialogConfirmaEnviar.dialog("close");
+    }
+
+    function RemessaImprimir(IdRemessa) {
+        $.ajax({
+            type: 'POST',
+            data: {
+                IdRemessa: IdRemessa
+            },
+            url: rootURL + 'Tesouraria/Remessa/Imprimir',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalFullContent").html(data);
+                OpenFullDialog();
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        SubmitFiltroRemessa();
+
+        dialogConfirmaGerar = $("#myModalConfirmaGerar").dialog({
+            autoOpen: false,
+            width: (thisDevice == "mobile") ? parseInt($(window).width()) : parseInt($("#content").css("width")) / 2,
+            resizable: false,
+            modal: true,
+            closeOnEscape: true,
+            position: { my: "center top", at: "center top", of: $("#content") }
+        });
+
+        dialogConfirmaPagamento = $("#myModalConfirmaConfirmarPagamento").dialog({
+            autoOpen: false,
+            width: (thisDevice == "mobile") ? parseInt($(window).width()) : parseInt($("#content").css("width")) / 2,
+            resizable: false,
+            modal: true,
+            closeOnEscape: true,
+            position: { my: "center top", at: "center top", of: $("#content") }
+        });
+
+        dialogConfirmaEnviar = $("#myModalConfirmaEnvio").dialog({
+            autoOpen: false,
+            width: (thisDevice == "mobile") ? parseInt($(window).width()) : parseInt($("#content").css("width")) / 2,
+            resizable: false,
+            modal: true,
+            closeOnEscape: true,
+            position: { my: "center top", at: "center top", of: $("#content") }
+        });
+    });
+</script>

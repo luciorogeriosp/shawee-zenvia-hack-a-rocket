@@ -1,0 +1,89 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.ClasseAtividadeListaModel
+@{
+    Layout = null;
+
+    dynamic ListaOrdemGrau = null;
+
+    if (Model != null && Model.ListaAtividades != null)
+    {
+        ListaOrdemGrau = Model.ListaAtividades.Select(s => new
+        {
+            GrauOrdem = s.GrauOrdem,
+            GrauNome = s.GrauNome
+        }).Distinct().OrderByDescending(o => o.GrauOrdem).ToList();
+    }
+
+    bool MembroFaltou = false;
+    int QuantidadeFaltasMembro = 0;
+}
+@if (Model.ListaVinculados != null && Model.ListaVinculados.Any())
+{
+    <div class="tab-content">
+        <ul class="nav nav-tabs" id="demo-pill-nav">
+            @foreach (dynamic itemGrau in ListaOrdemGrau)
+            {
+                <li class="@(itemGrau.GrauOrdem == ListaOrdemGrau[0].GrauOrdem ? "active" : "")">
+                    <a href="#tab-@itemGrau.GrauOrdem" data-toggle="tab">@itemGrau.GrauNome </a>
+                </li>
+            }
+        </ul>
+        <div class="tab-content">
+            @foreach (dynamic itemGrau in ListaOrdemGrau)
+            {
+                QuantidadeFaltasMembro = 0;
+                <div class="tab-pane@(itemGrau.GrauOrdem == ListaOrdemGrau[0].GrauOrdem ? " active" : "")" id="tab-@itemGrau.GrauOrdem">
+                    <form class="smart-form" novalidate="novalidate" onsubmit="return false">
+                        <table class="table table-striped table-bordered table-hover" width="100%">
+                            <caption>Total de Membros da Classe: @Model.ListaVinculados.Count</caption>
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Chave</th>
+                                    <th>Nome</th>
+                                    @foreach (var item in Model.ListaAtividades.Where(w => w.GrauOrdem == itemGrau.GrauOrdem).OrderBy(o => o.Numero))
+                                    {
+                                        <th class="text-center@(item.AtividadeVinculada ? " info" : "")" title="@item.Nome"@(Html.Raw(item.AtividadeVinculada == false ? " style=\"cursor:not-allowed\"" : ""))>M@(item.Numero.ToString().PadLeft(2, '0'))</th>
+                                    }
+                                    <th class="text-center">Faltas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var itemMembro in Model.ListaVinculados)
+                                {
+                                    QuantidadeFaltasMembro = 0;
+                                    <tr>
+                                        <td class="text-center">@itemMembro.AfiliacaoNumero</td>
+                                        <td>@itemMembro.Nome</td>
+                                        @foreach (var item in Model.ListaAtividades.Where(w => w.GrauOrdem == itemGrau.GrauOrdem).OrderBy(o => o.Numero))
+                                        {
+                                            MembroFaltou = false;
+                                            if (item.AtividadeVinculada && item.LiberarPresenca)
+                                            {
+                                                MembroFaltou = (!(item.ListaMembroId != null && item.ListaMembroId.Contains(itemMembro.Id)));
+                                            }
+                                            if (MembroFaltou)
+                                            {
+                                                QuantidadeFaltasMembro = QuantidadeFaltasMembro + 1;
+                                            }
+                                            <td class="text-center"@(Html.Raw(item.AtividadeVinculada == false ? " style=\"cursor:not-allowed\"" : ""))>
+                                                @if (item.LiberarPresenca)
+                                                {
+                                                    <label class="checkbox"><input type="checkbox" onclick="AtualizaPresencaClasse(@itemMembro.Id, @item.IdAtividade, '@itemMembro.AfiliacaoNumero - @itemMembro.Nome', '@itemGrau.GrauNome - M@(item.Numero.ToString().PadLeft(2, '0')) - @item.Nome', $(this))" @(Html.Raw(MembroFaltou == false ? " checked=\"checked\"" : ""))><i style="margin-left:12px; margin-top:-4px;"></i></label>
+                                                }
+                                                else
+                                                {
+                                                    <text>&nbsp;</text>
+                                                }
+                                            </td>
+                                        }
+                                        <td class="text-center @((QuantidadeFaltasMembro > 6 ? "danger" : (QuantidadeFaltasMembro == 6 ? "warning" : "success")))">@QuantidadeFaltasMembro</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+}
+

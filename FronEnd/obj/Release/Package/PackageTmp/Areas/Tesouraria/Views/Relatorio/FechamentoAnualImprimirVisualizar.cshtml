@@ -1,0 +1,1133 @@
+﻿@model SAL.MVC.Models.RelatorioModel<SAL.MVC.Areas.Tesouraria.Models.RelatorioResumoFinanceiroAnualModel>
+@{
+    decimal decRecebimento = 0;
+    decimal decSubTotalEntradas = 0;
+    decimal decEntradas = 0;
+
+    decimal decDespesas = 0;
+    decimal decSubTotalSaidas = 0;
+    decimal decSaidas = 0;
+
+    decimal decSaldoGarantias = 0;
+    decSaldoGarantias +=
+        (Model.Dados.SaldoCaixa.HasValue ? Model.Dados.SaldoCaixa.Value : 0)
+        +
+        (Model.Dados.SaldoContaCorrente.HasValue ? Model.Dados.SaldoContaCorrente.Value : 0)
+        +
+        (Model.Dados.SaldoContaPoupanca.HasValue ? Model.Dados.SaldoContaPoupanca.Value : 0)
+        +
+        (Model.Dados.SaldoAplicacao.HasValue ? Model.Dados.SaldoAplicacao.Value : 0)
+        ;
+
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+    string dtAtualTexto = dtAtual.Day + " de " + SAL.MVC.Helpers.Constantes.DescricaoMes(dtAtual.Month) + " de " + dtAtual.Year;
+}
+<style>
+    .page {
+        padding-top: 65px;
+    }
+
+    .pageother {
+        padding-top: 45px;
+    }
+
+    .titulo {
+        font-size: 9pt;
+        font-weight: bold;
+    }
+
+    .texto {
+        font-size: 9pt;
+    }
+
+    .textop {
+        font-size: 9pt;
+    }
+
+    .texto-branco {
+        font-size: 9pt;
+        color: white;
+    }
+
+    .texto-left {
+        text-align: left;
+    }
+
+    .texto-right {
+        text-align: right;
+    }
+
+    .texto-center {
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 12pt;
+        text-align: center;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
+    }
+
+    h2 {
+        font-size: 12pt;
+        text-align: center;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
+    }
+
+    .valores {
+        width: 100px;
+        font-size: 9pt;
+        border-bottom-color: #000000;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+    }
+
+    .espaco1 {
+        width: 100px;
+        font-size: 5pt;
+    }
+</style>
+<div class="page">
+    <h1>ORGANISMO AFILIADO: @Model.ReportTitle</h1>
+    <h2>DECLARAÇÃO I</h2>
+    <table class="tabela" cellpadding="1" cellspacing="0" width="100%">
+        <tr>
+            <td colspan="5" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="titulo">
+                Receita & Despesa
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5" class="texto">
+                (Correspondente à soma dos relatórios mensais do ano civil) ANO: @Model.Dados.Ano
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="texto">
+                ENTRADAS:
+            </td>
+        </tr>
+        @for (int i = 0; i < Model.Dados.Recebimento.Count; i++)
+        {
+            decRecebimento += Model.Dados.Recebimento[i].Valor;
+            decEntradas += Model.Dados.Recebimento[i].Valor;
+            <tr>
+                <td class="texto">@Model.Dados.Recebimento[i].Nome</td>
+                <td class="espaco">&nbsp;</td>
+                <td class="valores texto-@(Model.Dados.Recebimento[i].Valor > 0 ? "right" : "center")">@(Model.Dados.Recebimento[i].Valor > 0 ? string.Format("{0:N}", Model.Dados.Recebimento[i].Valor) : "-")</td>
+                <td class="espaco1">&nbsp;</td>
+                <td class="texto">&nbsp;</td>
+            </tr>
+        }
+        <tr>
+            <td class="texto">SUB-TOTAL</td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", decRecebimento))</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        @for (int i = 0; i < Model.Dados.SubTotalEntradas.Count; i++)
+        {
+            decSubTotalEntradas += Model.Dados.SubTotalEntradas[i].Valor;
+            decEntradas += Model.Dados.SubTotalEntradas[i].Valor;
+            <tr>
+                <td class="texto">@Model.Dados.SubTotalEntradas[i].Nome</td>
+                <td class="espaco">&nbsp;</td>
+                <td class="valores texto-@(Model.Dados.SubTotalEntradas[i].Valor > 0 ? "right" : "center")">@(Model.Dados.SubTotalEntradas[i].Valor > 0 ? string.Format("{0:N}", Model.Dados.SubTotalEntradas[i].Valor) : "-")</td>
+                <td class="espaco1">&nbsp;</td>
+                <td class="texto">&nbsp;</td>
+            </tr>
+        }
+        <tr>
+            <td class="texto">SOMA DAS ENTRADAS</td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", decEntradas))</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto" colspan="5">
+                SALDO DO ANO ANTERIOR
+            </td>
+        </tr>
+        <tr>
+            <td class="texto">
+                (Caixa, Bancos e Fundos)
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-right" valign="baseline">@(string.Format("{0:N}", Model.Dados.SaldoAnoAnterior))</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="titulo">TOTAL DAS ENTRADAS</td>
+            <td class="espaco">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="valores titulo texto-right">@(string.Format("{0:N}", (Model.Dados.SaldoAnoAnterior + decEntradas)))</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="texto">
+                SAÍDAS:
+            </td>
+        </tr>
+        @for (int i = 0; i < Model.Dados.Despesas.Count; i++)
+        {
+            decDespesas += Model.Dados.Despesas[i].Valor;
+            decSaidas += Model.Dados.Despesas[i].Valor;
+            <tr>
+                <td class="texto">@Model.Dados.Despesas[i].Nome</td>
+                <td class="espaco">&nbsp;</td>
+                <td class="valores texto-@(Model.Dados.Despesas[i].Valor > 0 ? "right" : "center")">@(Model.Dados.Despesas[i].Valor > 0 ? string.Format("{0:N}", Model.Dados.Despesas[i].Valor) : "-")</td>
+                <td class="espaco1">&nbsp;</td>
+                <td class="texto">&nbsp;</td>
+            </tr>
+        }
+        <tr>
+            <td class="texto">SUB-TOTAL</td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", decSaidas))</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        @for (int i = 0; i < Model.Dados.SubTotalSaidas.Count; i++)
+        {
+            decSubTotalSaidas += Model.Dados.SubTotalSaidas[i].Valor;
+            decSaidas += Model.Dados.SubTotalSaidas[i].Valor;
+            <tr>
+                <td class="texto">@Model.Dados.SubTotalSaidas[i].Nome</td>
+                <td class="espaco">&nbsp;</td>
+                <td class="valores texto-@(Model.Dados.SubTotalSaidas[i].Valor > 0 ? "right" : "center")">@(Model.Dados.SubTotalSaidas[i].Valor > 0 ? string.Format("{0:N}", Model.Dados.SubTotalSaidas[i].Valor) : "-")</td>
+                <td class="espaco1">&nbsp;</td>
+                <td class="texto">&nbsp;</td>
+            </tr>
+        }
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="titulo">TOTAL DAS SAÍDAS</td>
+            <td class="espaco">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="valores titulo texto-right">@string.Format("{0:N}", decSaidas)</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="titulo">SALDO PARA O ANO PRÓXIMO<br /></span>
+                <span class="texto">(Caixa, Bancos e Fundos)</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="valores titulo texto-right">@(string.Format("{0:N}", Model.Dados.SaldoAnoAnterior + decEntradas - decSaidas))</td>
+        </tr>
+    </table>
+</div>
+<div style="page-break-before:always">&nbsp;</div>
+<div class="pageother">
+    <h2>DECLARAÇÃO II</h2>
+    <table class="tabela" cellpadding="1" cellspacing="0" width="100%">
+        <tr>
+            <td colspan="5" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="titulo">
+                GARANTIAS:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">Disponível: </span><span class="texto">Caixa</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", Model.Dados.SaldoCaixa))</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto-branco">Disponível: </span><span class="texto">Banco</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", Model.Dados.SaldoContaCorrente))</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto-branco">Disponível: </span><span class="texto">FUNDOS: @Model.Dados.PoupancaTipo</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", Model.Dados.SaldoContaPoupanca))</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto-branco">Disponível: </span><span class="texto">FUNDOS: @Model.Dados.AplicacaoTipo</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", Model.Dados.SaldoAplicacao))</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="espaco">&nbsp;</td>
+            <td class="espaco">&nbsp;</td>
+            <td class="espaco">&nbsp;</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", decSaldoGarantias))</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto">Móveis & Utensílios (valor estimado atual)</td>
+            <td class="espaco">&nbsp;</td>
+            <td class="espaco">&nbsp;</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", Model.Dados.ValorInventario))</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="titulo">
+                OBRIGAÇÕES:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">Contas a Pagar (Emprestimo GLP)</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", Model.Dados.ValorContasPagar))</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">GLP - Suprimentos</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", Model.Dados.ValorSuprimentos))</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">Taxa da Carta Constitutiva</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", Model.Dados.ValorCartaConstitutiva))</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">Mensalidades e outros valores</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", Model.Dados.ValorMensalidadesOutros))</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">Caução aluguel</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", Model.Dados.ValorCaucaoAluguel))</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto">Patrimônio Líquido</td>
+            <td class="espaco">&nbsp;</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-right">@(string.Format("{0:N}", Model.Dados.ValorPatrimonioLiquido))</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">Nomes dos Bancos Depositários</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-center">@(Model.Dados.NomeBancos)</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+    </table>
+    <h2>DECLARAÇÃO III</h2>
+    <table class="tabela" cellpadding="1" cellspacing="0" width="100%">
+        <tr>
+            <td colspan="5" class="titulo">
+                APLICAÇÕES FINANCEIRAS
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">TIPO APLICAÇÃO BANCO</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-center">@(Model.Dados.PoupancaTipo)</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">a) Saldo anterior</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-@(Model.Dados.AnoAnteriorSaldoPoupanca.HasValue && Model.Dados.AnoAnteriorSaldoPoupanca.Value > 0 ? "right" : "center")">@(Model.Dados.AnoAnteriorSaldoPoupanca.HasValue && Model.Dados.AnoAnteriorSaldoPoupanca.Value > 0 ? string.Format("{0:N}", Model.Dados.AnoAnteriorSaldoPoupanca) : "-")</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">b) Depósitos</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-@(Model.Dados.PoupancaDeposito.HasValue && Model.Dados.PoupancaDeposito.Value > 0 ? "right" : "center")">@(Model.Dados.PoupancaDeposito.HasValue && Model.Dados.PoupancaDeposito.Value > 0 ? string.Format("{0:N}", Model.Dados.PoupancaDeposito) : "-")</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">c) Juros e Correções Monetárias-IR</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-@(Model.Dados.PoupancaRendimento.HasValue && Model.Dados.PoupancaRendimento.Value > 0 ? "right" : "center")">@(Model.Dados.PoupancaRendimento.HasValue && Model.Dados.PoupancaRendimento.Value > 0 ? string.Format("{0:N}", Model.Dados.PoupancaRendimento) : "-")</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">d) Retiradas</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-@(Model.Dados.PoupancaRetirada.HasValue && Model.Dados.PoupancaRetirada.Value > 0 ? "right" : "center")">@(Model.Dados.PoupancaRetirada.HasValue && Model.Dados.PoupancaRetirada.Value > 0 ? string.Format("{0:N}", Model.Dados.PoupancaRetirada) : "-")</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto-right">
+                <span class="texto">Saldo Atual</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="espaco">&nbsp;</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="valores texto-@(Model.Dados.PoupancaSaldo.HasValue && Model.Dados.PoupancaSaldo.Value > 0 ? "right" : "center")">@(Model.Dados.PoupancaSaldo.HasValue && Model.Dados.PoupancaSaldo.Value > 0 ? string.Format("{0:N}", Model.Dados.PoupancaSaldo) : "-")</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">TIPO APLICAÇÃO BANCO</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-center">@(Model.Dados.AplicacaoTipo)</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">a) Saldo anterior</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-@(Model.Dados.AnoAnteriorSaldoAplicacao.HasValue && Model.Dados.AnoAnteriorSaldoAplicacao.Value > 0 ? "right" : "center")">@(Model.Dados.AnoAnteriorSaldoAplicacao.HasValue && Model.Dados.AnoAnteriorSaldoAplicacao.Value > 0 ? string.Format("{0:N}", Model.Dados.AnoAnteriorSaldoAplicacao) : "-")</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">b) Depósitos</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-@(Model.Dados.AplicacaoDeposito.HasValue && Model.Dados.AplicacaoDeposito.Value > 0 ? "right" : "center")">@(Model.Dados.AplicacaoDeposito.HasValue && Model.Dados.AplicacaoDeposito.Value > 0 ? string.Format("{0:N}", Model.Dados.AplicacaoDeposito) : "-")</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">c) Juros e Correções Monetárias-IR</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-@(Model.Dados.AplicacaoRendimento.HasValue && Model.Dados.AplicacaoRendimento.Value > 0 ? "right" : "center")">@(Model.Dados.AplicacaoRendimento.HasValue && Model.Dados.AplicacaoRendimento.Value > 0 ? string.Format("{0:N}", Model.Dados.AplicacaoRendimento) : "-")</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <span class="texto">d) Retiradas</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="valores texto-@(Model.Dados.AplicacaoRetirada.HasValue && Model.Dados.AplicacaoRetirada.Value > 0 ? "right" : "center")">@(Model.Dados.AplicacaoRetirada.HasValue && Model.Dados.AplicacaoRetirada.Value > 0 ? string.Format("{0:N}", Model.Dados.AplicacaoRetirada) : "-")</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto-right">
+                <span class="texto">Saldo Atual</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="espaco">&nbsp;</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="valores texto-@(Model.Dados.AplicacaoSaldo.HasValue && Model.Dados.AplicacaoSaldo.Value > 0 ? "right" : "center")">@(Model.Dados.AplicacaoSaldo.HasValue && Model.Dados.AplicacaoSaldo.Value > 0 ? string.Format("{0:N}", Model.Dados.AplicacaoSaldo) : "-")</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto-right">
+                <span class="titulo">Total dos Investimentos</span>
+            </td>
+            <td class="espaco">&nbsp;</td>
+            <td class="espaco">&nbsp;</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="titulo texto-@((Model.Dados.PoupancaSaldo.HasValue && Model.Dados.PoupancaSaldo.Value > 0) || (Model.Dados.AplicacaoSaldo.HasValue && Model.Dados.AplicacaoSaldo.Value > 0) ? "right" : "center")">@((Model.Dados.PoupancaSaldo.HasValue && Model.Dados.PoupancaSaldo.Value > 0) || (Model.Dados.AplicacaoSaldo.HasValue && Model.Dados.AplicacaoSaldo.Value > 0) ? string.Format("{0:N}", (Model.Dados.PoupancaSaldo.HasValue ? Model.Dados.PoupancaSaldo.Value : 0) + (Model.Dados.AplicacaoSaldo.HasValue ? Model.Dados.AplicacaoSaldo.Value : 0)) : "-")</td>
+        </tr>
+    </table>
+</div>
+<div style="page-break-before:always">&nbsp;</div>
+<div class="pageother">
+    <h2>DECLARAÇÃO IV</h2>
+    <table class="tabela" cellpadding="1" cellspacing="0" width="100%">
+        <tr>
+            <td colspan="4" class="titulo texto-center" style="font-size: 12pt;">DADOS CADASTRAIS E SITUAÇÃO DO IMÓVEL EM 31.12.@(Model.Dados.Ano)</td>
+        </tr>
+        <tr>
+            <td colspan="4" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left">Organismo Afiliado: </td>
+            <td class="titulo texto-left">@Model.Dados.OrganismoAfiliadoNome</td>
+            <td class="texto texto-right">Número: </td>
+            <td class="titulo texto-left">@Model.Dados.OrganismoAfiliadoNumero</td>
+        </tr>
+        <tr>
+            <td colspan="4" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left">Localização do Imóvel: </td>
+            <td class="texto texto-left" colspan="3">@Model.Dados.OrganismoAfiliadoLocalizacao</td>
+        </tr>
+        <tr>
+            <td colspan="4" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left">Cidade / Município / Distrito: </td>
+            <td class="texto texto-left">@Model.Dados.OrganismoAfiliadoCidade</td>
+            <td class="texto texto-right">Estado: </td>
+            <td class="texto texto-left">@Model.Dados.OrganismoAfiliadoEstado</td>
+        </tr>
+        <tr>
+            <td colspan="4" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left" colspan="2">Natureza do Documento de Propriedade: </td>
+            <td class="texto texto-left" colspan="2">@Model.Dados.NaturezaDocumento</td>
+        </tr>
+        <tr>
+            <td colspan="4" class="espaco">&nbsp;</td>
+        </tr>
+    </table>
+    <table class="tabela" cellpadding="1" cellspacing="0" width="100%">
+        <tr>
+            <td class="texto texto-left" style="width:260px;">Escritura em nome da Grande Loja: </td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagEscrituraGLP == true ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Sim</td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagEscrituraGLP == false ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Não</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto texto-left">Alugado: </td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagAlugado == true ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Sim</td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagAlugado == false ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Não</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="18" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left" style="width:260px;">Em nome do Organismo Afiliado: </td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagEscrituraOA == true ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Sim</td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagEscrituraOA == false ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Não</td>
+            <td class="espaco1">&nbsp;</td>
+            <td colspan="7">
+                <table cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td class="texto texto-left">Valor aluguel - mês: </td>
+                        <td class="texto texto-@(Model.Dados.ValorAluguelMensal.HasValue && Model.Dados.ValorAluguelMensal.Value > 0 ? "right" : "left")" colspan="8">@(Model.Dados.ValorAluguelMensal.HasValue && Model.Dados.ValorAluguelMensal.Value > 0 ? string.Format("{0:N}", Model.Dados.ValorAluguelMensal) : "-")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="18" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left" style="width:260px;">Nome Proprietário Anterior: </td>
+            <td colspan="17" class="texto texto-left">@Model.Dados.NomeProprietarioAnterior</td>
+        </tr>
+        <tr>
+            <td colspan="18" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left" style="width:260px;">Data do Documento: </td>
+            <td colspan="7" class="texto texto-left">@Model.Dados.DocumentacaoImovelData</td>
+            <td class="texto texto-left" colspan="3">Registro do Imóvel nº: </td>
+            <td colspan="7" class="texto texto-left">@Model.Dados.DocumentacaoImovelRegistro</td>
+        </tr>
+        <tr>
+            <td colspan="18" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left" style="width:260px;">Área do Terreno m²: </td>
+            <td colspan="7" class="texto texto-left">@Model.Dados.AreaTerreno</td>
+            <td class="texto texto-left" colspan="3">Área Construída m²: </td>
+            <td colspan="7" class="texto texto-left">@Model.Dados.AreaConstruida</td>
+        </tr>
+        <tr>
+            <td colspan="18" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left" style="width:260px;">Construção em Andamento: </td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagConstrucaoEmAndamento == true ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Sim</td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagConstrucaoEmAndamento == false ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Não</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto texto-left">Habite-se: </td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagHabiteSe == true ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Sim</td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagHabiteSe == false ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Não</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="18" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left" style="width:260px;">Valor de Aquisição: </td>
+            <td colspan="7" class="texto texto-left">@string.Format("{0:N}", Model.Dados.ValorImovelAquisicao)</td>
+            <td class="texto texto-left" colspan="3">Valor Atual: </td>
+            <td colspan="7" class="texto texto-left">@string.Format("{0:N}", Model.Dados.ValorImovelAtual)</td>
+        </tr>
+        <tr>
+            <td colspan="18" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left" style="width:260px;">Imposição de Construção: </td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagImposicaoConstrucao == true ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Sim</td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagImposicaoConstrucao == false ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Não</td>
+            <td class="espaco1">&nbsp;</td>
+            <td colspan="7">
+                <table cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td class="texto texto-left">Prazo: </td>
+                        <td class="texto texto-left" colspan="8">@(Model.Dados.ImposicaoConstrucaoPrazo)</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="18" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="18" class="titulo">Impostos:</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left" style="width:260px;">IPTU - quitado: </td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagIptuQuitado == true ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Sim</td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagIptuQuitado == false ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Não</td>
+            <td class="espaco1">&nbsp;</td>
+            <td class="texto texto-left">Isento: </td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagIptuIsento == true ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Sim</td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagIptuIsento == false ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Não</td>
+            <td class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="9" class="espaco">&nbsp;</td>
+            <td colspan="9" class="texto texto-left">(Anexar cópias dos talões)</td>
+        </tr>
+        <tr>
+            <td colspan="18" class="espaco">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left" style="width:260px;">INSS da Construção - quitado: </td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagInssConstrucaoQuitado == true ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto">Sim</td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto" style="width:22px;">
+                <table cellpadding="0" cellspacing="0" style="width:22px; height:22px; border:1px solid #000000;">
+                    <tr>
+                        <td class="texto texto-center">@Html.Raw(Model.Dados.FlagInssConstrucaoQuitado == false ? "X" : "&nbsp;")</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="texto" style="width:5px;"></td>
+            <td class="texto" colspan="11">(Anexar cópias dos comprovantes)</td>
+        </tr>
+    </table>
+</div>
+<div style="page-break-before:always">&nbsp;</div>
+<div class="pageother">
+    <h2>DECLARAÇÃO V</h2>
+    <table class="tabela" cellpadding="1" cellspacing="0" width="100%">
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left" style="width:260px;">Total de Membros ativos (menos Columbas): </td>
+            <td class="texto texto-left" colspan="2">@Model.Dados.MembrosAtivos</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left" style="width:260px;">Mensalidades do Organismo Afiliado: </td>
+            <td class="texto texto-left" colspan="2">@Model.Dados.ValorMensalidade</td>
+        </tr>
+        <tr>
+            <td class="texto texto-left" style="width:260px;" colspan="2">Dia e hora das Convocações Ritualísticas: </td>
+            <td class="texto texto-left">
+                @if (Model.Dados.ListaHorario != null && Model.Dados.ListaHorario.Any())
+                {
+                    <table class="tabela" cellpadding="0" cellspacing="0">
+                        @foreach (var semana in Model.Dados.ListaHorario.Select(s => s.Id).Distinct().OrderBy(o => o))
+                        {
+                            <tr>
+                                <td class="textop texto-left" valign="top" style="width:180px;">@semana:</td>
+                                <td class="textop texto-left">
+                                    @foreach (var item in Model.Dados.ListaHorario.Where(w => w.Id == semana).OrderBy(o => o.Text))
+                                    {
+                                        @item.Text<br />
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="textop">&nbsp;</td>
+                            </tr>
+                        }
+                    </table>
+                }
+                else
+                {
+                    <div>(preencha as informações de horários no menu: Configurações / Organismo Afiliado / Horários)</div>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        @if (Model.Dados.ListaAgendaAnual != null && Model.Dados.ListaAgendaAnual.Any())
+        {
+            for (int i = 0; i < Model.Dados.ListaAgendaAnual.Count; i++)
+            {
+                <tr>
+                    <td class="texto texto-left" style="width:260px;" colspan="2">
+                        @Model.Dados.ListaAgendaAnual[i].Atividade
+                        @(Model.Dados.ListaAgendaAnual[i].Fundacao == false ? " - " + @SAL.MVC.Helpers.Constantes.DescricaoMes(Model.Dados.ListaAgendaAnual[i].Mes) : "")
+                    </td>
+                    <td class="texto texto-left">Data da realização: @(Model.Dados.ListaAgendaAnual[i].Data.HasValue ? Model.Dados.ListaAgendaAnual[i].Data.Value.ToString("dd/MM/yyyy") : "")</td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="texto">&nbsp;</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3" class="texto texto-left">(solicite ao administrador do SAL que alimente o calendário anual)</td>
+            </tr>
+        }
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">DECLARAMOS, para todos os fins, que as relações, valores e informações acima citados são completos e corretos, segundo os registros em nosso poder.</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+    </table>
+    <table class="tabela" cellpadding="1" cellspacing="0" width="100%">
+        <tr>
+            <td class="texto texto-left" style="width:400px;"></td>
+            <td>&nbsp;</td>
+            <td class="texto texto-right" style="width:400px;">@Model.Dados.OrganismoAfiliadoCidade, @dtAtualTexto</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        @if (Model.Dados.OficiaisAdministrativos != null)
+        {
+            var listaOficiaisAdministrativos = Model.Dados.OficiaisAdministrativos.OrderBy(o => o.Ordem).ToList();
+
+            for (int i = 0; i < listaOficiaisAdministrativos.Count; i = i + 2)
+            {
+                <tr>
+                    <td class="valores" style="width:250px;">&nbsp;</td>
+                    <td style="width:100px;">&nbsp;</td>
+                    @if (i + 1 <= listaOficiaisAdministrativos.Count)
+                    {
+                        <td class="valores" style="width:250px;">&nbsp;</td>
+                    }
+                    else
+                    {
+                        <td class="espaco" style="width:250px;">&nbsp;</td>
+                    }
+                </tr>
+                <tr>
+                    <td colspan="3" class="texto height:5px;">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="texto height:5px;">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="texto texto-center" style="width:250px;">@listaOficiaisAdministrativos[i].Nome<br />@listaOficiaisAdministrativos[i].Cargo</td>
+                    <td style="width:100px;">&nbsp;</td>
+                    @if (i + 1 <= listaOficiaisAdministrativos.Count)
+                    {
+                        <td class="texto texto-center" style="width:250px;">@listaOficiaisAdministrativos[i + 1].Nome<br />@listaOficiaisAdministrativos[i + 1].Cargo</td>
+                    }
+                    else
+                    {
+                        <td class="espaco" style="width:250px;">&nbsp;</td>
+                    }
+                </tr>
+                <tr>
+                    <td colspan="3" class="texto">&nbsp;</td>
+                </tr>
+            }
+        }
+    </table>
+</div>
+<div style="page-break-before:always">&nbsp;</div>
+<div class="pageother">
+    <h2>PARECER DA COMISSÃO DE VERIFICAÇÃO DE CONTAS</h2>
+    <table class="tabela" cellpadding="1" cellspacing="0" width="100%">
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">Examinamos o presente Relatório Anual e constatamos que os dados fornecidos estão corretos; efetuamos o levantamento do caixa e dos saldos bancários, inclusive a movimentação de cheques; verificamos a procedência das aplicações financeiras; verificamos o registro de mensalidades; constatamos também a procedência e motivos dos débitos e podemos declarar que as cifras correspondem aos registros apresentados, todos devidamente documentados.</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="valores" style="width:250px;">Data: </td>
+            <td style="width:100px;">&nbsp;</td>
+            <td class="texto" style="width:250px;">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">Observações:<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /></td>
+        </tr>
+        <tr>
+            <td colspan="3" class="titulo">COMISSÃO DE VERIFICAÇÃO DE CONTAS</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="texto">&nbsp;</td>
+        </tr>
+        @if (Model.Dados.OficiaisAdministrativosVerificacaoContas != null)
+        {
+            var listaOficiaisAdministrativosVerificacaoContas = Model.Dados.OficiaisAdministrativosVerificacaoContas.OrderBy(o => o).ToList();
+
+            for (int i = 0; i < listaOficiaisAdministrativosVerificacaoContas.Count; i = i + 2)
+            {
+                <tr>
+                    <td class="valores" style="width:250px;">&nbsp;</td>
+                    <td style="width:100px;">&nbsp;</td>
+                    @if (i + 1 <= listaOficiaisAdministrativosVerificacaoContas.Count)
+                    {
+                        <td class="valores" style="width:250px;">&nbsp;</td>
+                    }
+                    else
+                    {
+                        <td class="espaco" style="width:250px;">&nbsp;</td>
+                    }
+                </tr>
+                <tr>
+                    <td colspan="3" class="texto height:5px;">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="texto height:5px;">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="texto texto-center" style="width:250px;">@listaOficiaisAdministrativosVerificacaoContas[i]</td>
+                    <td style="width:100px;">&nbsp;</td>
+                    @if (i + 1 <= listaOficiaisAdministrativosVerificacaoContas.Count)
+                    {
+                        <td class="texto texto-center" style="width:250px;">@listaOficiaisAdministrativosVerificacaoContas[i + 1]</td>
+                    }
+                    else
+                    {
+                        <td class="espaco" style="width:250px;">&nbsp;</td>
+                    }
+                </tr>
+                <tr>
+                    <td colspan="3" class="texto">&nbsp;</td>
+                </tr>
+            }
+        }
+    </table>
+</div>

@@ -1,0 +1,505 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.IniciacaoCalendarioItemModel
+<div class="widget-grid">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <article>
+                <div class="jarviswidget jarviswidget-color-blue" id="wid-tarefas" data-widget-editbutton="false" data-widget-colorbutton="false" role="widget" style="">
+
+                    <!-- widget options:
+                    usage<div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                    data-widget-colorbutton="false"
+                    data-widget-editbutton="false"
+                    data-widget-togglebutton="false"
+                    data-widget-deletebutton="false"
+                    data-widget-fullscreenbutton="false"
+                    data-widget-custombutton="false"
+                    data-widget-collapsed="true"
+                    data-widget-sortable="false"
+
+                    -->
+
+                    <header role="heading">
+                        <h2>Dados do Membro</h2>
+                        <!-- <div class="widget-toolbar">
+                        add: non-hidden - to disable auto hide
+
+                        </div>-->
+                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                    </header>
+
+                    <!-- widget div-->
+                    <div role="content">
+                        <div class="widget-body smart-form">
+                            <fieldset style="padding:0px 14px 5px">
+                                <div class="row">
+                                    <section class="col-md-4">
+                                        <label class="label"><strong>Iniciando</strong></label>
+                                        <label class="input">
+                                            @Model.Nome
+                                        </label>
+                                    </section>
+                                    <section class="col-md-4">
+                                        <label class="label"><strong>Número de Afiliação</strong></label>
+                                        <label class="input">
+                                            @Model.NumeroAfiliacao
+                                        </label>
+                                    </section>
+                                    <section class="col-md-4">
+                                        <label class="label"><strong>Data de Afiliação</strong></label>
+                                        <label class="input">
+                                            @Model.DataAfiliacao.Value.ToString("dd/MM/yyyy")
+                                        </label>
+                                    </section>
+                                </div>
+                                <div class="row">
+                                    <section class="col-md-4">
+                                        <label class="label"><strong>Telefone Residencial</strong></label>
+                                        <label class="input">
+                                            @Model.TelefoneResidencialNumero
+                                        </label>
+                                    </section>
+                                    <section class="col-md-4">
+                                        <label class="label"><strong>Telefone Celular</strong></label>
+                                        <label class="input">
+                                            @Model.TelefoneCelularNumero
+                                        </label>
+                                    </section>
+                                    <section class="col-md-4">
+                                        <label class="label"><strong>Telefone Recado</strong></label>
+                                        <label class="input">
+                                            @Model.TelefoneCelularNumero
+                                        </label>
+                                    </section>
+                                </div>
+                                <div class="row">
+                                    <section>
+                                        <label class="label"><strong>E-mail</strong></label>
+                                        <label class="input">
+                                            @Model.Email
+                                        </label>
+                                    </section>
+                                </div>
+
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article>
+                <div class="jarviswidget jarviswidget-color-blue" id="wid-tarefas" data-widget-editbutton="false" data-widget-colorbutton="false" role="widget" style="">
+
+                    <!-- widget options:
+                    usage<div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                    data-widget-colorbutton="false"
+                    data-widget-editbutton="false"
+                    data-widget-togglebutton="false"
+                    data-widget-deletebutton="false"
+                    data-widget-fullscreenbutton="false"
+                    data-widget-custombutton="false"
+                    data-widget-collapsed="true"
+                    data-widget-sortable="false"
+
+                    -->
+
+                    <header role="heading">
+                        <h2>Iniciação</h2>
+                        <!-- <div class="widget-toolbar">
+                        add: non-hidden - to disable auto hide
+
+                        </div>-->
+                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                    </header>
+
+                    <!-- widget div-->
+                    <div role="content">
+                        <div class="widget-body smart-form">
+                            <fieldset style="padding:0px 14px 5px">
+                                <div class="row">
+                                    <section class="col-md-4">
+                                        <label class="label"><strong>Data</strong></label>
+                                        <label class="input">
+                                            @Model.DataOriginal.ToString("dd/MM/yyyy HH:mm")
+                                        </label>
+                                    </section>
+                                    <section class="col-md-4">
+                                        <label class="label"><strong>Iniciação</strong></label>
+                                        <label class="input">
+                                            @Model.Titulo
+                                        </label>
+                                    </section>
+                                    <section class="col-md-4">
+                                        <label class="label"><strong>Mestre</strong></label>
+                                        <label class="input">
+                                            @Model.Responsavel
+                                        </label>
+                                    </section>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
+                    <article>
+                        <div class="jarviswidget jarviswidget-color-blue" id="wid-tarefas" data-widget-editbutton="false" data-widget-colorbutton="false" role="widget" style="">
+
+                            <!-- widget options:
+                            usage<div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                            data-widget-colorbutton="false"
+                            data-widget-editbutton="false"
+                            data-widget-togglebutton="false"
+                            data-widget-deletebutton="false"
+                            data-widget-fullscreenbutton="false"
+                            data-widget-custombutton="false"
+                            data-widget-collapsed="true"
+                            data-widget-sortable="false"
+
+                            -->
+
+                            <header role="heading">
+                                <h2>Lote / Última Iniciação</h2>
+                                <!-- <div class="widget-toolbar">
+                                add: non-hidden - to disable auto hide
+
+                                </div>-->
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                            </header>
+
+                            <!-- widget div-->
+                            <div role="content">
+                                <div class="widget-body smart-form">
+                                    <fieldset style="padding:0px 14px 5px">
+                                        <div class="row">
+                                            <section class="col-md-6">
+                                                <label class="label"><strong>R+C</strong></label>
+                                                <label class="input">
+                                                    Lote Atual: @Model.LoteAtualGLP
+                                                    @if (Model.ListaIniciacaoRC != null)
+                                                    {
+                                                        var ListaIniciacaoRC_item = Model.ListaIniciacaoRC
+                                                            .Where(w => string.IsNullOrEmpty(w.Organismo) == false)
+                                                            .OrderByDescending(o => o.Data)
+                                                            .FirstOrDefault();
+
+                                                        if (ListaIniciacaoRC_item != null)
+                                                        {
+                                                            <text>
+                                                                <br /><br />Data Iniciação: @(ListaIniciacaoRC_item.Data.ToString("dd/MM/yyyy"))<br />
+                                                                @(ListaIniciacaoRC_item.Iniciacao)<br />
+                                                                @(ListaIniciacaoRC_item.OrganismoNome) (@(ListaIniciacaoRC_item.Organismo))
+                                                            </text>
+                                                        }
+                                                    }
+                                                </label>
+                                            </section>
+                                            <section class="col-md-6">
+                                                <label class="label"><strong>TOM</strong></label>
+                                                <label class="input">
+                                                    Lote Atual: @Model.LoteAtualTOM
+                                                    @if (Model.ListaIniciacaoTOM != null)
+                                                    {
+                                                        var ListaIniciacaoTOM_item = Model.ListaIniciacaoTOM
+                                                        .Where(w => string.IsNullOrEmpty(w.Organismo) == false)
+                                                        .OrderByDescending(o => o.Data)
+                                                        .FirstOrDefault();
+
+                                                        if (ListaIniciacaoTOM_item != null)
+                                                        {
+                                                            <text>
+                                                                <br /><br />Data Iniciação: @(ListaIniciacaoTOM_item.Data.ToString("dd/MM/yyyy"))<br />
+                                                                @(ListaIniciacaoTOM_item.Iniciacao)<br />
+                                                                @(ListaIniciacaoTOM_item.OrganismoNome) (@(ListaIniciacaoTOM_item.Organismo))
+                                                            </text>
+                                                        }
+                                                    }
+                                                </label>
+                                            </section>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5" style="display:@(Model.InscricaoCalendarioId == 0 ? "none" : "block")">
+                    <article>
+                        <div class="jarviswidget jarviswidget-color-blue" id="wid-tarefas" data-widget-editbutton="false" data-widget-colorbutton="false" role="widget" style="">
+
+                            <!-- widget options:
+                            usage<div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                            data-widget-colorbutton="false"
+                            data-widget-editbutton="false"
+                            data-widget-togglebutton="false"
+                            data-widget-deletebutton="false"
+                            data-widget-fullscreenbutton="false"
+                            data-widget-custombutton="false"
+                            data-widget-collapsed="true"
+                            data-widget-sortable="false"
+
+                            -->
+
+                            <header role="heading">
+                                <h2>Checklist </h2>
+                                <!-- <div class="widget-toolbar">
+                                add: non-hidden - to disable auto hide
+
+                                </div>-->
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                            </header>
+
+                            <!-- widget div-->
+                            <div role="content">
+                                <div class="widget-body smart-form">
+                                    <fieldset style="padding:0px 14px 5px" id="pnlCheckList">
+                                        <section>
+                                            <label class="checkbox">
+                                                @Html.CheckBox("QuitacaoGLP", Model.QuitacaoGLP.HasValue && Model.QuitacaoGLP.Value, new { onclick = "GravarCheckList(this);" })
+                                                <i></i>Ativo na GLP (@(Model.DataQuitacaoGLP.HasValue ? Model.DataQuitacaoGLP.Value.ToString("dd/MM/yyyy") : "Não Tem"))
+                                            </label>
+                                        </section>
+                                        @if (Model.IniciacaoMartinista)
+                                        {
+                                            <section>
+                                                <label class="checkbox">
+                                                    @Html.CheckBox("QuitacaoTOM", Model.QuitacaoTOM.HasValue && Model.QuitacaoTOM.Value, new { onclick = "GravarCheckList(this);" })
+                                                    <i></i>Ativo na TOM (@(Model.DataQuitacaoTOM.HasValue ? Model.DataQuitacaoTOM.Value.ToString("dd/MM/yyyy") : "Não Tem"))
+                                                </label>
+                                            </section>
+                                            if (Model.IniciacaoId == Convert.ToInt32(SAL.MVC.Helpers.Constantes.CodigoIniciacao.MartinistaAssociado))
+                                            {
+                                                <section>
+                                                    <label class="checkbox">
+                                                        @Html.CheckBox("IniciacaoPrimeiroGrau", Model.IniciacaoPrimeiroGrau.HasValue && Model.IniciacaoPrimeiroGrau.Value, new { onclick = "GravarCheckList(this);" })
+                                                        <i></i>Iniciado ao 1º Grau de Templo
+                                                    </label>
+                                                </section>
+                                                <section>
+                                                    <label class="checkbox">
+                                                        @Html.CheckBox("CarteiraIniciacaoGLP", Model.CarteiraIniciacaoGLP.HasValue && Model.CarteiraIniciacaoGLP.Value, new { onclick = "GravarCheckList(this);" })
+                                                        <i></i>Carteira de Iniciação Rosacruz
+                                                    </label>
+                                                </section>
+                                                <section>
+                                                    <label class="checkbox">
+                                                        @Html.CheckBox("AutorizacaoGH", Model.AutorizacaoGH.HasValue && Model.AutorizacaoGH.Value, new { onclick = "GravarCheckList(this);" })
+                                                        <i></i>Autorizado pelo Grande Conselheiro
+                                                    </label>
+                                                </section>
+                                            }
+                                            if (Model.IniciacaoId != Convert.ToInt32(SAL.MVC.Helpers.Constantes.CodigoIniciacao.MartinistaAssociado))
+                                            {
+                                                <section>
+                                                    <label class="checkbox">
+                                                        @Html.CheckBox("PresencaMinima", Model.PresencaMinima.HasValue && Model.PresencaMinima.Value, new { onclick = "GravarCheckList(this);" })
+                                                        <i></i>Presença (@Model.PresencaTotalMembro de @Model.PresencaTotalExigida conventículos exigidos)
+                                                    </label>
+                                                </section>
+                                                <section>
+                                                    <label class="checkbox">
+                                                        @Html.CheckBox("CarteiraIniciacaoTOM", Model.CarteiraIniciacaoTOM.HasValue && Model.CarteiraIniciacaoTOM.Value, new { onclick = "GravarCheckList(this);" })
+                                                        <i></i>Carteira de Iniciação TOM
+                                                    </label>
+                                                </section>
+                                            }
+                                            if (Model.IniciacaoId == Convert.ToInt32(SAL.MVC.Helpers.Constantes.CodigoIniciacao.MartinistaSI))
+                                            {
+                                                <section>
+                                                    <label class="checkbox">
+                                                        @Html.CheckBox("TrabalhoEscrito", Model.TrabalhoEscrito.HasValue && Model.TrabalhoEscrito.Value, new { onclick = "GravarCheckList(this);" })
+                                                        <i></i>Possui Trabalho Escrito
+                                                    </label>
+                                                </section>
+                                                <section>
+                                                    <label class="checkbox">
+                                                        @Html.CheckBox("FormularioNomeMistico", Model.FormularioNomeMistico.HasValue && Model.FormularioNomeMistico.Value, new { onclick = "GravarCheckList(this);" })
+                                                        <i></i>Entregou Formulário com o Nome Místico
+                                                    </label>
+                                                </section>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (Model.IniciacaoId == Convert.ToInt32(SAL.MVC.Helpers.Constantes.CodigoIniciacao.Loja) || Model.IniciacaoId == Convert.ToInt32(SAL.MVC.Helpers.Constantes.CodigoIniciacao.Pronaos))
+                                            {
+                                                <section>
+                                                    <label class="checkbox">
+                                                        @Html.CheckBox("QuitacaoOA", Model.QuitacaoOA.HasValue && Model.QuitacaoOA.Value, new { onclick = "GravarCheckList(this);" })
+                                                        <i></i>Ativo no OA (@(Model.DataQuitacaoOA.HasValue ? Model.DataQuitacaoOA.Value.ToString("dd/MM/yyyy") : "Não Tem"))
+                                                    </label>
+                                                </section>
+                                            }
+                                            <section>
+                                                <label class="checkbox">
+                                                    @Html.CheckBox("CredencialGrandeLoja", Model.CredencialGrandeLoja.HasValue && Model.CredencialGrandeLoja.Value, new { onclick = "GravarCheckList(this);" })
+                                                    <i></i>Credencial da Grande Loja (Cartão plástico branco)
+                                                </label>
+                                            </section>
+                                            <section>
+                                                <label class="checkbox">
+                                                    @Html.CheckBox("MonografiaGrauCorrespondente", Model.MonografiaGrauCorrespondente.HasValue && Model.MonografiaGrauCorrespondente.Value, new { onclick = "GravarCheckList(this);" })
+                                                    <i></i>Qualquer monografia do Grau correspondente (Lote Mínimo: @Model.LoteMinimo)
+                                                </label>
+                                            </section>
+                                            if (Model.IniciacaoId != Convert.ToInt32(SAL.MVC.Helpers.Constantes.CodigoIniciacao.RosacruzPrimeiroGrau))
+                                            {
+                                                <section>
+                                                    <label class="checkbox">
+                                                        @Html.CheckBox("CarteiraIniciacaoGLP", Model.CarteiraIniciacaoGLP.HasValue && Model.CarteiraIniciacaoGLP.Value, new { onclick = "GravarCheckList(this);" })
+                                                        <i></i>Carteira de Iniciação Rosacruz
+                                                    </label>
+                                                </section>
+                                            }
+                                            <section>
+                                                <label class="checkbox">
+                                                    @Html.CheckBox("PalavraPasse", Model.PalavraPasse.HasValue && Model.PalavraPasse.Value, new { onclick = "GravarCheckList(this);" })
+                                                    <i></i>Palavra de passe
+                                                </label>
+                                            </section>
+                                        }
+                                        <div class="alert alert-success fade in" id="pnlMembroApto" style="display:@(Model.Apto.HasValue && Model.Apto.Value ? "block" : "none");">
+                                            <i class="fa-fw fa fa-check"></i>
+                                            Membro Apto para realizar a iniciação
+                                        </div>
+                                        <div class="alert alert-danger fade in" id="pnlMembroCancelado" style="display:@(Model.Cancelado.HasValue && Model.Cancelado.Value ? "block" : "none");">
+                                            <i class="fa-fw fa fa-times"></i>
+                                            @if (Model.CanceladoData.HasValue)
+                                            {
+                                                <text>
+                                                    Membro desistiu de realizar a iniciação em: @Model.CanceladoData.Value.ToString("dd/MM/yyyy HH:mm:ss")
+                                                </text>
+                                            }
+                                            else
+                                            {
+                                                <text>
+                                                    Membro desistiu de realizar a iniciação
+                                                </text>
+                                            }
+                                        </div>
+                                        <div class="alert alert-warning fade in" id="pnlMembroEspera" style="display:@(Model.ListaEspera.HasValue && Model.ListaEspera.Value ? "block" : "none");">
+                                            <i class="fa-fw fa fa-times"></i>
+                                            @if (Model.ListaEsperaData.HasValue)
+                                            {
+                                                <text>
+                                                    Membro em Espera desde: @Model.ListaEsperaData.Value.ToString("dd/MM/yyyy HH:mm:ss")
+                                                </text>
+                                            }
+                                            else
+                                            {
+                                                <text>
+                                                    Membro em Espera
+                                                </text>
+                                            }
+                                        </div>
+                                        <div class="btn-group" id="pnlCanceladoBotao" style="display:@(Model.Cancelado.HasValue && Model.Cancelado.Value || (Model.InscricaoCalendarioId == 0) ? "none" : "block")">
+                                            <button type="button" class="btn btn-danger" onclick="CancelarInscricao();" style="padding:5px;">
+                                                Cancelar Inscrição
+                                            </button>
+                                            <button type="button" class="btn btn-primary" onclick="ComprovanteInscricao();" style="padding:5px; margin-left:10px;">
+                                                Imprimir Comprovante
+                                            </button>
+                                        </div>
+                                        <button type="button" class="btn btn-success" onclick="RefazerInscricao();" id="pnlInscricaoBotao" style="padding:5px; display:@(Model.Cancelado.HasValue && Model.Cancelado.Value && Model.TotalInscritos < Model.TotalVagas && (Model.InscricaoCalendarioId != 0) ? "block" : "none")">
+                                            Refazer Inscrição
+                                        </button>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <!-- end widget div -->
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" id="pnlInscrever" style="display:@(Model.InscricaoCalendarioId != 0 ? "none" : "block")">
+            <button type="button" class="btn btn-danger" onclick="Inscricao(true);" style="padding:5px;">
+                Clique aqui para inscrever este membro na iniciação.
+            </button>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" style="display:@(Model.InscricaoCalendarioId == 0 ? "none" : "block")">
+            <article>
+                <div class="jarviswidget jarviswidget-color-blue" id="wid-tarefas" data-widget-editbutton="false" data-widget-colorbutton="false" role="widget" style="">
+
+                    <!-- widget options:
+                    usage<div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                    data-widget-colorbutton="false"
+                    data-widget-editbutton="false"
+                    data-widget-togglebutton="false"
+                    data-widget-deletebutton="false"
+                    data-widget-fullscreenbutton="false"
+                    data-widget-custombutton="false"
+                    data-widget-collapsed="true"
+                    data-widget-sortable="false"
+
+                    -->
+
+                    <header role="heading">
+                        <h2>Histórico </h2>
+                        <!-- <div class="widget-toolbar">
+                        add: non-hidden - to disable auto hide
+
+                        </div>-->
+                    </header>
+
+                    <!-- widget div-->
+                    <div role="content">
+                        <div class="widget-body widget-hide-overflow no-padding">
+                            <!-- content goes here -->
+                            <!-- CHAT CONTAINER -->
+                            <!-- CHAT BODY -->
+                            <div id="chat-body" class="chat-body custom-scroll">
+                                <ul id="pnlWorkflowList">
+                                    @{
+                                        Html.RenderPartial("WorkflowList", Model.ListaWorkflow);
+                                    }
+                                </ul>
+                            </div>
+                            <!-- CHAT FOOTER -->
+                            <div class="chat-footer">
+
+                                <!-- CHAT TEXTAREA -->
+                                <div class="textarea-div">
+
+                                    <div class="typearea">
+                                        <textarea placeholder="Escreva um comentário" id="txtWorkflowComentario" class="custom-scroll" onkeyup="HabilitaGravacaoComentarioWorkflow(this.value.trim().length > 0);"></textarea>
+                                    </div>
+
+                                </div>
+
+                                <!-- CHAT REPLY/SEND -->
+                                <span class="textarea-controls">
+                                    <button class="btn btn-sm btn-primary pull-right" id="btnWorkflowComentario" onclick="GravarWorkflowComentario()" disabled="disabled">
+                                        Gravar
+                                    </button>
+                                    <span class="pull-right smart-form" style="margin-top: 3px; margin-right: 10px; display:@(string.IsNullOrEmpty(Model.Email) == false ? "block" : "none")">
+                                        <label class="checkbox pull-right">
+                                            <input type="checkbox" name="cbWorkflowComentarioEnviarMembro" id="cbWorkflowComentarioEnviarMembro" disabled="disabled">
+                                            <i></i>Enviar ao membro
+                                        </label>
+                                    </span>
+                                </span>
+                            </div>
+                            <!-- end content -->
+                        </div>
+                    </div>
+                    <!-- end widget div -->
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $("body").css({ overflow: 'hidden' });
+            $("div[aria-describedby='myModalInscricao'] span")[1].remove();
+        }, 300);
+    });
+
+    ToggleDisabled(@((Model.Cancelado.HasValue && Model.Cancelado.Value).ToString().ToLower()));
+</script>

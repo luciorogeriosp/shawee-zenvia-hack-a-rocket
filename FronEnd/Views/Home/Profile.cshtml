@@ -1,0 +1,81 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<FrontEnd.Models.UsuarioClientePerfilModel> perfilLista = new List<FrontEnd.Models.UsuarioClientePerfilModel>();
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilLogado") != null)
+    {
+        perfilLista = (List<FrontEnd.Models.UsuarioClientePerfilModel>)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilLogado");
+    }
+
+    FrontEnd.Models.UsuarioClientePerfilModel perfilItem = null;
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado") != null)
+    {
+        perfilItem = (FrontEnd.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    }
+
+    string dtAtual = DateTime.Now.ToString("yyyyMMddHHmmss");
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-user fa-fw "></i>
+                    Meus Dados
+                </h1>
+            </div>
+        </div>
+        @{Html.RenderAction("ProfileForm");}
+    </div>
+</div>
+<!-- END MAIN PANEL -->
+<script>
+    function SelecionaCliente(PerfilId, ClienteId) {
+        $.ajax(
+        {
+            url: '@Url.Action("SelecionaCliente", "Home")',
+            type: "POST",
+            data: { PerfilId: PerfilId, ClienteId: ClienteId },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data, textStatus, jqXHR) {
+                if (data.success) {
+                    OnBeginForm();
+                    window.location.href = '@Url.Action("Painel", "Home")';
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                OnCompleteForm();
+            },
+            complete: function () {
+                //OnCompleteForm();
+            }
+        });
+    }
+
+    function GravarDadosUsuario() {
+        $(".alert").remove();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Home/ProfileForm',
+            data: $.param($("#frmProfile").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#tabDadosUsuario").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+</script>

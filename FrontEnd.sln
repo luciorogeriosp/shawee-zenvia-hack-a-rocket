@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30309.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontEnd", "FronEnd\FrontEnd.csproj", "{F19CCB0F-94C1-4B93-B052-A81DA5EFF52B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tropical.Infrastructure", "Tropical.Infrastructure\Tropical.Infrastructure.csproj", "{8031EF6F-B5E6-4F03-A952-9A109107CD4D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F19CCB0F-94C1-4B93-B052-A81DA5EFF52B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F19CCB0F-94C1-4B93-B052-A81DA5EFF52B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F19CCB0F-94C1-4B93-B052-A81DA5EFF52B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F19CCB0F-94C1-4B93-B052-A81DA5EFF52B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8031EF6F-B5E6-4F03-A952-9A109107CD4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8031EF6F-B5E6-4F03-A952-9A109107CD4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8031EF6F-B5E6-4F03-A952-9A109107CD4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8031EF6F-B5E6-4F03-A952-9A109107CD4D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DBC0BFEE-CB2B-4899-A890-35C406653561}
+	EndGlobalSection
+EndGlobal

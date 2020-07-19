@@ -1,0 +1,236 @@
+﻿@model SAL.MVC.Models.RelatorioModel<List<SAL.MVC.Areas.Suprimento.Models.ProdutoModel>>
+@{
+    decimal custo = 0;
+    decimal venda = 0;
+    decimal lucro = 0;
+
+    decimal custo_total = 0;
+    decimal venda_total = 0;
+    decimal lucro_total = 0;
+    int qtde_total = 0;
+
+}
+<html>
+<body>
+    <meta name="viewport" content="width=device-width">
+
+    <!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script>
+        if (!window.jQuery) {
+            document.write('<script src="@Url.Content("~/js/libs/jquery-2.0.2.min.js")" ><\/script>');
+        }
+    </script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script>
+        if (!window.jQuery.ui) {
+            document.write('<script src="@Url.Content("~/js/libs/jquery-ui-1.10.3.min.js")" ><\/script>');
+        }
+    </script>
+
+    <link rel="stylesheet" href="@Url.Content("~/js/jsPDF-AutoTable-master/pure-min.css")">
+    <link rel="stylesheet" href="@Url.Content("~/js/jsPDF-AutoTable-master/grids-responsive-min.css")">
+
+
+    <script src="@Url.Content("~/js/jsPDF-AutoTable-master/jspdf.min.js")"></script>
+    <script>if (window.define) delete window.define.amd;</script>
+    <script src="@Url.Content("~/js/jsPDF-AutoTable-master/jspdf.plugin.autotable.src.js")"></script>
+    <div id="pnlTitle" style="display:none;">@Model.ReportTitle</div>
+    <div id="pnlSubTitle" style="display:none;">@Model.ReportSubitle</div>
+    <table id="pnlDadosItens" class="table table-striped" style="display:none;">
+        <thead>
+            <tr>
+                <th>Fornecedor</th>
+                <th>Custo Total</th>
+                <th>Venda Total</th>
+                <th>Lucro</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Dados)
+            {
+                lucro = 0;
+                lucro = (item.ValorVenda - item.ValorCusto) * item.QuantidadeVendida;
+                lucro_total += lucro;
+                qtde_total += item.QuantidadeVendida;
+                custo_total += item.ValorCusto * item.QuantidadeVendida;
+                venda_total += item.ValorVenda * item.QuantidadeVendida;
+                custo = item.ValorCusto * item.QuantidadeVendida;
+                venda = item.ValorVenda * item.QuantidadeVendida;
+                <tr>
+                    <td>@item.FornecedorNome</td>
+                    <td>@custo.ToString("0.00")</td>
+                    <td>@venda.ToString("0.00")</td>
+                    <td>@lucro.ToString("0.00")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <table id="pnlDadosTotal" class="table table-striped" style="display:none;">
+        <thead>
+            <tr>
+                <th>Custo</th>
+                <th>Venda</th>
+                <th>Lucro Estimado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@custo_total.ToString("0.00")</td>
+                <td>@venda_total.ToString("0.00")</td>
+                <td>@lucro_total.ToString("0.00")</td>
+            </tr>
+        </tbody>
+    </table>
+    <script type="text/javascript">
+        $(function () {
+
+            var doc = new jsPDF('L', 'pt', 'a4', true);
+            var HeaderOK = false;
+
+            doc.setProperties({
+                title: $("#pnlTitle").text(),
+                subject: ''
+            });
+
+            var header = function (data) {
+
+                if (!HeaderOK) {
+
+                    doc.setFontSize(20);
+                    doc.setTextColor(40);
+                    doc.setFontStyle('normal');
+                    doc.text($("#pnlTitle").html(), 40, 45);
+                    doc.setFontSize(12);
+                    doc.text($("#pnlSubTitle").html(), 40, 65);
+
+                    HeaderOK = true;
+                }
+            };
+
+            var totalPagesExp = "{total_pages_count_string}";
+            var footer = function (data) {
+                var str = "Página " + doc.internal.getCurrentPageInfo().pageNumber;
+                // Total page number plugin only available in jspdf v1.0+
+                if (typeof doc.putTotalPages === 'function') {
+                    str = str + " de " + totalPagesExp;
+                }
+
+                doc.setFontStyle('normal');
+                doc.setFontSize(10);
+                doc.setFillColor(255, 255, 255);
+                doc.rect(50, doc.internal.pageSize.height - 35, 200, 20, 'F');
+
+                doc.text(str, 50, doc.internal.pageSize.height - 30);
+            };
+
+            var options = {
+            };
+
+            var dataTipoSuprimento = '';
+            var contadorSpan = 0;
+
+            var dataTipoSuprimento = '';
+            var contadorSpan = 0;
+            var res;
+            var resItens;
+            var contadorRecebedoria = 0;
+
+            resItens = doc.autoTableHtmlToJson(document.getElementById("pnlDadosItens"));
+            doc.autoTable(resItens.columns, resItens.data, {
+                startY: (contadorRecebedoria == 0) ? 80 : doc.autoTableEndPosY() + 20,
+                margin: { left: 40, bottom: 60 },
+                pageBreak: 'auto',
+                tableWidth: 'auto',
+                styles: {
+                    font: 'Arial',
+                    fillStyle: 'DF',
+                    lineColor: [44, 62, 80],
+                    lineWidth: 1,
+                    overflow: 'linebreak'
+                },
+                headerStyles: { fontSize: 13, fontStyle: 'bold', halign: 'center', valign: 'middle' },
+                beforePageContent: header,
+                afterPageContent: footer,
+                columnStyles: {
+                    0: {
+                        halign: 'left'
+                    },
+                    1: {
+                        halign: 'center',
+                    },
+                    2: {
+                        halign: 'center',
+                        columnWidth: 100
+                    },
+                    3: {
+                        halign: 'right'
+                    },
+                    4: {
+                        halign: 'right'
+                    },
+                    5: {
+                        halign: 'center'
+                    },
+                    6: {
+                        halign: 'right'
+                    },
+                    7: {
+                        halign: 'right'
+                    },
+                    8: {
+                        halign: 'center'
+                    }
+                },
+            });
+
+            resTotal = doc.autoTableHtmlToJson(document.getElementById("pnlDadosTotal"));
+            doc.autoTable(resTotal.columns, resTotal.data, {
+                startY: doc.autoTableEndPosY() + 30,
+                tableWidth: 408,
+                drawHeaderRow: function (row, data) {
+                    return true;
+                },
+                margin: { left: 496 },
+                styles: {
+                    font: 'Arial',
+                    fillStyle: 'DF',
+                    lineColor: [44, 62, 80],
+                    lineWidth: 1,
+                    overflow: 'linebreak'
+                },
+                columnStyles: {
+                    0: {
+                        halign: 'right',
+                        fontSize: 12,
+                        columnWidth: 102
+                    },
+                    1: {
+                        halign: 'right',
+                        fontSize: 12,
+                        columnWidth: 102
+                    },
+                    2: {
+                        halign: 'right',
+                        fontSize: 12,
+                        columnWidth: 102
+                    },
+                    3: {
+                        halign: 'right',
+                        fontSize: 12,
+                        columnWidth: 102
+                    }
+                },
+            });
+
+            // Total page number plugin only available in jspdf v1.0+
+            if (typeof doc.putTotalPages === 'function') {
+                doc.putTotalPages(totalPagesExp);
+            }
+
+            parent.document.getElementById("iframeImprimir").src = doc.output('datauristring');
+        });
+    </script>
+</body>
+</html>

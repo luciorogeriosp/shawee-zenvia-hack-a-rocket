@@ -1,0 +1,38 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.ConsultaMembroVisaoGeralModel
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapseRC_@(Model.MembroSOA.Identificador)" class="collapsed"> <i class="fa fa-lg fa-angle-down pull-right"></i> <i class="fa fa-lg fa-angle-up pull-right"></i> Iniciação R+C </a></h4>
+    </div>
+    <div id="collapseRC_@(Model.MembroSOA.Identificador)" class="panel-collapse collapse">
+        <div class="panel-body no-padding">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th class="text-center" width="50%">Iniciação</th>
+                        <th class="text-center" width="25%">Data</th>
+                        <th class="text-center" width="25%" nowrap="nowrap"><span class="visible-lg visible-md visible-sm">Organismo Afiliado</span><span class="visible-xs">OA</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.MembroSOA.ListaIniciacaoRC != null && Model.MembroSOA.ListaIniciacaoRC.Any())
+                    {
+                        foreach (var itemIniacao in Model.MembroSOA.ListaIniciacaoRC)
+                        {
+                            <tr>
+                                <td>@itemIniacao.Iniciacao</td>
+                                <td class="text-center">@itemIniacao.Data.ToString("dd/MM/yyyy")</td>
+                                <td class="text-center">@(string.IsNullOrEmpty(itemIniacao.Organismo) == false ? itemIniacao.Organismo + " - " + itemIniacao.OrganismoNome : "")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3">Não existem iniciações cadastradas</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

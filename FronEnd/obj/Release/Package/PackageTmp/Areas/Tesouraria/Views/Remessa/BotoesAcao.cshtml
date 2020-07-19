@@ -1,0 +1,31 @@
+﻿@model SAL.MVC.Areas.Tesouraria.Models.RemessaModel
+@if (Model != null && Model.Id > 0)
+{
+    <td class="text-center">@Model.Codigo.ToString("00") - @SAL.MVC.Helpers.Constantes.DescricaoMes(Model.Mes) / @Model.Ano</td>
+    <td class="text-center">@(Model.SituacaoNome)</td>
+    <td class="text-center">@(Model.QuantidadeItens)</td>
+    <td class="text-right">@(Model.ValorTotal)</td>
+    @*<td class="text-center">@Model.DataVenda.ToString("dd/MM/yyyy")<br />@Model.UsuarioNomeVenda</td>*@
+    <td class="text-center">@Html.Raw((Model.DataGeracao.HasValue) ? Model.DataGeracao.Value.ToString("dd/MM/yyyy") + "</br>" + Model.UsuarioNomeGeracao : "")</td>
+    <td class="text-center">@Html.Raw((Model.DataPagamento.HasValue) ? "<a href=\"" + Model.Arquivo  + "\" target=\"_blank\">" + Model.DataPagamento.Value.ToString("dd/MM/yyyy") + "</br>" + Model.UsuarioNomePagamento + "</a>" : "")</td>
+    <td class="text-center">@Html.Raw((Model.DataEnvio.HasValue) ? Model.DataEnvio.Value.ToString("dd/MM/yyyy") + "</br>" + Model.UsuarioNomeEnvio : "")</td>
+    <td class="text-center">
+        @switch (Model.SituacaoId)
+        {
+            case SAL.Repository.Comum.Constantes.SituacaoRemessaEmAberto:
+                <a class="btn btn-warning" href="javascript:RemessaGerar(@(Model.Id));">Gerar</a>
+                break;
+            case SAL.Repository.Comum.Constantes.SituacaoRemessaAguardandoPagamento:
+                <a class="btn btn-warning" href="javascript:RemessaConfirmarPagamento(@(Model.Id));">Confirmar Pagamento</a>
+                break;
+            case SAL.Repository.Comum.Constantes.SituacaoRemessaPago:
+                <a class="btn btn-warning" href="javascript:RemessaEnviar(@(Model.Id));">Enviar</a>
+                break;
+            case SAL.Repository.Comum.Constantes.SituacaoRemessaEnviado:
+            case SAL.Repository.Comum.Constantes.SituacaoRemessaLancado:
+                <a class="btn btn-warning" href="javascript:RemessaEnviar(@(Model.Id));">Reenviar</a>
+                break;
+        }
+    </td>
+    <td><a class="btn btn-primary" href="javascript:RemessaImprimir(@(Model.Id));">Imprimir</a></td>
+}

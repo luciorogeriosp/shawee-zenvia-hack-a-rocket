@@ -1,0 +1,131 @@
+﻿@model SAL.MVC.Areas.Configuracao.Models.OrganismoAfiliadoDadosOAViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<!-- Error states for elements -->
+<form class="smart-form" id="frmDadosOrganismoAfiliado">
+    <fieldset>
+        <div class="row">
+            <section class="col col-4">
+                <label class="label">
+                    <label for="NumeroAfiliacao">Número de Afiliação</label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.NumeroAfiliacao)
+                </label>
+            </section>
+            <section class="col col-4">
+                <label class="label">Região</label>
+                <label class="input">
+                    <input type="text" value="@Model.RegiaoSigla" disabled="disabled">
+                </label>
+            </section>
+            <section class="col col-4">
+                <label class="label">Tipo</label>
+                <label class="input">
+                    <input type="text" value="@Model.OrganismoAfiliadoTipoNome" disabled="disabled">
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col">
+                <label class="checkbox">
+                    @Html.CheckBoxFor(m => m.AtualizacaoMembros)
+                    <i></i>Lançar quitação de membro automaticamente
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col">
+                <label class="checkbox">
+                    @Html.CheckBoxFor(m => m.HabilitarOrdemVenda)
+                    <i></i>Habilitar Ordem de Venda
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col">
+                <label class="checkbox">
+                    @Html.CheckBoxFor(m => m.HabilitarPlanoFamiliar)
+                    <i></i>Habilitar Plano Familiar
+                </label>
+            </section>
+        </div>
+    </fieldset>
+    @for (int i = 0; i < Model.ListOrganismoAfiliado.Count; i++) {
+        <fieldset style="border:0;">
+            <legend>@(i + 1)</legend>
+            <div class="row">
+                <section class="col col-3">
+                    <label class="label">Tipo</label>
+                    <label class="input">
+                        @Html.HiddenFor(m => m.ListOrganismoAfiliado[i].Id)
+                        <input type="text" value="@Model.ListOrganismoAfiliado[i].Tipo" disabled="disabled">
+                    </label>
+                </section>
+                <section class="col col-3">
+                    <label class="label">
+                        <label for="ListOrganismoAfiliado[@(i)].Sigla">Sigla</label>
+                        <span class="font-xs text-danger">*</span>
+                    </label>
+                    <label class="label"></label>
+                    <label class="input">
+                        @Html.TextBoxFor(m => m.ListOrganismoAfiliado[i].Sigla, new { style = "text-transform: uppercase" })
+                    </label>
+                </section>
+                <section class="col col-3">
+                    <label class="label">
+                        <label for="ListOrganismoAfiliado[@(i)].Nome">Nome</label>
+                        <span class="font-xs text-danger">*</span>
+                    </label>
+                    <label class="input">
+                        @Html.TextBoxFor(m => m.ListOrganismoAfiliado[i].Nome, new { style = "text-transform: uppercase", disabled="disabled" })
+                    </label>
+                </section>
+                <section class="col col-3">
+                    <label class="label">Data Fundação</label>
+                    <label class="input">
+                        @Html.TextBoxFor(m => m.ListOrganismoAfiliado[i].DataFundacao, new { type="date" })
+                    </label>
+                </section>
+            </div>
+        </fieldset>
+    }
+        <footer>
+        <button type="submit" class="btn btn-primary">
+            Gravar Dados do Organismo
+        </button>
+    </footer>
+</form>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmDadosOrganismoAfiliado"))
+<script>
+    $("[data-mask]").each(function () { var a = $(this), b = a.attr("data-mask") || "error...", c = a.attr("data-mask-placeholder") || "X"; a.mask(b, { placeholder: c }), a = null });
+
+    $("#frmDadosOrganismoAfiliado").submit(function (e) {
+        var postData = $(this).serializeArray();
+
+        $("#frmDadosOrganismoAfiliado button").prop("disabled", true);
+
+        $.ajax(
+        {
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosOrganismoAfiliado',
+            type: "POST",
+            data: postData,
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data, textStatus, jqXHR) {
+                $("#pnlDadosOrganismo").html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                OnCompleteForm();
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+        e.preventDefault(); //STOP default action
+    });
+</script>

@@ -1,0 +1,208 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-book"></i>
+                    Biblioteca | Locais
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:10px;">
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" onclick="AbrirModalLocal();">
+                        Incluir Local
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="widget-body" id="LocalLista">
+
+        </div>
+    </div>
+</div>
+<div id="myModalLocal" title="Formulário de Local" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalLocalContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogLocal();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmDialogLocal();" id="btnConfirmar">Confirmar</button>
+    </div>
+</div>
+<script>
+    var dialogLocal;
+
+    function CloseDialogLocal() {
+        dialogLocal.dialog("close");
+    }
+
+    function LoadList() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Biblioteca/Local/Lista',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#LocalLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmDialogLocal() {
+        ClearNotify();
+        $("#btnConfirmar").attr("disabled", "disabled");
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Biblioteca/Local/Form',
+            data: $.param($("#frmLocal").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalLocalContent").html("");
+                $("#myModalLocalContent").html(data);
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfigureDialogLocal() {
+        dialogLocal = $("#myModalLocal").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()),
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' })
+            }
+        });
+    }
+    
+    function AbrirModalLocal() {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Biblioteca/Local/Form',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalLocalContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogLocal.dialog("open");
+                dialogLocal.dialog("moveToTop");
+
+                $("#myModalLocalContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Editar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Biblioteca/Local/Form',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalLocalContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogLocal.dialog("open");
+                dialogLocal.dialog("moveToTop");
+
+                $("#myModalLocalContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Apagar(Id, Nome) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente excluir o Local " + Nome + "?", "ApagarConfirmar(" + Id + ", '" + Nome + "');")
+    }
+
+    function ApagarConfirmar(Id, Nome) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Biblioteca/Local/Excluir',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Biblioteca | Local', data.msg);
+                    $("#line_" + Id).remove();
+                }
+                else {
+                    ShowNotify('danger', 'Biblioteca | Local', data.msg);
+                }
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    $(window).resize(function () {
+        ConfigureDialogLocal();
+    });
+
+    $(document).ready(function () {
+        ConfigureDialogLocal();
+        LoadList();
+    });
+</script>

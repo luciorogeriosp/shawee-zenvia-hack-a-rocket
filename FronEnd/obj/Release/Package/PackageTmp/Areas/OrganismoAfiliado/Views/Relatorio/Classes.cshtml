@@ -1,0 +1,95 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.RelatorioClassesFiltroModel
+@{
+    ViewBag.Title = "Diario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-bar-chart-o fa-fw "></i>
+                    Organismo Afiliado | Relatórios | Classes
+                </h1>
+            </div>
+            <div>
+                <article class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+                        <div role="content" style="border-width: 1px 1px 1px 1px; border-style: solid; border-top-color: #CCC!important;">
+                            <div class="widget-body no-padding">
+                                <form id="frmConsultaRemessa" class="smart-form" novalidate="novalidate" onsubmit="return false">
+                                    <header>
+                                        Defina o filtro
+                                    </header>
+                                    <fieldset>
+                                        <div class="row">
+                                            <section class="col col-10">
+                                                <label for="ClasseId">Classe</label>
+                                                <label class="select">
+                                                    @Html.DropDownListFor(m => m.ClasseId, Model.ListaClasses, "Selecione")
+                                                    <i></i>
+                                                </label>
+                                            </section>
+                                            <section class="col col-2">
+                                                <label for="GrauId">Grau</label>
+                                                <label class="select">
+                                                    @Html.DropDownListFor(m => m.GrauId, Model.ListaGraus, "Todos")
+                                                    <i></i>
+                                                </label>
+                                            </section>
+                                        </div>
+                                        <section>
+                                            <label for="GrauId">Membro</label>
+                                            <label class="select">
+                                                @Html.DropDownListFor(m => m.MembroId, Model.ListaMembros, "Selecione")
+                                                <i></i>
+                                            </label>
+                                        </section>
+                                    </fieldset>
+                                    <footer>
+                                        <button type="button" class="btn btn-success" onclick="Imprimir();">
+                                            Buscar
+                                        </button>
+                                    </footer>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function Imprimir() {
+        $(".alert").remove();
+
+        $.ajax({
+            type: 'POST',
+            data: {
+                ClasseId: $("#ClasseId").val(),
+                GrauId: $("#GrauId").val(),
+                MembroId: $("#MembroId").val()
+            },
+            url: rootURL + 'OrganismoAfiliado/Relatorio/ClassesImprimir',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success == undefined) {
+                    $("#myModalFullContent").html(data);
+                    OpenFullDialog();
+                } else {
+                    ShowNotify('danger', 'Organismo Afiliado - Relatórios - Classes', data.msg);
+                }
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+</script>

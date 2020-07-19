@@ -1,0 +1,51 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.ConsultaMembroVisaoGeralModel
+@if (Model.MembroOA != null && Model.MembroOA.RecebeEmail.HasValue && Model.MembroOA.RecebeEmail.Value)
+{
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapseDadosPessoais_@(Model.MembroSOA.Identificador)" class="collapsed"> <i class="fa fa-lg fa-angle-down pull-right"></i> <i class="fa fa-lg fa-angle-up pull-right"></i> Dados Pessoais </a></h4>
+        </div>
+        <div id="collapseDadosPessoais_@(Model.MembroSOA.Identificador)" class="panel-collapse collapse">
+            <div class="panel-body no-padding">
+                <table class="table table-bordered table-hover">
+                    @*
+                        <thead>
+                            <tr>
+                                <th class="text-right" width="20%">Tipo</th>
+                                <th class="text-left" width="80%">Número/E-mail</th>
+                            </tr>
+                        </thead>
+                    *@
+                    <tbody>
+                        <tr>
+                            <td class="text-right">Telefone Residencial</td>
+                            <td class="text-left">@Model.MembroSOA.NumeroTelefoneRes</td>
+                        </tr>
+                        <tr>
+                            <td class="text-right">Telefone Celular</td>
+                            <td class="text-left">@Model.MembroSOA.NumeroTelefoneCel</td>
+                        </tr>
+                        <tr>
+                            <td class="text-right">Telefone Recado</td>
+                            <td class="text-left">@Model.MembroSOA.NumeroTelefoneContato</td>
+                        </tr>
+                        <tr>
+                            <td class="text-right">E-mail</td>
+                            <td class="text-left">@Model.MembroSOA.Email</td>
+                        </tr>
+                        <tr>
+                            <td class="text-right">Endereço</td>
+                            <td class="text-left">
+                                @Model.MembroSOA.EnderecoLogradouro@(string.IsNullOrEmpty(Model.MembroSOA.EnderecoNumero) == false ? ", " + Model.MembroSOA.EnderecoNumero : "")@(string.IsNullOrEmpty(Model.MembroSOA.EnderecoComplemento) == false ? " - " + Model.MembroSOA.EnderecoComplemento : "")
+                                @(string.IsNullOrEmpty(Model.MembroSOA.EnderecoBairro) == false ? " - " + Model.MembroSOA.EnderecoBairro : "")
+                                @(Html.Raw(string.IsNullOrEmpty(Model.MembroSOA.EnderecoCEP) == false ? "<br />CEP: " + Convert.ToUInt64(Model.MembroSOA.EnderecoCEP).ToString(@"00000-000") : ""))
+                                @(Html.Raw(string.IsNullOrEmpty(Model.MembroSOA.EnderecoCidade) == false ? "<br />" + Model.MembroSOA.EnderecoCidade : ""))
+                                @(Html.Raw(string.IsNullOrEmpty(Model.MembroSOA.EnderecoEstado) == false ? "<br />" + Model.MembroSOA.EnderecoEstado : ""))
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}

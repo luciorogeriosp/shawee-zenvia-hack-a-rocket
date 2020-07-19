@@ -1,0 +1,18 @@
+﻿@model List<DateTime>
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped table-hover" width="100%">
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr style="cursor:pointer;" onclick="FiltroDataEspecifica('@item.ToString("yyyy-MM-dd")')">
+                    <td class="text-center">@item.ToString("dd/MM/yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <text>Não existem atividades para esse Ano/Mês.</text>
+}

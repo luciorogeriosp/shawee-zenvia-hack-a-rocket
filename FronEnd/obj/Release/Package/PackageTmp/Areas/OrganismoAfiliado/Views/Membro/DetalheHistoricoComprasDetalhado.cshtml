@@ -1,0 +1,80 @@
+﻿@model SAL.MVC.Areas.Recebedoria.Models.VendaModel
+@{ 
+    Tropical.Infrastructure.Model.User user = null;
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado") != null)
+    {
+        user = (Tropical.Infrastructure.Model.User)Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado");
+    }
+
+    SAL.MVC.Models.UsuarioClientePerfilModel perfilSelecionado = null;
+
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado") != null)
+    {
+        perfilSelecionado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    }
+}
+<table class="table table-bordered table-hover">
+    <caption><icon class="fa fa-tasks"></icon> Itens da Compra</caption>
+    <thead>
+        <tr>
+            <th class="text-center" width="4%">Movimento</th>
+            <th class="text-center" width="64%">Descrição</th>
+            <th class="text-center" width="10%">Qtde</th>
+            <th class="text-center" width="10%">Valor</th>
+            <th class="text-center" width="10%">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var itemComprador in Model.ListaCompradores.OrderBy(o => o.Nome))
+        {
+            <tr>
+                <td class="text-left" colspan="5">@(itemComprador.MembroId != 0 ? "Membro O.A. " : "")@itemComprador.GLP - @itemComprador.Nome</td>
+            </tr>
+            foreach (var item in itemComprador.ListaItens)
+            {
+                <tr>
+                    <td class="text-center">@item.MovimentoId</td>
+                    <td class="text-left">@item.ProdutoCodigo - @item.Descricao</td>
+                    <td class="text-right">@item.Quantidade</td>
+                    <td class="text-right">@string.Format(@"{0:N}", item.Valor)</td>
+                    <td class="text-right">@string.Format(@"{0:N}", item.ValorTotal)</td>
+                </tr>
+            }
+
+        }
+    </tbody>
+</table>
+<table class="table table-bordered table-hover">
+    <caption><icon class="fa fa-usd"></icon> Forma de Pagamento</caption>
+    <thead>
+        <tr>
+            <th class="text-center" width="45%">Tipo</th>
+            <th class="text-center" width="45%">Detalhe</th>
+            <th class="text-center" width="10%">Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ListaFormaPagamento)
+        {
+            <tr>
+                <td class="text-center">@item.FormaPagamento.Nome</td>
+                <td class="text-left">@item.Detalhe</td>
+                <td class="text-right">@string.Format(@"{0:N}", item.Valor)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="text-right">
+    @if (Model.Situacao != "C")
+    {
+        if (Model.PermiteCancelamento && perfilSelecionado.SomenteLeitura == false)
+        {
+            <button type="button" class="btn btn-danger" onclick="CancelarVenda(@Model.Id)" id="btnCancelarVenda_@(Model.Id)">
+                Cancelar Venda
+            </button>
+        }
+        <button type="button" class="btn btn-primary" onclick="EmitirRecibo(@Model.Id)" id="btnReciboVenda_@(Model.Id)">
+            Reemitir Recibo
+        </button>
+    }
+</div>

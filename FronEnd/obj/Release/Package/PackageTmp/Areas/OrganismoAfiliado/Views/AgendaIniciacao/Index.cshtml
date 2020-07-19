@@ -1,0 +1,312 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-university"></i>
+                    Organismo Afiliado | Agenda de Iniciações
+                </h1>
+            </div>
+        </div>
+        <div class="widget-body" id="pnlLista">
+
+        </div>
+    </div>
+</div>
+<div id="myModalInscricao" title="Inscricao" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalInscricaoContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogInscricao();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+    </div>
+</div>
+<form action="@Url.Action("ComprovanteInscricao", "AgendaIniciacao", new { Area = "OrganismoAfiliado" })" target="iFrameRecibo" method="post" id="frmComprovanteAgendamento" mame="frmComprovanteAgendamento">
+    <input type="hidden" id="CalendarioId" name="CalendarioId" />
+    <input type="hidden" id="fSeqCadast" name="fSeqCadast" />
+</form>
+<script>
+    var dialogInscricao;
+    var CalendarioId = 0;
+    var fSeqCadast = 0;
+
+    ConfigureDialogInscricao();
+
+    function OpenDialogAbrirMembroGLPInscricao(id) {
+        CalendarioId = id;
+
+        consultaMembroSelecionarFuncao = "SelecionarResultadoBuscaConsultaMembroInscricao";
+        OpenDialogAbrirMembroGLP(true);
+    }
+
+    function SelecionarResultadoBuscaConsultaMembroInscricao(obj, Identificador, Chave, Nome, MembroTOM, MembroOGG, paramfSeqCadast) {
+        ClearNotify();
+        CloseDialogAbrirMembroGLP();
+
+        fSeqCadast = paramfSeqCadast;
+        Inscricao(false);
+    }
+
+    function CloseDialogInscricao() {
+        dialogInscricao.dialog("close");
+    }
+
+    function LoadList() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/AgendaIniciacao/Listar',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowNotify('error', 'Organismo Afiliado | Agenda de Iniciações', MsgNaoFoiPossivelCompletarOperacao, 'myModalInscricaoContent');
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function AbrirInscricao(id, paramfSeqCadast) {
+        CalendarioId = id;
+        fSeqCadast = paramfSeqCadast;
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Membro/ConsultaMembro',
+            data: {
+                fSeqCadast: paramfSeqCadast
+            },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                Inscricao(false);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowNotify('error', 'Organismo Afiliado | Agenda de Iniciações', MsgNaoFoiPossivelCompletarOperacao, 'myModalInscricaoContent');
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Inscricao(Inscrever) {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/AgendaIniciacao/Inscricao',
+            data: { CalendarioId: CalendarioId, fSeqCadast: fSeqCadast, Inscrever: Inscrever },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                dialogInscricao.dialog("open");
+                dialogInscricao.dialog("moveToTop");
+                $("body").css({ overflow: 'hidden' });
+
+                $("#myModalInscricaoContent").html(data);
+
+                if (Inscrever) {
+                    ComprovanteInscricao();
+                }
+
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowNotify('error', 'Organismo Afiliado | Agenda de Iniciações', MsgNaoFoiPossivelCompletarOperacao, 'myModalInscricaoContent');
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfigureDialogInscricao() {
+        dialogInscricao = $("#myModalInscricao").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()),
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' })
+
+                LoadList();
+            }
+        });
+    }
+
+    function HabilitaGravacaoComentarioWorkflow(habilitarBotao) {
+        if (habilitarBotao) {
+            $("#btnWorkflowComentario").removeAttr("disabled");
+            $("#cbWorkflowComentarioEnviarMembro").removeAttr("disabled");
+        } else {
+            $("#btnWorkflowComentario").attr("disabled", "disabled");
+            $("#cbWorkflowComentarioEnviarMembro").attr("disabled", "disabled");
+        }
+    }
+
+    function GravarWorkflowComentario() {
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/AgendaIniciacao/GravarWorkflowComentario',
+            data: {
+                CalendarioId: CalendarioId,
+                fSeqCadast: fSeqCadast,
+                Comentario: $("#txtWorkflowComentario").val(),
+                EnviarMembro: $("#cbWorkflowComentarioEnviarMembro").prop("checked")
+            },
+            beforeSend: function () {
+                ShowProgress('pnlWorkflowList');
+            },
+            success: function (data) {
+                $("#txtWorkflowComentario").val("");
+                HabilitaGravacaoComentarioWorkflow(false);
+                $("#pnlWorkflowList").html(data);
+            },
+            error: function (xhr, st, str) {
+                ShowNotify('error', 'Organismo Afiliado | Agenda de Iniciações', MsgNaoFoiPossivelCompletarOperacao, 'myModalInscricaoContent');
+            },
+            complete: function () {
+                HideProgress();
+            }
+        });
+    }
+
+    function GravarCheckList(obj) {
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/AgendaIniciacao/CheckList',
+            data: {
+                CalendarioId: CalendarioId,
+                fSeqCadast: fSeqCadast,
+                CheckName: $(obj).attr("id"),
+                CheckValue: $(obj).prop("checked")
+            },
+            beforeSend: function () {
+                ShowProgress('pnlWorkflowList');
+            },
+            success: function (data) {
+                $("#pnlWorkflowList").html(data);
+            },
+            error: function (xhr, st, str) {
+                ShowNotify('error', 'Organismo Afiliado | Agenda de Iniciações', MsgNaoFoiPossivelCompletarOperacao, 'myModalInscricaoContent');
+            },
+            complete: function () {
+                HideProgress();
+            }
+        });
+    }
+
+    function CancelarInscricao() {
+        OpenDialogExcluir("Deseja realmente cancelar esta inscrição?", "CancelarInscricaoConfirmar()")
+    }
+
+    function CancelarInscricaoConfirmar() {
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/AgendaIniciacao/CancelarInscricao',
+            data: {
+                CalendarioId: CalendarioId,
+                fSeqCadast: fSeqCadast
+            },
+            beforeSend: function () {
+                ShowProgress('pnlWorkflowList');
+            },
+            success: function (data) {
+                $("#pnlWorkflowList").html(data);
+
+                $("#pnlMembroApto").hide();
+                $("#pnlCanceladoBotao").hide();
+                $("#pnlMembroEspera").hide();
+
+                $("#pnlMembroCancelado").show();
+                $("#pnlInscricaoBotao").show();
+
+                ToggleDisabled(false);
+            },
+            error: function (xhr, st, str) {
+                ShowNotify('error', 'Organismo Afiliado | Agenda de Iniciações', MsgNaoFoiPossivelCompletarOperacao, 'myModalInscricaoContent');
+            },
+            complete: function () {
+                HideProgress();
+            }
+        });
+    }
+
+    function ComprovanteInscricao() {
+        $("#iFrameRecibo").attr("src", "about:blank");
+
+        $("#CalendarioId").val(CalendarioId);
+        $("#fSeqCadast").val(fSeqCadast);
+        
+        $("#frmComprovanteAgendamento").submit();
+    }
+
+    function RefazerInscricao() {
+        OpenDialogExcluir("Deseja realmente refazer a inscrição?", "RefazerInscricaoConfirmar()")
+    }
+
+    function RefazerInscricaoConfirmar() {
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/AgendaIniciacao/RefazerInscricao',
+            data: {
+                CalendarioId: CalendarioId,
+                fSeqCadast: fSeqCadast
+            },
+            beforeSend: function () {
+                ShowProgress('pnlWorkflowList');
+            },
+            success: function (data) {
+                $("#pnlWorkflowList").html(data);
+
+                $("#pnlInscricaoBotao").hide();
+                $("#pnlMembroCancelado").hide();
+
+                $("#pnlCanceladoBotao").show();
+
+                ToggleDisabled(false);
+            },
+            error: function (xhr, st, str) {
+                ShowNotify('error', 'Organismo Afiliado | Agenda de Iniciações', MsgNaoFoiPossivelCompletarOperacao, 'myModalInscricaoContent');
+            },
+            complete: function () {
+                HideProgress();
+            }
+        });
+    }
+
+    function ToggleDisabled(desabilitar) {
+        if (desabilitar) {
+            $("#pnlCheckList input[type='checkbox']").attr("disabled", "disabled");
+            $("#txtWorkflowComentario").attr("disabled", "disabled");
+        } else {
+            $("#pnlCheckList input[type='checkbox']").removeAttr("disabled");
+            $("#txtWorkflowComentario").removeAttr("disabled");
+        }
+    }
+
+    $(window).resize(function () {
+        ConfigureDialogInscricao();
+    });
+
+
+    $(document).ready(function () {
+        LoadList();
+    });
+</script>

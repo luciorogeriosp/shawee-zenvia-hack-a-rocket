@@ -1,0 +1,56 @@
+﻿@model SAL.MVC.Areas.IntegracaoSuprimentos.Models.SuprimentoProdutoModel
+<td class="text-center"><a href="@Model.Link" targe target="_blank">@Model.ID</a></td>
+<td>@Model.Nome</td>
+<td>
+    <form class="smart-form">
+        <fieldset style="padding-top:0px;">
+
+            <section>
+                <label class="label">
+                    Variação
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="input">
+                    @Html.TextBox("ProdutoVariacao_" + Model.ID)
+                    <i></i>
+                </label>
+            </section>
+            <div class="form-group">
+                <button type="button" class="btn btn-primary" onclick="AdicionarVariacao(@Model.ID);" style="padding:10px;">
+                    Incluir Variação
+                </button>
+            </div>
+
+        </fieldset>
+    </form>
+    @if (Model.Variacoes != null && Model.Variacoes.Any())
+    {
+        <br />
+        <table class="table table-striped table-bordered table-hover">
+            <tr>
+                <td class="text-center"><b>Variação</b></td>
+                <td class="text-center"><b>Excluir</b></td>
+            </tr>
+            @foreach (var itemVariacoes in Model.Variacoes)
+                {
+                <tr>
+                    <td>
+                        <label class="input">
+                            @Html.TextBox("ProdutoVariacaoEdit_" + itemVariacoes.ID, itemVariacoes.Nome, new { @onblur= "AlterarVariacao(" + Model.ID + ", " + itemVariacoes.ID + ", this.value)" })
+                            <i></i>
+                        </label>
+                    </td>
+                    <td>
+                        <a href="javascript:void(0);" onclick="ApagarVariacao(@Model.ID, @itemVariacoes.ID, '@Model.Nome - @itemVariacoes.Nome');" class="btn btn-default"><i class="fa fa-trash-o"></i> </a>
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+
+</td>
+<td class="text-right">@Model.Preco</td>
+<td class="text-right">@Model.PrecoVenda</td>
+<td class="text-center"><img src="@Model.ImagemPequena" /></td>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute))
+

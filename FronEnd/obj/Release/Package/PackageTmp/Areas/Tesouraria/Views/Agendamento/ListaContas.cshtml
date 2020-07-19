@@ -1,0 +1,27 @@
+﻿@model List<SAL.MVC.Areas.Tesouraria.Models.ContaModel>
+@{
+    Layout = null;
+}
+@if (Model != null && Model.Any())
+{
+    <table class="table table-bordered table-hover" id="tblAgendamentoListaContas" style="border-left:0; border-top:0; border-right:0;">
+        <thead>
+            <tr>
+                <th class="text-center" width="20%" style="border:0">Conta</th>
+                <th class="text-left" width="80%" style="border:0">Descrição</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr style="cursor:pointer;" onclick="AgendamentoSelecionaConta(@item.Id, '@item.CodCont - @item.Nome');">
+                    <td class="text-center">@item.CodCont</td>
+                    <td>@item.Nome</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+} else
+{
+    <text>Não existem agendamentos.</text>
+}

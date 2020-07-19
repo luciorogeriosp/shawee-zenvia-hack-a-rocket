@@ -1,0 +1,75 @@
+﻿@model SAL.MVC.Areas.Configuracao.Models.OrganismoAfiliadoDadosHorarioViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<!-- Error states for elements -->
+<form class="smart-form" id="frmDadosHorario">
+    <fieldset>
+        <div class="row">
+            <section class="col col-2">
+                <label class="label">
+                    <label for="Dia">Dia da Semana</label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="select">
+                    @Html.DropDownListFor(m => m.DiaDaSemanaIdSelect, Model.DiaDaSemanaLista, "Selecione")
+                    <i></i>
+                </label>
+            </section>
+            <section class="col col-2">
+                <label class="label" for="Horario">Horário</label>
+                <label class="input">
+                    <input type="text" data-mask="99:99" id="Horario" name="Horario" value="@Model.Horario">
+                </label>
+            </section>
+            <section class="col col-8">
+                <label class="label" for="Descricao">Descrição</label>
+                <label class="input">
+                    <input type="text" id="Descricao" name="Descricao" value="@Model.Descricao">
+                </label>
+            </section>
+        </div>
+        <section>
+            <button type="submit" class="btn btn-primary" style="float:right; padding:10px;">
+                Adicionar Horário
+            </button>
+        </section>
+        <article class="col-sm-12 col-md-12 col-lg-12" id="pnlListagem" style="margin-top:15px;">
+            @{
+                Html.RenderPartial("ListaDadosHorario", Model.ListaHorarios);
+            }
+
+        </article>
+    </fieldset>
+</form>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmDadosHorario"))
+<script>
+    $("[data-mask]").each(function () { var a = $(this), b = a.attr("data-mask") || "error...", c = a.attr("data-mask-placeholder") || "X"; a.mask(b, { placeholder: c }), a = null });
+
+    $("#frmDadosHorario").submit(function (e) {
+        var postData = $(this).serializeArray();
+
+        $("#frmDadosHorario button").prop("disabled", true);
+
+        $.ajax(
+        {
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosHorario',
+            type: "POST",
+            data: postData,
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data, textStatus, jqXHR) {
+                $("#pnlDadosHorario").html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                OnCompleteForm();
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+        e.preventDefault(); //STOP default action
+    });
+</script>

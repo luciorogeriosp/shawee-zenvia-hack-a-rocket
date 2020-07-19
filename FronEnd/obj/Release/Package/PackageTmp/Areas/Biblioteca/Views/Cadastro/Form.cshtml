@@ -1,0 +1,268 @@
+﻿@model SAL.MVC.Areas.Biblioteca.Models.ItemModel
+<div role="content">
+
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body no-padding">
+        <ul id="myTab1" class="nav nav-tabs bordered">
+            <li class="active">
+                <a href="#pnlFormulario" data-toggle="tab">Dados do Item</a>
+            </li>
+            <li class="">
+                <a href="#pnlHistorico" data-toggle="tab" onclick="CarregaHistorico(@Model.IdBiblioteca);">Histórico</a>
+            </li>
+        </ul>
+        <div id="myTabContent1" class="tab-content padding-10">
+            <div class="tab-pane fade active in" id="pnlFormulario">
+                <!-- Error states for elements -->
+                <form class="smart-form" id="frmBiblioteca" onsubmit="$('#btnConfirmar').click(); return false;">
+                    @Html.HiddenFor(m => m.IdBiblioteca)
+                    <fieldset>
+                        <div class="row">
+                            <section class="col col-4">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.TipoIdSelect)
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="select">
+                                    @Html.DropDownListFor(m => m.TipoIdSelect, Model.TipoLista, "Selecione")
+                                    <i></i>
+                                </label>
+                            </section>
+                            <section class="col col-4">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.CategoriaIdSelect)
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="select">
+                                    @Html.DropDownListFor(m => m.CategoriaIdSelect, Model.CategoriaLista, "Selecione")
+                                    <i></i>
+                                </label>
+                            </section>
+                            <section class="col col-4">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.LocalIdSelect)
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="select">
+                                    @Html.DropDownListFor(m => m.LocalIdSelect, Model.LocalLista, "Selecione")
+                                    <i></i>
+                                </label>
+                            </section>
+                        </div>
+                        <div class="row">
+                            <section class="col col-6">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.AutorIdSelect)
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="select">
+                                    @Html.DropDownListFor(m => m.AutorIdSelect, Model.AutorLista, "Selecione")
+                                    <i></i>
+                                </label>
+                            </section>
+                            <section class="col col-3">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.IdCodigoFA)
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.IdCodigoFA)
+                                </label>
+                            </section>
+                            <section class="col col-3">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.Codigo)
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.Codigo, new { disabled = "disabled" })
+                                </label>
+                                <div class="note note-error" style="@(Model.IdBiblioteca == 0 ? "display:none" : "")">(alterar código) <input type="checkbox" onclick="HabilitaAlterarCodigo(this);" /></div>
+                            </section>
+                        </div>
+                        <section>
+                            <label class="label">
+                                @Html.LabelFor(m => m.Nome)
+                                <span class="font-xs text-danger">*</span>
+                            </label>
+                            <label class="input">
+                                @Html.TextBoxFor(m => m.Nome, new { style = "text-transform:uppercase;" })
+                            </label>
+                        </section>
+                        <div class="row">
+                            <section class="col col-6">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.Editora)
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="Editora" name="Editora" value="@Model.Editora" style="text-transform:uppercase;" list="Editora_DataList">
+                                    <datalist id="Editora_DataList">
+                                        @foreach (var item in Model.ListaEditora)
+                                        {
+                                            <option value="@item">@item</option>
+                                        }
+                                    </datalist>
+                                </label>
+                            </section>
+                            <section class="col col-2">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.Edicao)
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.Edicao, new { style = "text-transform:uppercase;" })
+                                </label>
+                            </section>
+                            <section class="col col-2">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.Ano)
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.Ano, new { @type = "number" })
+                                </label>
+                            </section>
+                            <section class="col col-2">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.Idioma)
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="Idioma" name="Idioma" value="@Model.Idioma" style="text-transform:uppercase;" list="Idioma_DataList">
+                                    <datalist id="Idioma_DataList">
+                                        @foreach (var item in Model.ListaIdioma)
+                                        {
+                                            <option value="@item">@item</option>
+                                        }
+                                    </datalist>
+                                </label>
+                            </section>
+                        </div>
+                        <div class="row">
+                            <section class="col col-4">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.CodigoBarra)
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.CodigoBarra)
+                                </label>
+                            </section>
+                            <section class="col col-4">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.ISBN)
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.ISBN)
+                                </label>
+                            </section>
+                            <section class="col col-4">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.DataAquisicao)
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.DataAquisicao, new { type = "date" })
+                                </label>
+                            </section>
+                        </div>
+                        <div class="row">
+                            <section class="col col-4">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.Assunto)
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="Assunto" name="Assunto" value="@Model.Assunto" style="text-transform:uppercase;" list="Assunto_DataList">
+                                    <datalist id="Assunto_DataList">
+                                        @foreach (var item in Model.ListaAssunto)
+                                        {
+                                            <option value="@item">@item</option>
+                                        }
+                                    </datalist>
+                                </label>
+                            </section>
+                            <section class="col col-4">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.Classe)
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="Classe" name="Classe" value="@Model.Classe" style="text-transform:uppercase;" list="Classe_DataList">
+                                    <datalist id="Classe_DataList">
+                                        @foreach (var item in Model.ListaClasse)
+                                        {
+                                            <option value="@item">@item</option>
+                                        }
+                                    </datalist>
+                                </label>
+                            </section>
+                            <section class="col col-4">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.Volume)
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.Volume, new { style = "text-transform:uppercase;" })
+                                </label>
+                            </section>                            
+                        </div>
+                        <section>
+                            <label class="label">
+                                @Html.LabelFor(m => m.Observacao)
+                            </label>
+                            <label class="input">
+                                @Html.TextAreaFor(m => m.Observacao, new { rows = "5", style = "width:100%;" })
+                            </label>
+                        </section>
+                        <section>
+                            <label class="checkbox">
+                                @Html.CheckBoxFor(m => m.DisponivelEmprestimo)
+                                <i></i>Disponível para Empréstimo
+                            </label>
+                        </section>
+                        <section>
+                            <label class="checkbox">
+                                @Html.CheckBoxFor(m => m.DisponivelFisico)
+                                <i></i>Disponível Fisicamente
+                            </label>
+                        </section>
+                        <section>
+                            <label class="checkbox">
+                                @Html.CheckBoxFor(m => m.DisponivelOnline, new { onclick = "HabilitaUrl(this);" })
+                                <i></i>Disponível On-line
+                            </label>
+                        </section>
+                        <section id="pnlDisponivelOnlineUrl" style="display:@(Model.DisponivelOnline ? "block" : "none");">
+                            <label class="label">
+                                @Html.LabelFor(m => m.OnlineUrl)
+                            </label>
+                            <label class="input">
+                                @Html.TextBoxFor(m => m.OnlineUrl)
+                            </label>
+                        </section>
+                    </fieldset>
+                </form>
+                <!--/ Error states for elements -->
+            </div>
+            <div class="tab-pane fade" id="pnlHistorico"></div>
+        </div>
+
+    </div>
+    <!-- end widget content -->
+</div>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmBiblioteca"))
+@if (Model.IdBiblioteca == 0)
+{
+    <script>
+
+    </script>
+}
+<script>
+    $("#Codigo").val('@Model.Codigo');
+    $("#IdBiblioteca").val('@Model.IdBiblioteca');
+</script>
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        LoadList();
+    </script>
+}
+<script>
+    $("#btnConfirmar").removeAttr("disabled");
+</script>

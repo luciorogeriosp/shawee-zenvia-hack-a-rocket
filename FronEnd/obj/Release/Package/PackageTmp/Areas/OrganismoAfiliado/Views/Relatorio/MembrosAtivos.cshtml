@@ -1,0 +1,120 @@
+﻿@model List<SAL.MVC.Models.ListItemModel>
+@{
+    ViewBag.Title = "Diario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-university"></i>
+                    Organismo Afiliado | Relatórios | Membros Ativos
+                </h1>
+            </div>
+            <div>
+                <article class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+                        <div role="content" style="border-width: 1px 1px 1px 1px; border-style: solid; border-top-color: #CCC!important;">
+                            <section class="widget-body no-padding">
+                                <form class="smart-form" novalidate="novalidate" onsubmit="return false">
+                                    <header>
+                                        Defina o filtro
+                                    </header>
+                                    <fieldset>
+                                        <div class="row">
+                                            <section class="col col-6">
+                                                <label for="cboAnoMes">Mês de Referência</label>
+                                                <label class="select">
+                                                    <select class="form-control" id="cboAnoMes" name="cboAnoMes" onchange="Seleciona(this.options[this.selectedIndex].value);">
+                                                        <option value="0">Selecione</option>
+                                                        @foreach (var item in Model)
+                                                        {
+                                                            <option value="@item.Id">@item.Text</option>
+                                                        }
+                                                    </select>
+                                                    <i></i>
+                                                </label>
+                                                <div id="pnlQuantidades" style="display:none; height:150px; overflow-y:scroll; border-left:1px solid #BDBDBD; border-bottom:1px solid #BDBDBD; border-right:1px solid #BDBDBD; width:100%;">
+
+                                                </div>
+                                                <div id="pnlMembros" style="display:none; margin-top:15px; width:100%;">
+
+                                                </div>
+                                            </section>
+                                        </div>
+                                    </fieldset>
+                                    <footer>
+                                        <button type="button" class="btn btn-success" onclick="Imprimir();">
+                                            Buscar
+                                        </button>
+                                    </footer>
+                                </form>
+                            </section>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function PrintElem(elem) {
+        var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+
+        mywindow.document.write('<html><head><title>' + document.title + '</title>');
+        mywindow.document.write('</head><body >');
+        mywindow.document.write('<h1>' + document.title + '</h1>');
+        mywindow.document.write(document.getElementById(elem).outerHTML);
+        mywindow.document.write('</body></html>');
+
+        mywindow.document.close(); // necessary for IE >= 10
+        mywindow.focus(); // necessary for IE >= 10*/
+
+        mywindow.print();
+        mywindow.close();
+
+        return true;
+    }
+
+    function Seleciona(FechamentoId) {
+        $(".alert").remove();
+        $("#pnlQuantidades").hide();
+        $("#pnlMembros").hide();
+
+        $.ajax({
+            type: 'POST',
+            data: {
+                FechamentoId: FechamentoId
+            },
+            url: rootURL + 'OrganismoAfiliado/Relatorio/MembrosAtivosQuantidade',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlQuantidades").show();
+                $("#pnlQuantidades").html(data);
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function SelecionaMembrosPorSituacao(Situacao, Sigla) {
+        var strHtmlToAppend = "";
+
+        if (Sigla != "") {
+            strHtmlToAppend = $("#pnlMembros" + Situacao + Sigla)[0].outerHTML.replace("id = \"pnlMembros" + Situacao + Sigla + "\"", "");
+        } else {
+            strHtmlToAppend = $("#pnlMembros" + Situacao)[0].outerHTML.replace("id = \"pnlMembros" + Situacao + "\"", "");
+        }
+
+        $("#pnlMembros").html(strHtmlToAppend);
+        $("#pnlMembros").show();
+    }
+</script>

@@ -1,0 +1,79 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.CalendarioItemModel
+<form class="smart-form" id="frmPresenca">
+    <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+    <input type="hidden" id="TipoId" name="TipoId" value="@Model.TipoId" />
+    <fieldset>
+        <div class="row">
+            <section class="col col-4">
+                <label class="label">
+                    <label>Data: @Model.Data</label>
+                </label>
+            </section>
+        </div>
+        <section>
+            @Model.TipoNome: @Model.Titulo.ToUpper()
+        </section>
+        <section>
+            <label class="label">
+                <label>Responsável: @(Model.OrganismoAfiliadoNome + (string.IsNullOrEmpty(Model.OrganismoAfiliadoNome) == false && string.IsNullOrEmpty(Model.Responsavel) == false ? " - " : "") + Model.Responsavel)</label>
+            </label>
+        </section>
+
+        @if (Model.ConventiculoMartinista)
+        {
+            <div class="row">
+                <section class="col col-6">
+                    <label class="label">
+                        <label for="PresencaTotalMembro">Total Membros</label>
+                        <span class="font-xs text-danger">*</span>
+                    </label>
+                    <label class="input">
+                        <input type="number" value="@Model.PresencaTotalMembro" disabled="disabled">
+                        <input type="hidden" name="PresencaTotalMembro" id="PresencaTotalMembro" value="@Model.PresencaTotalMembro">
+                    </label>
+                </section>
+                <section class="col col-6">
+                    <label class="label">
+                        <label for="PresencaTotalVisitante">Total Visitantes</label>
+                        <span class="font-xs text-danger">*</span>
+                    </label>
+                    <label class="input">
+                        <input type="number" name="PresencaTotalVisitante" id="PresencaTotalVisitante" value="@Model.PresencaTotalVisitante">
+                    </label>
+                </section>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <section class="col col-6">
+                    <label class="label">
+                        <label for="PresencaTotalMembro">Total Membros</label>
+                        <span class="font-xs text-danger">*</span>
+                    </label>
+                    <label class="input">
+                        <input type="number" name="PresencaTotalMembro" id="PresencaTotalMembro" value="@Model.PresencaTotalMembro">
+                    </label>
+                </section>
+                <section class="col col-6">
+                    <label class="label">
+                        <label for="PresencaTotalVisitante">Total Visitantes</label>
+                        <span class="font-xs text-danger">*</span>
+                    </label>
+                    <label class="input">
+                        <input type="number" name="PresencaTotalVisitante" id="PresencaTotalVisitante" value="@Model.PresencaTotalVisitante">
+                    </label>
+                </section>
+            </div>
+        }
+    </fieldset>
+</form>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "myModalPresencaContent"))
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        $("#btnPresenca_@(Model.Id)").removeClass("btn-default");
+        $("#btnPresenca_@(Model.Id)").addClass("btn-success");
+    </script>
+    
+}

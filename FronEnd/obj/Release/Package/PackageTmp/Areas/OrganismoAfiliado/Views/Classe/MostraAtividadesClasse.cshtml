@@ -1,0 +1,33 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.MostraAtividadesClasseModel
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+
+    bool ExibirBotoes = Request.ServerVariables["HTTP_REFERER"] == null || (Request.ServerVariables["HTTP_REFERER"] != null && Request.ServerVariables["HTTP_REFERER"].ToString().Contains("OrganismoAfiliado"));
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+    dtAtual = new DateTime(dtAtual.Year, dtAtual.Month, dtAtual.Day);
+    DateTime dtLista;
+}
+<table id="datatable_tabletools" class="table table-striped table-bordered table-hover" width="100%">
+    <caption>
+        Membro: @Model.Membro.Nome - @Model.Membro.AfiliacaoNumero<br />
+        Atividade: @Model.ListaAtividades[0].TipoNome<br />
+        Título: @Model.ListaAtividades[0].Titulo.ToUpper()
+    </caption>
+    <thead>
+        <tr>
+            <th class="text-left">Data</th>
+            <th>Presença</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ListaAtividades)
+        {
+            dtLista = new DateTime(Convert.ToInt32(item.DataAno), Convert.ToInt32(item.DataMes), Convert.ToInt32(item.DataDia));
+            <tr id="line_@item.Id">
+                <td class="text-left" width="100%">@dtLista.ToString("dd/MM/yyyy") às @item.Horario</td>
+                <td class="text-center"><label class="checkbox"><input type="checkbox" value="@item.Id" /><i style="margin-left:18px; margin-top:-4px;"></i></label></td>
+            </tr>
+        }
+    </tbody>
+</table>

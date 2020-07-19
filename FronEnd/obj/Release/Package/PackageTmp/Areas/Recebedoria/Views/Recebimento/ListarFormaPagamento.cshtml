@@ -1,0 +1,142 @@
+﻿@model SAL.MVC.Areas.Recebedoria.Models.FormaPagamentoViewModel
+@{
+    decimal valorFalta = Model.Valor;
+    decimal valorTroco = Model.Troco;
+    if (Model.SelecaoFormaPagamento != null)
+    {
+        valorFalta = Model.Valor - Model.SelecaoFormaPagamento.Sum(s => s.Valor);
+
+    }
+}
+@*<div class="well">
+        <div class="row">
+            <div class="col-md-6 alert alert-info text-left">
+                <h4 class="alert-heading">Valor Total da Venda</h4>
+                <p>
+                    R$ @(String.Format("{0:0.00}", Model.Valor))
+                </p>
+            </div>
+            <div class="col-md-6 alert alert-info text-right">
+                <h4 class="alert-heading">Data da Venda</h4>
+                <p>
+                    @Convert.ToDateTime(Session["DataVenda"].ToString()).ToString("dd/MM/yyyy")
+                </p>
+            </div>
+        </div>
+    </div>*@
+@if (Model.ListaFormaPagamento != null)
+{
+    <form class="smart-form" onsubmit="return false;">
+        <fieldset style="padding-top:0px;">
+            <div class="row">
+                <div class="col col-md-2">
+                    <label class="label">Informe o valor</label>
+                    <label class="input">
+                        <input type="text" size="5" style="width:100%;" autocomplete="off" min="1" maxlength="7" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" onfocus="this.select();" class="text-right" value="@(String.Format("{0:0.00}", valorFalta))" />
+                    </label>
+                </div>
+                <div class="col col-md-2">
+                    <label class="label">Observação <small class="note">(optional)</small></label>
+                    <label class="input">
+                        <textarea rows="5" style="width:100%"></textarea>
+                    </label>
+                </div>
+                <div class="col col-md-8">
+                    <label class="label">&nbsp;</label>
+                    @foreach (var itemFormaPagamento in Model.ListaFormaPagamento)
+                    {
+                        <button type="button" class="btn btn-lg btn-primary" onclick="AdicionaFormaPagamento(this, @itemFormaPagamento.Id)"><i class="fa fa-plus"></i> @itemFormaPagamento.Nome</button>
+                    }
+                </div>
+            </div>
+            <div class="clear">&nbsp;</div>
+        </fieldset>
+    </form>
+}
+<table class="table table-bordered table-striped table-hover smart-form has-tickbox table-responsive">
+    @*<thead>
+            <tr>
+                <th class="text-left" style="width:160px;">Forma de Pagamento</th>
+                <th class="text-center">Observação</th>
+                <th class="text-center" style="width:160px;">Valor</th>
+                <th style="width:80px;">&nbsp;</th>
+            </tr>
+        </thead>*@
+    <tbody>
+        <tr>
+            <td class="text-right bg-color-blueDark txt-color-white" colspan="2">Data da Venda: </td>
+            <td class="text-right bg-color-blueDark txt-color-white">@Convert.ToDateTime(Session["DataVenda"].ToString()).ToString("dd/MM/yyyy")</td>
+            <td class="text-right bg-color-white txt-color-white" style="width:80px">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="text-right bg-color-blueDark txt-color-white" colspan="2">Valor Total da Venda: </td>
+            <td class="text-right bg-color-blueDark txt-color-white">R$ @(String.Format("{0:0.00}", Model.Valor))</td>
+            <td class="text-right bg-color-white txt-color-white" style="width:80px; border:0;">&nbsp;</td>
+        </tr>
+        @if (Model.SelecaoFormaPagamento != null && Model.SelecaoFormaPagamento.Any())
+            {
+            <tr>
+                <td style="width:160px;" class="text-bold">Forma de Pagamento</td>
+                <td>Observação</td>
+                <td style="width:160px;" class="text-bold">Valor</td>
+                <td>&nbsp;</td>
+            </tr>
+            foreach (var itemSelecaoFormaPagamento in Model.SelecaoFormaPagamento)
+            {
+                <tr>
+                    <td class="text-left">@itemSelecaoFormaPagamento.FormaPagamento.Nome</td>
+                    <td class="text-center">@itemSelecaoFormaPagamento.Detalhe</td>
+                    <td class="text-right">R$ @(String.Format("{0:0.00}", itemSelecaoFormaPagamento.Valor))</td>
+                    <td class="text-center">
+                        <div class="widget-body">
+                            <a href="javascript:void(0);" onclick="RemoverFormaPagamento(this, '@itemSelecaoFormaPagamento.Guid')" class="btn btn-sm btn-danger"> <i class="fa fa-trash-o"></i></a>
+                        </div>
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td class="text-right" colspan="2">Valor Pago: </td>
+                <td class="text-right">R$ @(String.Format("{0:0.00}", Model.SelecaoFormaPagamento.Sum(s => s.Valor)))</td>
+                <td class="text-center" style="width:80px">&nbsp;</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="2">Falta: </td>
+                <td class="text-right">R$ @(String.Format("{0:0.00}", valorFalta))</td>
+                <td style="width:80px">&nbsp;</td>
+            </tr>
+            <tr>
+                <td class="text-right" colspan="2">Troco: </td>
+                <td class="text-right">R$ @(String.Format("{0:0.00}", valorTroco))</td>
+                <td style="width:80px">
+                    <label class="checkbox" style="display:@(Model.Troco > 0 ? "" : "none");">
+                        <input type="checkbox" id="cbTrocoLeiAmra" name="cbTrocoLeiAmra" @(Html.Raw(Model.TrocoLeiAmra ? " checked=\"checked\"" : "")) onclick="LeiAmraFormaPagamento();">
+                        <i></i>Lei Amra
+                    </label>&nbsp;
+                </td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td colspan="4">Adicione a(s) forma(s) de pagamento desejada(s).</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<br />
+<div class="clear pull-right">
+    <button type="button" class="btn btn-default" onclick="dialogFullFormaPagamento.dialog('close');"><i class="fa fa-rotate-left"></i> Início</button>
+    <button type="button" class="btn btn-default btn-success" onclick="RealizarPagamento()" id="btnRealizarPagamento"><i class="fa fa-save"></i> Realizar Pagamento</button>
+</div>
+@if (Model.SelecaoFormaPagamento != null && Model.SelecaoFormaPagamento.Any())
+{
+    <script>
+        $("#btnRealizarPagamento").removeAttr("disabled");
+    </script>
+}
+else
+{
+    <script>
+        $("#btnRealizarPagamento").attr("disabled", "disabled");
+    </script>
+}

@@ -1,0 +1,230 @@
+﻿@model SAL.MVC.Areas.Recebedoria.Models.AssistenteCompradorModel
+@{
+    string strSelecionado = "";
+    SAL.MVC.Areas.Recebedoria.Models.AssistenteCompradorModel item_AssistenteCompradorMembroModel = null;
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("AssistenteComprador") != null)
+    {
+        item_AssistenteCompradorMembroModel = (SAL.MVC.Areas.Recebedoria.Models.AssistenteCompradorModel)Tropical.Infrastructure.Util.SessionData.SessionReader("AssistenteComprador");
+    }
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+
+    bool HabilitarOrdemVenda = false;
+    int PerfilId = 0;
+
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado") != null)
+    {
+        var perfilSelecionado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+        PerfilId = perfilSelecionado.PerfilId;
+        HabilitarOrdemVenda = perfilSelecionado.Cliente.HabilitarOrdemVenda;
+    }
+}
+@if (Model != null && Model.ListaMembros != null && Model.ListaMembros.Any())
+{
+        <fieldset class="visible-xs visible-sm hidden-md hidden-lg" id="pnlItensTabletMobile">
+            <table class="table table-bordered table-striped table-hover table-responsive" style="margin-bottom:5px;">
+                <thead>
+                    @if (HabilitarOrdemVenda && Model.IdOrdemVenda > 0)
+                    {
+                        <tr>
+                            <th colspan="5" class="text-left">Ordem de Venda: @Model.NumeroOrdemVenda &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:VendaPadrao();">clique aqui</a> para realizar uma venda comum.</th>
+                        </tr>
+                    }
+                <tr>
+                    <th class="text-center">&nbsp;</th>
+                    <th class="text-left">Nome</th>
+                    <th class="text-center" nowrap="nowrap">Número<br />GLP</th>
+                    <th class="text-center">&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                    @foreach (var itemMembro in Model.ListaMembros.OrderBy(o => o.VisitanteNome))
+                    {
+                        strSelecionado = string.Empty;
+                        if (item_AssistenteCompradorMembroModel != null)
+                        {
+                            if (item_AssistenteCompradorMembroModel.IdentificadorMembroAtual == itemMembro.GUID)
+                            {
+                                strSelecionado = " txt-color-black fa-2x";
+                            }
+                        }
+                        <tr class="@(string.IsNullOrEmpty(strSelecionado) ? "txt-color-blueLight" : "")" tkey="@itemMembro.GUID">
+                            <td class="text-center" style="cursor:pointer; width:60px;" onclick="SelecionaComprador('@itemMembro.GUID');">
+                                @if (itemMembro.Visitante && string.IsNullOrEmpty(itemMembro.VisitanteGLP))
+                                {
+                                    <i class="fa fa-paper-plane-o@(Html.Raw(strSelecionado))"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-user@(Html.Raw(strSelecionado))"></i>
+                                }
+                            </td>
+                            <td class="text-left">
+                                @if (itemMembro.Visitante && string.IsNullOrEmpty(itemMembro.VisitanteGLP))
+                                {
+                                    <span class="editable editable-click" style="cursor:pointer;" id="lblNomeVisitante_@(itemMembro.GUID)" onclick="HabilitaAlterarNomeVisitante('@(itemMembro.GUID)')">@itemMembro.VisitanteNome.ToUpper()</span>
+                                    <input maxlength="30" class="form-control" id="txtNomeVisitante_@(itemMembro.GUID)" name="txtNomeVisitante_@(itemMembro.GUID)" onkeypress="OnEnter(event, 'AlterarNomeVisitante')" onblur="AlterarNomeVisitante(this);" style="text-transform: uppercase; display:none;" type="text" value="@(itemMembro.VisitanteNome)">
+                                }
+                                else
+                                {
+                                    @itemMembro.VisitanteNome.ToUpper()
+                                }
+                            </td>
+                            <td class="text-center">@(itemMembro.MembroOA != null ? itemMembro.MembroOA.AfiliacaoNumero : string.IsNullOrEmpty(itemMembro.VisitanteGLP) ? " - " : itemMembro.VisitanteGLP)</td>
+                            <td class="text-center">
+                                <div class="widget-body">
+                                    <a href="javascript:void(0);" onclick="SelecionaComprador('@itemMembro.GUID');" class="btn btn-labeled btn-primary"> <i class="fa fa-plus"></i></a>
+                                    <a href="javascript:void(0);" onclick="ExcluirComprador('@(itemMembro.VisitanteNome.ToUpper())', '@(itemMembro.GUID)')" class="btn btn-labeled btn-danger"> <i class="fa fa-trash-o"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr style="@(itemMembro.ListaItens == null || itemMembro.ListaItens.Any() == false ? Html.Raw("display:none;").ToHtmlString() : "")">
+                            <td style="border-right:0">&nbsp;</td>
+                            <td colspan="5" style="margin:0; padding:0; border:0">
+                                @if (itemMembro.ListaItens != null && itemMembro.ListaItens.Any())
+                                {
+                                    Html.RenderPartial("AssistenteItensMembro", itemMembro);
+                                }
+                            </td>
+                        </tr>
+                    }
+                    @if (HabilitarOrdemVenda && Model.IdOrdemVenda == 0 && PerfilId == 15)
+                    {
+                        <tr>
+                            <td colspan="2" style="border-bottom:1px solid #ddd;" class="text-right bg-color-blueDark txt-color-white">Total Final</td>
+                            <td class="text-right bg-color-blueDark txt-color-white" style="width:140px;" id="lblTotalFinal">0,00</td>
+                            <td style="width:80px;"><a class="btn btn-success" href="javascript:void(0);" onclick="GerarOrdemVenda();"><i class="fa fa-dollar"></i> Pagar</a></td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" style="border-bottom:1px solid #ddd;" class="text-right bg-color-blueDark txt-color-white">Total Final</td>
+                            <td class="text-right bg-color-blueDark txt-color-white" style="width:140px;" id="lblTotalFinal">0,00</td>
+                            <td style="width:80px;"><a class="btn btn-success" href="javascript:void(0);" onclick="AbrirPagamento();"><i class="fa fa-dollar"></i> Pagar</a></td>
+                        </tr>
+                    }
+                </tbody>
+                @*<tfoot>
+                        <tr>
+                            <td colspan="9" class="text-right">@(Model.ListaMembros.Count) comprador@(Model.ListaMembros.Count > 1 ? "es" : "")</td>
+                        </tr>
+                    </tfoot>*@
+            </table>
+        </fieldset>
+        <fieldset class="visible-lg visible-md hidden-sm hidden-xs" id="pnlItensPCNotebook">
+            <table class="table table-bordered table-striped table-hover table-responsive" style="margin-bottom:5px;">
+                <thead>
+                    @if (HabilitarOrdemVenda && Model.IdOrdemVenda > 0)
+                    {
+                        <tr>
+                            <th colspan="9" class="text-left">Ordem de Venda: @Model.NumeroOrdemVenda &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:VendaPadrao();">clique aqui</a> para realizar uma venda comum.</th>
+                        </tr>
+                    }
+                    <tr>
+                        <th class="text-center" rowspan="2" colspan="2">Tipo</th>
+                        <th class="text-left" rowspan="2">Nome</th>
+                        <th class="text-center" rowspan="2" nowrap="nowrap">Número<br />GLP</th>
+                        <th class="text-center" rowspan="2">Dual</th>
+                        <th class="text-center" colspan="3" nowrap="nowrap">Datas de Quitação</th>
+                        <th class="text-center" rowspan="2" style="width:80px;"></th>
+                    </tr>
+                    <tr>
+                        <th class="text-center" style="width:140px;">GLP</th>
+                        <th class="text-center" style="width:140px;">TOM</th>
+                        <th class="text-center" style="width:140px;">O.A.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var itemMembro in Model.ListaMembros.OrderBy(o => o.VisitanteNome))
+                    {
+                        strSelecionado = string.Empty;
+                        if (item_AssistenteCompradorMembroModel != null)
+                        {
+                            if (item_AssistenteCompradorMembroModel.IdentificadorMembroAtual == itemMembro.GUID)
+                            {
+                                strSelecionado = " txt-color-black fa-2x";
+                            }
+                        }
+                        <tr class="@(string.IsNullOrEmpty(strSelecionado) ? "txt-color-blueLight" : "")" tkey="@itemMembro.GUID">
+                            <td class="text-center" style="cursor:pointer; width:60px;" onclick="SelecionaComprador('@itemMembro.GUID');">
+                                @if (itemMembro.Visitante && string.IsNullOrEmpty(itemMembro.VisitanteGLP))
+                                {
+                                    <i class="fa fa-paper-plane-o@(Html.Raw(strSelecionado))"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-user@(Html.Raw(strSelecionado))"></i>
+                                }
+                            </td>
+                            <td class="text-center" nowrap="nowrap" style="width:180px;">@(itemMembro.Tipo)</td>
+                            <td class="text-left">
+                                @if (itemMembro.Visitante && string.IsNullOrEmpty(itemMembro.VisitanteGLP))
+                                {
+                                    <span class="editable editable-click" style="cursor:pointer;" id="lblNomeVisitante_@(itemMembro.GUID)" onclick="HabilitaAlterarNomeVisitante('@(itemMembro.GUID)')">@itemMembro.VisitanteNome.ToUpper()</span>
+                                    <input maxlength="30" class="form-control" id="txtNomeVisitante_@(itemMembro.GUID)" name="txtNomeVisitante_@(itemMembro.GUID)" onkeypress="OnEnter(event, 'AlterarNomeVisitante')" onblur="AlterarNomeVisitante(this);" style="text-transform: uppercase; display:none;" type="text" value="@(itemMembro.VisitanteNome)">
+                                }
+                                else
+                                {
+                                    @itemMembro.VisitanteNome.ToUpper()
+                                }
+                            </td>
+                            <td class="text-center">@(itemMembro.MembroOA != null ? itemMembro.MembroOA.AfiliacaoNumero : string.IsNullOrEmpty(itemMembro.VisitanteGLP) ? " - " : itemMembro.VisitanteGLP)</td>
+                            <td class="text-center">@(itemMembro.MembroOA != null ? itemMembro.MembroOA.AfiliacaoDual.HasValue && itemMembro.MembroOA.AfiliacaoDual.Value ? "Sim" : "Não" : " - ")</td>
+                            <td class="text-center @(itemMembro.MembroOA != null && itemMembro.MembroOA.DataVencimentoGLP.HasValue ? itemMembro.MembroOA.DataVencimentoGLP.Value > dtAtual ? "info" : (itemMembro.MembroOA.DataVencimentoGLP.Value.AddMonths(1) > dtAtual ? "warning" : "danger") : "danger")">@(itemMembro.MembroOA != null && itemMembro.MembroOA.DataVencimentoGLP.HasValue ? itemMembro.MembroOA.DataVencimentoGLP.Value.ToString("dd/MM/yyyy") : " - ")</td>
+                            <td class="text-center @(itemMembro.MembroOA != null && itemMembro.MembroOA.DataVencimentoTOM.HasValue ? itemMembro.MembroOA.DataVencimentoTOM.Value > dtAtual ? "info" : (itemMembro.MembroOA.DataVencimentoTOM.Value.AddMonths(1) > dtAtual ? "warning" : "danger") : "danger")">@(itemMembro.MembroOA != null && itemMembro.MembroOA.DataVencimentoTOM.HasValue ? itemMembro.MembroOA.DataVencimentoTOM.Value.ToString("dd/MM/yyyy") : " - ")</td>
+                            <td class="text-center @(itemMembro.MembroOA != null && itemMembro.MembroOA.DataVencimentoOA.HasValue ? itemMembro.MembroOA.DataVencimentoOA.Value > dtAtual ? "info" : (itemMembro.MembroOA.DataVencimentoOA.Value.AddMonths(1) > dtAtual ? "warning" : "danger") : "danger")">@(itemMembro.MembroOA != null && itemMembro.MembroOA.DataVencimentoOA.HasValue ? itemMembro.MembroOA.DataVencimentoOA.Value.ToString("dd/MM/yyyy") : " - ")</td>
+                            <td class="text-center">
+                                <div class="widget-body">
+                                    <a href="javascript:void(0);" onclick="SelecionaComprador('@itemMembro.GUID');" class="btn btn-labeled btn-primary"> <i class="fa fa-plus"></i></a>
+                                    <a href="javascript:void(0);" onclick="ExcluirComprador('@(itemMembro.VisitanteNome.ToUpper())', '@(itemMembro.GUID)')" class="btn btn-labeled btn-danger"> <i class="fa fa-trash-o"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr style="@(itemMembro.ListaItens == null || itemMembro.ListaItens.Any() == false ? Html.Raw("display:none;").ToHtmlString() : "")">
+                            <td style="border-right:0">&nbsp;</td>
+                            <td colspan="8" style="margin:0; padding:0; border:0">
+                                @if (itemMembro.ListaItens != null && itemMembro.ListaItens.Any())
+                                {
+                                    Html.RenderPartial("AssistenteItensMembro", itemMembro);
+                                }
+                            </td>
+                        </tr>
+                    }
+                    @if (HabilitarOrdemVenda && Model.IdOrdemVenda == 0 && PerfilId == 15)
+                    {
+                        <tr>
+                            <td colspan="7" style="border-bottom:1px solid #ddd;" class="text-right bg-color-blueDark txt-color-white">Total Final</td>
+                            <td class="text-right bg-color-blueDark txt-color-white" style="width:140px;" id="lblTotalFinal">0,00</td>
+                            <td style="width:80px;"><a class="btn btn-success" href="javascript:void(0);" onclick="GerarOrdemVenda();"><i class="fa fa-dollar"></i> Pagar</a></td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" style="border-bottom:1px solid #ddd;" class="text-right bg-color-blueDark txt-color-white">Total Final</td>
+                            <td class="text-right bg-color-blueDark txt-color-white" style="width:140px;" id="lblTotalFinal">0,00</td>
+                            <td style="width:80px;"><a class="btn btn-success" href="javascript:void(0);" onclick="AbrirPagamento();"><i class="fa fa-dollar"></i> Pagar</a></td>
+                        </tr>
+                    }
+                </tbody>
+                @*<tfoot>
+                        <tr>
+                            <td colspan="9" class="text-right">@(Model.ListaMembros.Count) comprador@(Model.ListaMembros.Count > 1 ? "es" : "")</td>
+                        </tr>
+                    </tfoot>*@
+            </table>
+        </fieldset>
+    <script>
+        $(document).ready(function () {
+            CalculateItem();
+
+            if ($("#pnlItensTabletMobile").css("display") == "none") {
+                $("#pnlItensTabletMobile").remove();
+            };
+
+            if ($("#pnlItensPCNotebook").css("display") == "none") {
+                $("#pnlItensPCNotebook").remove();
+            };
+        });
+    </script>
+}

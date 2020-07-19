@@ -1,0 +1,337 @@
+﻿@model SAL.MVC.Models.RelatorioModel<SAL.MVC.Areas.Tesouraria.Models.RelatorioResumoFinanceiroMensalModel>
+@{
+    int countRowsGroup1 = 0;
+    if (Model.Dados.Despesas.Count >= Model.Dados.Recebimento.Count)
+    {
+        countRowsGroup1 = Model.Dados.Despesas.Count;
+    }
+    else
+    {
+        countRowsGroup1 = Model.Dados.Recebimento.Count;
+    }
+
+    int countRowsGroup2 = 0;
+    if (Model.Dados.SubTotalEntradas.Count >= Model.Dados.SubTotalSaidas.Count)
+    {
+        countRowsGroup2 = Model.Dados.SubTotalEntradas.Count;
+    }
+    else
+    {
+        countRowsGroup2 = Model.Dados.SubTotalSaidas.Count;
+    }
+}
+<html>
+<head>
+    <meta charset="utf-8">
+    <!--<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">-->
+
+    <title>@Model.ReportTitle</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <base href="@Url.Content("~")">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script>
+        if (!window.jQuery) {
+            document.write('<script src="js/libs/jquery-2.0.2.min.js"><\/script>');
+        }
+    </script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script>
+        if (!window.jQuery.ui) {
+            document.write('<script src="js/libs/jquery-ui-1.10.3.min.js"><\/script>');
+        }
+    </script>
+    <script>
+        var MsgNaoFoiPossivelCompletarOperacao = "@(SAL.Repository.Comum.Constantes.MsgNaoFoiPossivelCompletarOperacao)";
+        var rootURL = "@Url.Content("~")";
+    </script>
+    <style>
+        @@page {
+            margin: 0;
+            padding: 0;
+            size: A4;
+            margin: 15mm 5mm 5mm 5mm;
+        }
+
+        h1 {
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            height: 100%;
+            width: 100%;
+            font-size: large;
+        }
+
+            body #pnlFundo {
+                background-color: #000;
+            }
+
+        .texto {
+            font-family: Arial;
+            color: #000;
+        }
+
+        .titulo {
+            font-family: Arial;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .bg-white {
+            background-color: #fff;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .texto-codigo {
+            text-align: center;
+            font-family: Arial;
+            color: #fff;
+            background-color: #003300;
+        }
+
+        .texto-total {
+            font-family: Arial;
+            color: #000;
+            background-color: #ccc;
+        }
+
+        table, th, td {
+            border-collapse: collapse;
+            border: 1px solid black;
+            font-size: 10px;
+        }
+
+        td {
+            height: 15px !important;
+            margin: 0px;
+            padding: 4px;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <table cellpadding="0" cellspacing="1" border="0" width="100%" style="border:0;">
+            <tr>
+                <td colspan="2" align="center" class="titulo" style="border:0; font-size:14px;">
+                    @Model.Dados.OrganismoAfiliadoTipoNomeCompleto<br />
+                    @Model.ReportSubitle - @Model.Dados.MesAno.ToUpper()
+                </td>
+            </tr>
+            <tr>
+                <td class="texto" style="border:0;">ORGANISMO AFILIADO @Model.Dados.OrganismoAfiliadoNumeroAfiliacao</td>
+                <td class="texto text-right" style="border:0;">@Model.ReportTitle</td>
+            </tr>
+            <tr>
+                <td class="texto" style="border:0;">MOVIMENTO FINANCEIRO</td>
+                <td class="texto text-right" style="border:0;">Relatório n.@Model.Dados.NumeroRelatorio</td>
+            </tr>
+        </table>
+        <table cellpadding="0" cellspacing="1" border="0" width="100%">
+            <tr>
+                <td class="titulo text-center" style="background-color:#00ffff;" colspan="2">Recebimentos (ou entradas)</td>
+                <td class="titulo text-center" style="background-color:#00ff00;" colspan="2">Despesas (ou saídas)</td>
+            </tr>
+            @for (int i = 0; i < countRowsGroup1; i++)
+            {
+                <tr>
+                    @if (Model.Dados.Recebimento.Count > i)
+                {
+                        <td class="texto bg-white text-left" style="height:15px;">@Model.Dados.Recebimento[i].Nome</td>
+                        <td class="texto bg-white text-@(Model.Dados.Recebimento[i].Valor > 0 ? "right" : "center")" style="height:15px;">@(Model.Dados.Recebimento[i].Valor > 0 ? string.Format("{0:N}", Model.Dados.Recebimento[i].Valor) : "-")</td>
+                    }
+                    else
+                    {
+                        <td class="texto bg-white" style="height:15px;">&nbsp;</td>
+                        <td class="texto bg-white" style="height:15px;">&nbsp;</td>
+                    }
+                    @if (Model.Dados.Despesas.Count > i)
+                {
+                        <td class="texto bg-white text-left" style="height:15px;">@Model.Dados.Despesas[i].Nome</td>
+                        <td class="texto bg-white text-@(Model.Dados.Despesas[i].Valor > 0 ? "right" : "center")" style="height:15px;">@(Model.Dados.Despesas[i].Valor > 0 ? string.Format("{0:N}", Model.Dados.Despesas[i].Valor) : "-")</td>
+                    }
+                    else
+                    {
+                        <td class="texto bg-white" style="height:15px;">&nbsp;</td>
+                        <td class="texto bg-white" style="height:15px;">&nbsp;</td>
+                    }
+                </tr>
+            }
+            <tr>
+                <td class="titulo text-center" style="background-color:#ffff99;">SUB-TOTAL</td>
+                <td class="titulo text-right" style="background-color:#ffff99;">@(string.Format("{0:N}", Model.Dados.Recebimento.Sum(s => s.Valor)))</td>
+                <td class="titulo text-center" style="background-color:#ffff99;">SUB-TOTAL</td>
+                <td class="titulo text-right" style="background-color:#ffff99;">@(string.Format("{0:N}", Model.Dados.Despesas.Sum(s => s.Valor)))</td>
+            </tr>
+            @for (int i = 0; i < countRowsGroup2; i++)
+            {
+                <tr>
+                    @if (Model.Dados.SubTotalEntradas.Count > i)
+                {
+                        <td class="texto bg-white text-left">@Model.Dados.SubTotalEntradas[i].Nome</td>
+                        <td class="texto bg-white text-@(Model.Dados.SubTotalEntradas[i].Valor > 0 ? "right" : "center")">@(Model.Dados.SubTotalEntradas[i].Valor > 0 ? string.Format("{0:N}", Model.Dados.SubTotalEntradas[i].Valor) : "-")</td>
+                    }
+                    else
+                    {
+                        <td class="texto bg-white">&nbsp;</td>
+                        <td class="texto bg-white">&nbsp;</td>
+                    }
+                    @if (Model.Dados.SubTotalSaidas.Count > i)
+                {
+                        <td class="texto bg-white text-left">@Model.Dados.SubTotalSaidas[i].Nome</td>
+                        <td class="texto bg-white text-@(Model.Dados.SubTotalSaidas[i].Valor > 0 ? "right" : "center")">@(Model.Dados.SubTotalSaidas[i].Valor > 0 ? string.Format("{0:N}", Model.Dados.SubTotalSaidas[i].Valor) : "-")</td>
+                    }
+                    else
+                    {
+                        <td class="texto bg-white">&nbsp;</td>
+                        <td class="texto bg-white">&nbsp;</td>
+                    }
+                </tr>
+            }
+            <tr>
+                <td class="titulo text-center" style="background-color:#ccffff;">SOMA DAS ENTRADAS</td>
+                <td class="titulo text-right" style="background-color:#ccffff;">@(string.Format("{0:N}", (Model.Dados.Recebimento.Sum(s => s.Valor) + Model.Dados.SubTotalEntradas.Sum(s => s.Valor))))</td>
+                <td class="titulo text-center" style="background-color:#ccffff;">SOMA DAS SAÍDAS</td>
+                <td class="titulo text-right" style="background-color:#ccffff;">@(string.Format("{0:N}", (Model.Dados.Despesas.Sum(s => s.Valor) + Model.Dados.SubTotalSaidas.Sum(s => s.Valor))))</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="background-color:#c0c0c0;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td class="titulo text-center" style="background-color:#ffcc99;">SALDO DO MÊS ANTERIOR</td>
+                <td class="titulo text-right" style="background-color:#ffcc99;">@(string.Format("{0:N}", Model.Dados.SaldoMesAnterior))</td>
+                <td class="titulo text-center" style="background-color:#c0c0c0;" colspan="2" rowspan="3">&nbsp;</td>
+            </tr>
+            <tr>
+                <td class="titulo text-center" colspan="2">(Caixa, Bancos e fundos)</td>
+            </tr>
+            <tr>
+                <td class="titulo text-center bg-white">TOTAL</td>
+                <td class="titulo text-right bg-white">@(string.Format("{0:N}", (Model.Dados.Recebimento.Sum(s => s.Valor) + Model.Dados.SubTotalEntradas.Sum(s => s.Valor) + Model.Dados.SaldoMesAnterior)))</td>
+            </tr>
+            @*<tr>
+                    <td colspan="4" style="background-color:#c0c0c0;">&nbsp;</td>
+                </tr>*@
+            <tr>
+                <td colspan="4" class="titulo text-center">SALDO ATUAL</td>
+            </tr>
+            <tr>
+                <td class="texto text-left">Caixa</td>
+                <td class="texto text-right">@(string.Format("{0:N}", Model.Dados.SaldoCaixa))</td>
+                <td class="texto text-left">Dívidas: GLP (Mensalidades/Supriment.)</td>
+                <td class="texto text-@(Model.Dados.DividaGLPRemessa > 0 ? "right" : "center")">@(Model.Dados.DividaGLPRemessa > 0 ? string.Format("{0:N}", Model.Dados.DividaGLPRemessa) : "-")</td>
+            </tr>
+            <tr>
+                <td class="texto text-left">Bancos Cta Corrente</td>
+                <td class="texto text-right">@(string.Format("{0:N}", Model.Dados.SaldoContaCorrente))</td>
+                <td class="texto text-left">Dívidas: Caução Locação</td>
+                <td class="texto text-@(Model.Dados.DividaCaucao > 0 ? "right" : "center")">@(Model.Dados.DividaCaucao > 0 ? string.Format("{0:N}", Model.Dados.DividaCaucao) : "-")</td>
+            </tr>
+            <tr>
+                <td class="texto text-left">Bancos Cta Aplicação</td>
+                <td class="texto text-@(Model.Dados.SaldoContaAplicacao > 0 ? "right" : "center")">@(Model.Dados.SaldoContaAplicacao > 0 ? string.Format("{0:N}", Model.Dados.SaldoContaAplicacao) : "-")</td>
+                <td class="texto text-left">Dívidas: GLP (Carta Constitutiva)</td>
+                <td class="texto text-@(Model.Dados.DividaCartaConstitutiva > 0 ? "right" : "center")">@(Model.Dados.DividaCartaConstitutiva > 0 ? string.Format("{0:N}", Model.Dados.DividaCartaConstitutiva) : "-")</td>
+            </tr>
+            <tr>
+                <td class="texto text-left">Poupança Cont. Al.Im.</td>
+                <td class="texto text-@(Model.Dados.SaldoContaPoupanca > 0 ? "right" : "center")">@(Model.Dados.SaldoContaPoupanca > 0 ? string.Format("{0:N}", Model.Dados.SaldoContaPoupanca) : "-")</td>
+                <td class="texto text-left">Dívidas: SP1 (Convenção/Erin)</td>
+                <td class="texto text-@(Model.Dados.DividaSP1 > 0 ? "right" : "center")">@(Model.Dados.DividaSP1 > 0 ? string.Format("{0:N}", Model.Dados.DividaSP1) : "-")</td>
+            </tr>
+            <tr>
+                <td class="titulo text-center" style="background-color:#ccffcc;">TOTAL</td>
+                <td class="titulo text-right" style="background-color:#ccffcc;">@(string.Format("{0:N}", Model.Dados.TotalCaixa))</td>
+                <td class="titulo text-center">TOTAL</td>
+                <td class="titulo text-right">@(string.Format("{0:N}", (Model.Dados.DividaGLPRemessa + Model.Dados.DividaCaucao + Model.Dados.DividaCartaConstitutiva + Model.Dados.DividaSP1)))</td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <table style="border:0;" align="center" width="100%">
+                        <tr style="border:0;">
+                            <td class="titulo text-center" colspan="5" style="border:0;">MEMBROS ATIVOS</td>
+                        </tr>
+                        <tr style="border:0;">
+                            <td class="titulo text-center" style="border:0;">Número Anterior</td>
+                            <td class="titulo text-center" style="border:0;">Reintegrados</td>
+                            <td class="titulo text-center" style="border:0;">Desligados / Suspensos / Atrasados</td>
+                            <td class="titulo text-center" style="border:0;">Novos Afiliados</td>
+                            <td class="titulo text-center" style="border:0;">Número atual Ativos</td>
+                        </tr>
+                        <tr>
+                            <td class="texto text-center" style="border:0;">@Model.Dados.MembrosAtivosMesAnterior</td>
+                            <td class="texto text-center" style="border:0;">@Model.Dados.MembrosReintegrados</td>
+                            <td class="texto text-center" style="border:0;">@Model.Dados.MembrosDesligados</td>
+                            <td class="texto text-center" style="border:0;">@Model.Dados.MembrosNovos</td>
+                            <td class="texto text-center" style="border:0;">@Model.Dados.MembrosAtivos</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" valign="top">
+                    <table width="90%" style="border:0;" align="center">
+                        <tr>
+                            <td class="titulo text-center" style="border:0;">Oficiais Administrativos</td>
+                        </tr>
+                        @if (Model.Dados.OficiaisAdministrativos != null && Model.Dados.OficiaisAdministrativos.Any())
+                        {
+                            foreach (var itemOficiaisAdministrativos in Model.Dados.OficiaisAdministrativos.OrderBy(o => o.Ordem))
+                            {
+                                <tr>
+                                    <td style="border:0;">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td class="texto text-center" style="border:0; border-top: 1px solid #000000;">@itemOficiaisAdministrativos.Nome</td>
+                                </tr>
+                                <tr>
+                                    <td class="titulo text-center" style="border:0;">@itemOficiaisAdministrativos.Cargo</td>
+                                </tr>
+                            }
+                        }
+                    </table>
+                </td>
+                <td colspan="2" valign="top">
+                    <table width="90%" style="border:0;" align="center">
+                        <tr>
+                            <td class="titulo text-center" style="border:0;">Verificação de Contas</td>
+                        </tr>
+                        @if (Model.Dados.VerificacaoContas != null && Model.Dados.VerificacaoContas.Any())
+                        {
+                            foreach (var nomeVerificacaoContas in Model.Dados.VerificacaoContas)
+                            {
+                                <tr>
+                                    <td style="border:0;">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td class="texto text-center" style="border:0; border-top: 1px solid #000000;">@nomeVerificacaoContas</td>
+                                </tr>
+                            }
+                        }
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+    </center>
+</body>
+</html>

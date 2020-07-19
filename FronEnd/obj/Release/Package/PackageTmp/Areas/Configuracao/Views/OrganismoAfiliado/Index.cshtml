@@ -1,0 +1,426 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-desktop"></i>
+                    Configuração | Organismo Afiliado
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <ul id="myTab1" class="nav nav-tabs bordered">
+                    <li class="active">
+                        <a href="#pnlDadosOrganismo" onclick="AbreDadosOrganismo();" data-toggle="tab">Organismo </a>
+                    </li>
+                    <li class="">
+                        <a href="#pnlDadosHorario" onclick="AbreDadosHorario();" data-toggle="tab">Horários </a>
+                    </li>
+                    <li class="">
+                        <a href="#pnlDadosImovel" onclick="AbreDadosImovel();" data-toggle="tab">Imóvel </a>
+                    </li>
+                    <li class="">
+                        <a href="#pnlDadosEmpresa" onclick="AbreDadosEmpresa();" data-toggle="tab">Empresa </a>
+                    </li>
+                    <li class="">
+                        <a href="#pnlDadosBancarios" onclick="AbreDadosBancarios();" data-toggle="tab">Dados Bancários </a>
+                    </li>
+                    <li class="">
+                        <a href="#pnlDadosSOA" onclick="AbreDadosSOA();" data-toggle="tab">SOA </a>
+                    </li>
+                    <li class="">
+                        <a href="#pnlDadosSMTP" onclick="AbreDadosSMTP();" data-toggle="tab">SMTP </a>
+                    </li>
+                    <li class="">
+                        <a href="#pnlLogotipo" onclick="AbreLogotipo();" data-toggle="tab">Logotipo </a>
+                    </li>
+                    <li class="">
+                        <a href="#pnlRoteiroAnual" onclick="AbreRoteiroAnual();" data-toggle="tab">Roteiro Anual </a>
+                    </li>
+                </ul>
+                <div id="myTabContent1" class="bg-color-white tab-content padding-10">
+                    <div class="tab-pane fade active in" id="pnlDadosOrganismo">
+
+                    </div>
+                    <div class="tab-pane fade" id="pnlDadosHorario">
+
+                    </div>
+                    <div class="tab-pane fade" id="pnlDadosEmpresa">
+
+                    </div>
+                    <div class="tab-pane fade" id="pnlDadosImovel">
+
+                    </div>
+                    <div class="tab-pane fade" id="pnlDadosBancarios">
+
+                    </div>
+                    <div class="tab-pane fade" id="pnlDadosSOA">
+
+                    </div>
+                    <div class="tab-pane fade" id="pnlDadosSMTP">
+
+                    </div>
+                    <div class="tab-pane fade" id="pnlLogotipo">
+
+                    </div>
+                    <div class="tab-pane fade" id="pnlRoteiroAnual">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function AbreDadosOrganismo() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosOrganismoAfiliado',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlDadosOrganismo").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function AbreDadosHorario() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosHorario',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlDadosHorario").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function AbreDadosEmpresa() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosEmpresa',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlDadosEmpresa").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function AbreDadosImovel() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosImovel',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlDadosImovel").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function AbreDadosBancarios() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosBancarios',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlDadosBancarios").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function AbreDadosSOA() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosSOA',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlDadosSOA").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function AbreDadosSMTP() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosSMTP',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlDadosSMTP").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function AbreLogotipo() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormLogotipo',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlLogotipo").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function AbreRoteiroAnual() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosRoteiroAnual',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlRoteiroAnual").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function CapturaCidades() {
+        ClearNotify();
+
+        $("#CDD_ID").empty();
+        $("#CDD_ID").append("<option value=''>Selecione");
+
+        var EstadoId = $("#EnderecoEstado").val();
+        if (EstadoId != "") {
+            $.ajax({
+                type: 'GET',
+                url: rootURL + 'Configuracao/OrganismoAfiliado/PreencheCidadeJSON',
+                data: { EstadoId: EstadoId },
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $.each(data.list, function () {
+                            $("#CDD_ID").append("<option value='" + this.Id + "'>" + this.Text);
+                        });
+                        OnCompleteForm();
+                        $("#CDD_ID").focus();
+                    } else {
+                        ShowNotify('danger', 'Configuração - Organismo Afiliado', data.msg, 'frmDadosGerais');
+                    }
+                },
+                error: function (xhr, st, str) {
+                    OnCompleteForm();
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+        }
+    }
+
+    function SelecionaEscritura(value) {
+        $("#FlagEscrituraGLP").val("false");
+        $("#FlagEscrituraOA").val("false");
+        $("#FlagAlugado").val("false");
+        $("#ValorAluguelMensal").val("0,00");
+        $("#ValorAluguelMensal").attr("style", "cursor: not-allowed; background-color: #eee !important;")
+        $("#ValorAluguelMensal").attr("readonly", "");
+
+        switch (value) {
+            case "1":
+                $("#FlagEscrituraGLP").val("true");
+                break;
+            case "2":
+                $("#FlagEscrituraOA").val("true");
+                break;
+            case "3":
+                $("#FlagAlugado").val("true");
+                $("#ValorAluguelMensal").attr("style", "")
+                $("#ValorAluguelMensal").removeAttr("readonly", "");
+                $("#ValorAluguelMensal").focus();
+                $("#ValorAluguelMensal").select();
+                break;
+        }
+    }
+
+    function SelecionaImposicaoConstrucao(value) {
+        $("#ImposicaoConstrucaoPrazo").val("");
+        $("#ImposicaoConstrucaoPrazo").attr("style", "cursor: not-allowed; background-color: #eee !important;")
+        $("#ImposicaoConstrucaoPrazo").attr("readonly", "");
+
+        if (value == "true") {
+            $("#ImposicaoConstrucaoPrazo").attr("style", "")
+            $("#ImposicaoConstrucaoPrazo").removeAttr("readonly", "");
+            $("#ImposicaoConstrucaoPrazo").focus();
+            $("#ImposicaoConstrucaoPrazo").select();
+        }
+    }
+
+    function ExcluirHorario(Id, Nome) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente excluir o Item " + Nome + "?", "ExcluirHorarioConfirmar(" + Id + ");")
+    }
+
+    function ListaDadosHorario() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/OrganismoAfiliado/ListaDadosHorario',
+            beforeSend: function () {
+
+            },
+            success: function (data) {
+                $("#pnlListagem").html(data);
+            },
+            error: function (xhr, st, str) {
+
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+    function ExcluirHorarioConfirmar(Id) {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/OrganismoAfiliado/ExcluirDadosHorario',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ListaDadosHorario();
+                    ShowNotify('success', 'Configuração - Organismo Afiliado', data.msg, 'frmDadosHorario');
+                } else {
+                    ShowNotify('danger', 'Configuração - Organismo Afiliado', data.msg, 'frmDadosHorario');
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function RoteiroAnualSelecionaAno(Mes) {
+        $("#pnlRoteiroAnualTexto").hide();
+        $("#pnlRoteiroAnualBotao").hide();
+
+        if (Mes != "") {
+
+            $.ajax({
+                type: 'GET',
+                url: rootURL + 'Configuracao/OrganismoAfiliado/RoteiroAnualSelecionaPorMes',
+                data: { Mes: Mes },
+                beforeSend: function () {
+
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $("#Roteiro").val(data.RoteiroAnual);
+                    } else {
+                        ShowNotify('success', 'Configuração - Roteiro Anual', data.msg, 'frmRoteiroAnual');
+                    }
+
+                    if (Mes != "") {
+                        $("#pnlRoteiroAnualTexto").show();
+                        $("#pnlRoteiroAnualBotao").show();
+                    }
+                },
+                error: function (xhr, st, str) {
+
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        AbreDadosOrganismo();
+    });
+</script>

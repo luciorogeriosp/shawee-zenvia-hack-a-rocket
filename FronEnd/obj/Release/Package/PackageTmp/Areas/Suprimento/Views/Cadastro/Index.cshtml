@@ -1,0 +1,504 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-list-alt"></i>
+                    Suprimentos | Produto
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:10px;">
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" onclick="AbrirModalSuprimento();">
+                        Incluir Produto
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="jarviswidget jarviswidget-color-white" id="wid-id-0" data-widget-editbutton="true">
+                    <header>
+                        <span class="widget-icon"> <i class="fa fa-table"></i> </span>
+                        <h2>Lista de Produtos </h2>
+
+                    </header>
+
+                    <!-- widget div-->
+                    <div>
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body no-padding" id="SuprimentoLista">
+
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModalSuprimento" title="Formulário de Produto" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalSuprimentoContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogSuprimento();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmDialogSuprimento();">Confirmar</button>
+    </div>
+</div>
+<div id="myModalEstoque" title="Formulário de Estoque" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalEstoqueContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogEstoque();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+
+    </div>
+</div>
+<script>
+    var dialogEstoque;
+    var dialogSuprimento;
+
+    function CloseDialogSuprimento() {
+        dialogSuprimento.dialog("close");
+    }
+
+    function CloseDialogEstoque() {
+        dialogEstoque.dialog("close");
+    }
+
+    function LoadList() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Suprimento/Cadastro/Lista',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#SuprimentoLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmDialogSuprimento() {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Suprimento/Cadastro/Form',
+            data: $.param($("#frmSuprimento").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalSuprimentoContent").html("");
+                $("#myModalSuprimentoContent").html(data);
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmDialogEstoque() {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Suprimento/Cadastro/Estoque',
+            data: $.param($("#frmEstoque").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalEstoqueContent").html("");
+                $("#myModalEstoqueContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowNotify('danger', 'Erro Inesperado', MsgNaoFoiPossivelCompletarOperacao, 'frmSuprimento');
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmDialogEstoqueRemover() {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Suprimento/Cadastro/EstoqueRemover',
+            data: $.param($("#frmEstoque").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalEstoqueContent").html("");
+                $("#myModalEstoqueContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowNotify('danger', 'Erro Inesperado', MsgNaoFoiPossivelCompletarOperacao, 'frmSuprimento');
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfigureDialogSuprimento() {
+        dialogSuprimento = $("#myModalSuprimento").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()),
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' })
+            }, open: function (event, ui) {
+                siHidden = setInterval(function () {
+                    $("body").css({ overflow: 'hidden' });
+                    clearInterval(siHidden);
+                }, 300);
+            }
+        });
+    }
+
+    function ConfigureDialogEstoque() {
+        dialogEstoque = $("#myModalEstoque").dialog({
+            autoOpen: false,
+            width: (thisDevice == "mobile") ? parseInt($(window).width()) : parseInt($("#content").css("width")) / 2,
+            resizable: false,
+            modal: true,
+            closeOnEscape: true,
+            position: { my: "center top", at: "center top", of: $("#content") }
+        });
+    }
+
+    function AbrirModalSuprimento() {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Suprimento/Cadastro/Form',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalSuprimentoContent").html("");
+
+                dialogSuprimento.dialog("open");
+                dialogSuprimento.dialog("moveToTop");
+
+                $("#myModalSuprimentoContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Estoque(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Suprimento/Cadastro/Estoque',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalEstoqueContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogEstoque.dialog("open");
+                dialogEstoque.dialog("moveToTop");
+
+                $("#myModalEstoqueContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+
+                ShowNotify('danger', 'Erro Inesperado', MsgNaoFoiPossivelCompletarOperacao, 'frmSuprimento');
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Editar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Suprimento/Cadastro/Form',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalSuprimentoContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogSuprimento.dialog("open");
+                dialogSuprimento.dialog("moveToTop");
+
+                $("#myModalSuprimentoContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Apagar(Id, ContaNome) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente excluir o Produto " + ContaNome + "?", "ApagarConfirmar(" + Id + ", '" + ContaNome + "');")
+    }
+
+    function ApagarConfirmar(Id, ContaNome) {
+        ClearNotify();
+
+        $("#line_" + Id).remove();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Suprimento/Cadastro/Excluir',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Suprimentos | Produto', data.msg);
+                }
+                else {
+                    ShowNotify('danger', 'Suprimentos | Produto', data.msg);
+                }
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function SelecionaConta(obj) {
+        $("#ContaIdSelect").empty();
+        $("#ContaIdSelect").append("<option value=''>Selecione");
+
+        var TipoId = obj.options[obj.selectedIndex].value;
+
+        if (TipoId != "") {
+            $.ajax({
+                type: 'GET',
+                url: rootURL + 'Suprimento/Cadastro/PreencheConta',
+                data: { TipoId: TipoId },
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    $.each(data.lista, function () {
+                        $("#ContaIdSelect").append("<option value='" + this.Id + "'>" + this.Text);
+                    });
+                },
+                error: function (xhr, st, str) {
+
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+        }
+    }
+
+    function DesabilitaMembroGLP() {
+        $("#MembroGLP").attr("disabled", "disabled");
+        $("#MembroGLP").prop("checked", false);
+        $("#MembroGLP").parent().find("i").css({
+            "cursor": "not-allowed",
+            "background-color": "#eee"
+        });
+
+        HabilitaMembroGLP(false);
+    }
+
+    function AtualizaConta() {
+        HabilitaQuitacao();
+
+        var ContaId = parseInt($("#ContaIdSelect").val());
+        if (ContaId > 0) {
+            $("#MembroGLP").removeAttr("disabled");
+            $("#MembroGLP").parent().find("i").css({
+                "cursor": "",
+                "background-color": ""
+            });
+        } else {
+            DesabilitaMembroGLP();
+        }
+    }
+
+    function HabilitaQuitacao() {
+        var ContaId = parseInt($("#ContaIdSelect").val());
+
+        if (ContaId == 146) {
+            $("#PrazoQtdeMeses").removeAttr("disabled");
+        } else {
+            $("#PrazoQtdeMeses").attr("disabled", "disabled");
+            $("#PrazoQtdeMeses").val("");
+        }
+
+
+        if (ContaId == 144) {
+            $("#Remessa").removeAttr("disabled");
+
+            $("#Remessa").parent().find("i").css({
+                "cursor": "",
+                "background-color": ""
+            });
+        } else {
+            $("#Remessa").attr("disabled", "disabled");
+
+            $("#Remessa").parent().find("i").css({
+                "cursor": "not-allowed",
+                "background-color": "#eee"
+            });            
+        }
+    }
+
+    function HabilitaMembroGLP(habilitar) {
+        var ContaId = parseInt($("#ContaIdSelect").val());
+
+        if (habilitar) {
+            $("#MembroTOM").removeAttr("disabled");
+            $("#MembroOGG").removeAttr("disabled");
+            $("#MembroOA").removeAttr("disabled");
+            $("#MembroDual").removeAttr("disabled");
+            $("#MembroIndividual").removeAttr("disabled");
+
+            $("#MembroTOM").parent().find("i").css({
+                "cursor": "",
+                "background-color": ""
+            });
+            $("#MembroOGG").parent().find("i").css({
+                "cursor": "",
+                "background-color": ""
+            });
+            $("#MembroOA").parent().find("i").css({
+                "cursor": "",
+                "background-color": ""
+            });
+            $("#MembroDual").parent().find("i").css({
+                "cursor": "",
+                "background-color": ""
+            });
+            $("#MembroIndividual").parent().find("i").css({
+                "cursor": "",
+                "background-color": ""
+            });
+        } else {
+            $("#MembroTOM").prop("checked", false);
+            $("#MembroOGG").prop("checked", false);
+            $("#MembroOA").prop("checked", false);
+            $("#MembroDual").prop("checked", false);
+            $("#MembroIndividual").prop("checked", false);
+
+            $("#MembroTOM").parent().find("i").css({
+                "cursor": "not-allowed",
+                "background-color": "#eee"
+            });
+            $("#MembroOGG").parent().find("i").css({
+                "cursor": "not-allowed",
+                "background-color": "#eee"
+            });
+            $("#MembroOA").parent().find("i").css({
+                "cursor": "not-allowed",
+                "background-color": "#eee"
+            });
+            $("#MembroDual").parent().find("i").css({
+                "cursor": "not-allowed",
+                "background-color": "#eee"
+            });
+            $("#MembroIndividual").parent().find("i").css({
+                "cursor": "not-allowed",
+                "background-color": "#eee"
+            });
+
+            $("#MembroTOM").attr("disabled", "disabled");
+            $("#MembroOGG").attr("disabled", "disabled");
+            $("#MembroOA").attr("disabled", "disabled");
+            $("#MembroDual").attr("disabled", "disabled");
+            $("#MembroIndividual").attr("disabled", "disabled");
+        }
+    }
+
+    function HabilitaEstoque(habilitar) {
+        if (habilitar) {
+            $("#QuantidadeEstoque").removeAttr("disabled");
+            $("#QuantidadeMinima").removeAttr("disabled");
+        } else {
+            $("#QuantidadeEstoque").attr("disabled", "disabled");
+            $("#QuantidadeMinima").attr("disabled", "disabled");
+        }
+
+    }
+
+    $(window).resize(function () {
+        ConfigureDialogSuprimento();
+        ConfigureDialogEstoque();
+    });
+
+    $(document).ready(function () {
+        ConfigureDialogSuprimento();
+        ConfigureDialogEstoque();
+        LoadList();
+    });
+</script>

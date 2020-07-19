@@ -1,0 +1,103 @@
+﻿@model List<SAL.MVC.Areas.Recebedoria.Models.VendaModel>
+@if (Model == null || Model.Any() == false)
+{
+    <script>
+        ShowNotify('danger', 'Recebedoria - Histórico', 'Não existem dados a serem exibidos.', 'pnlHistoricoContent');
+    </script>
+}
+else
+{
+    <table id="datatable_tabletools" class="table table-striped table-bordered table-hover" width="100%" style="display:none;">
+        <thead>
+            <tr>
+                <th class="text-center" width="4%">&nbsp;</th>
+                <th class="text-center" width="4%">Número</th>
+                <th class="text-center" width="4%">Situação</th>
+                <th class="text-center" width="4%">Remessa</th>
+                <th class="text-center" width="34%">Comprador</th>
+                <th class="text-center" width="10%">Data</th>
+                <th class="text-center" width="10%">Usuário</th>
+                <th class="text-center" width="10%">Sub-Total</th>
+                <th class="text-center" width="10%">Desconto</th>
+                <th class="text-center" width="10%">Valor Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var itemRecebedoria in Model.OrderByDescending(o => o.Id))
+            {
+            <tr id="pnlHistoricoCompras_@(itemRecebedoria.Id)">
+                <td class="text-center"><a href="javascript:void(0);" onclick="AbrirDetalhesMembroHistoricoComprasDetalhado(@(itemRecebedoria.Id))"><icon class="fa fa-plus"></icon></a></td>
+                <td class="text-center">@itemRecebedoria.Id</td>
+                <td class="text-center" id="SituacaoVenda_@(itemRecebedoria.Id)">
+                    @if (itemRecebedoria.Situacao == "C")
+                    {
+                        <span class="badge bg-color-blueLight" rel="popover-hover" data-placement="left" data-content="Cancelado em: @itemRecebedoria.DataCancelamento.Value.ToString("dd/MM/yyyy HH:mm") por: @itemRecebedoria.UsuarioCancelamento - Motivo: @itemRecebedoria.MotivoCancelamento">Cancelado</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-color-green" rel="popover-hover" data-placement="left">Vendido</span>
+                    }
+                </td>
+                <td class="text-center">@Html.Raw(itemRecebedoria.RemessaId)</td>
+                <td class="text-left">@Html.Raw(itemRecebedoria.Comprador)</td>
+                <td class="text-center">@itemRecebedoria.Data.ToString("dd/MM/yyyy")</td>
+                <td class="text-center">@itemRecebedoria.RecebidoPor</td>
+                <td class="text-right">@itemRecebedoria.ValorSubTotal</td>
+                <td class="text-right">@itemRecebedoria.ValorDesconto</td>
+                <td class="text-right">@itemRecebedoria.ValorTotal</td>
+            </tr>
+            }
+            @*< <tr>
+                        <td colspan="8" class="text-right"><strong>Total Vendido</strong></td>
+                        <td class="text-right"><strong>@(Model.Sum(s => s.ValorTotal))</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="8" class="text-right"><strong>Total Cancelado</strong></td>
+                        <td class="text-right"><strong>@(Model.Where(w => w.Situacao == "C").Sum(s => s.ValorTotal))</strong></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="8" class="alert alert-success font-lg text-right">Valor Final</td>
+                        <td class="alert alert-success font-lg text-right">@(Model.Where(w => w.Situacao == "V").Sum(s => s.ValorTotal))</td>
+                    </tr>
+                </tfoot>*@
+    </table>
+    <table class="table table-striped table-bordered table-hover" width="100%">
+        <tr>
+            <td class="text-right" width="100%"><strong>Total Vendido</strong></td>
+            <td class="text-right"><strong>@(Model.Sum(s => s.ValorTotal))</strong></td>
+        </tr>
+        <tr>
+            <td class="text-right" width="100%"><strong>Total Cancelado</strong></td>
+            <td class="text-right"><strong>@(Model.Where(w => w.Situacao == "C").Sum(s => s.ValorTotal))</strong></td>
+        </tr>
+        <tfoot>
+            <tr>
+                <td class="alert alert-success font-lg text-right" width="100%">Valor Final</td>
+                <td class="alert alert-success font-lg text-right">@(Model.Where(w => w.Situacao == "V").Sum(s => s.ValorTotal))</td>
+            </tr>
+        </tfoot>
+    </table>
+    <script>
+        $('#datatable_tabletools').dataTable({
+            "preDrawCallback": function () {
+                // Initialize the responsive datatables helper once.
+                if (!responsiveHelper_datatable_tabletools) {
+                    responsiveHelper_datatable_tabletools = new ResponsiveDatatablesHelper($('#datatable_tabletools'), breakpointDefinition);
+                }
+            },
+            "rowCallback": function (nRow) {
+                try {
+                    responsiveHelper_datatable_tabletools.createExpandIcon(nRow);
+                } catch (e) {
+
+                }   
+            },
+            "drawCallback": function (oSettings) {
+                $("#datatable_tabletools").show();
+                responsiveHelper_datatable_tabletools.respond();
+            }
+        });
+    </script>
+}

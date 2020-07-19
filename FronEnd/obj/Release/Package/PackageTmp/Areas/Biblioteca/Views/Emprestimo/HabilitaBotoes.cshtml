@@ -1,0 +1,7 @@
+﻿@{
+    Layout = null;
+}
+<a href="javascript:LoadList();" class="btn btn-labeled btn-primary" id="btnTodos"> <span class="btn-label"><i class="glyphicon glyphicon-filter"></i></span>Todos (@ViewBag.TotalGeral) </a>
+<a href="javascript:LoadDisponiveis();" class="btn btn-labeled btn-success" id="btnDisponiveis"> <span class="btn-label"><i class="glyphicon glyphicon-filter"></i></span>Disponíveis (@ViewBag.TotalDisponivel) </a>
+<a href="javascript:LoadEmprestados();" class="btn btn-labeled btn-warning" id="btnEmprestados"> <span class="btn-label"><i class="glyphicon glyphicon-filter"></i></span>Emprestados (@ViewBag.TotalEmprestado) </a>
+<a href="javascript:LoadAtrasados();" class="btn btn-labeled btn-danger" id="btnAtrasados"> <span class="btn-label"><i class="glyphicon glyphicon-filter"></i></span>Em Atraso (@ViewBag.TotalAtrasado) </a>

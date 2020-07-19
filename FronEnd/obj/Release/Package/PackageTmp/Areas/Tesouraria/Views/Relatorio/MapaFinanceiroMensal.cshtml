@@ -1,0 +1,97 @@
+﻿@model List<SAL.MVC.Models.ListItemModel>
+@{
+    ViewBag.Title = "Diario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+    DateTime dtSemana = dtAtual.AddDays(-7);
+    DateTime dtQuinzena = dtAtual.AddDays(-15);
+    DateTime dtMes = new DateTime(dtAtual.Year, dtAtual.Month, 1);
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-cut"></i>
+                    Tesouraria | Relatório Mapa Financeiro Mensal
+                </h1>
+            </div>
+            <div>
+                <article class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+                        <div role="content" style="border-width: 1px 1px 1px 1px; border-style: solid; border-top-color: #CCC!important;">
+                            <div class="widget-body no-padding">
+                                <form class="smart-form" novalidate="novalidate" onsubmit="return false">
+                                    <header>
+                                        Defina o filtro
+                                    </header>
+                                    <fieldset>
+                                        <div class="row">
+                                            <section class="col col-12">
+                                                <label for="cboAnoMes">Mês de Referência</label>
+                                                <label class="select">
+                                                    <select class="form-control" id="cboAnoMes" name="cboAnoMes">
+                                                        <option value="0">Selecione</option>
+                                                        @foreach (var item in Model)
+                                                        {
+                                                            <option value="@item.Id">@item.Text</option>
+                                                        }
+                                                    </select>
+                                                    <i></i>
+                                                </label>
+                                            </section>
+                                        </div>
+                                    </fieldset>
+                                    <footer>
+                                        <button type="button" class="btn btn-success" onclick="Exibir();">
+                                            Exibir
+                                        </button>
+                                    </footer>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function PrintFullDialog() {
+        $("#iFrameRecibo").attr("src", rootURL + 'Tesouraria/Relatorio/MapaFinanceiroMensalExcelDownload');
+    }
+
+    function Exibir() {
+        $(".alert").remove();
+
+        $.ajax({
+            type: 'POST',
+            data: {
+                Id: $("#cboAnoMes").val()
+            },
+            url: rootURL + 'Tesouraria/Relatorio/MapaFinanceiroMensalImprimir',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success == undefined) {
+                    $("#myModalFullContent").html(data);
+                    OpenFullDialog();
+
+                    $("#btnPrintFullDialog").html("<i class=\"fa fa-file-excel-o\"></i> Exportar para Excel");
+                    $("#btnPrintFullDialog").show();
+                } else {
+                    ShowNotify('danger', 'Tesouraria - Relatório Mapa Financeiro Mensal', data.msg);
+                }
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+</script>

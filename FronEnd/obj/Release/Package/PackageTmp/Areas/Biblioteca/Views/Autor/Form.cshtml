@@ -1,0 +1,78 @@
+﻿@model SAL.MVC.Areas.Biblioteca.Models.AutorModel
+<div role="content">
+
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body no-padding">
+
+        <!-- Error states for elements -->
+        <form class="smart-form" id="frmAutor" onsubmit="$('#btnConfirmar').click(); return false;">
+            @Html.HiddenFor(m => m.IdAutor)
+            <fieldset>
+                <section id="pnlProprietario">
+                    <label class="label">
+                        @Html.LabelFor(m => m.OrganismoNome)
+                    </label>
+                    <label class="input">
+                        @Html.TextBoxFor(m => m.OrganismoNome, new { style = "text-transform:uppercase;", disabled = "disabled" })
+                    </label>
+                </section>
+                <section>
+                    <label class="label">
+                        @Html.LabelFor(m => m.Nome)
+                        <span class="font-xs text-danger">*</span>
+                    </label>
+                    <label class="input">
+                        @Html.TextBoxFor(m => m.Nome, new { style = "text-transform:uppercase;" })
+                    </label>
+                </section>
+                <section>
+                    <label class="label">
+                        @Html.LabelFor(m => m.CodigoPHA)
+                    </label>
+                    <label class="input">
+                        @Html.TextBoxFor(m => m.CodigoPHA)
+                    </label>
+                </section>
+            </fieldset>
+        </form>
+        <!--/ Error states for elements -->
+    </div>
+    <!-- end widget content -->
+</div>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmAutor"))
+@if (Model.IdAutor == 0)
+{
+    <script>
+
+    </script>
+}
+<script>
+    $("#IdAutor").val('@Model.IdAutor');
+    $('#pnlProprietario').hide()
+</script>
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        LoadList();
+    </script>
+}
+@if (Model.OutroOrganismo)
+{
+    <script>
+        $(document).ready(function () {
+            $('#btnConfirmar').unbind('click');
+            $('#btnConfirmar').attr('disabled', 'disabled');
+            $('#pnlProprietario').show()
+        });
+    </script>
+} else { 
+<script>
+    $("#btnConfirmar").removeAttr("disabled");
+</script>
+}

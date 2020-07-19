@@ -1,0 +1,60 @@
+﻿@model SAL.MVC.Areas.Configuracao.Models.LogotipoViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<!-- Error states for elements -->
+<form class="smart-form" id="frmDadosLogotipo" enctype="multipart/form-data">
+    <fieldset>
+        <div class="row">
+            <img src="@Model.Logotipo" style="width:150px;" />
+        </div>
+    </fieldset>
+    <footer>
+        <input type="file" style="display:none;" />
+        <button type="button" class="btn btn-primary" onclick="$('#frmDadosLogotipo input[type=file]').click();">
+            Selecionar Imagem
+        </button>
+    </footer>
+</form>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmDadosBancarios"))
+<script>
+    $("#frmDadosLogotipo input[type=file]").unbind("change");
+    $('#frmDadosLogotipo input[type=file]').on('change', function (e) {
+        var files = e.target.files;
+        if (files.length > 0) {
+            if (window.FormData !== undefined) {
+                var data = new FormData();
+                for (var x = 0; x < files.length; x++) {
+                    data.append("file" + x, files[x]);
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: rootURL + 'Configuracao/OrganismoAfiliado/FormLogotipoUpload',
+                    contentType: false,
+                    processData: false,
+                    data: data,
+                    beforeSend: function () {
+                        OnBeginForm();
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            ShowNotify('success', 'SAL', 'Logotipo gravado com sucesso!', 'frmDadosLogotipo');
+                        } else {
+                            ShowNotify('danger', 'SAL', result.message, 'frmDadosLogotipo');
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        OnCompleteForm();
+                    },
+                    complete: function () {
+                        OnCompleteForm();
+                    }
+                });
+            } else {
+                ShowNotify('danger', 'Logotipo', "This browser doesn't support HTML5 file uploads!", 'frmDadosLogotipo');
+            }
+        }
+    });
+</script>

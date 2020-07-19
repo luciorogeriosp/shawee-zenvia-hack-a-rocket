@@ -1,0 +1,77 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.ConsultaMembroVisaoGeralModel
+@{
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+    SAL.MVC.Models.UsuarioClientePerfilModel perfilSelecionado = null;
+
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado") != null)
+    {
+        perfilSelecionado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    }
+}
+@*
+    <table class="table table-bordered table-hover">
+        <caption><icon class="fa fa-file-text-o"></icon> Quadro Geral</caption>
+        <thead>
+            <tr>
+                <th class="text-center">GLP ativo até</th>
+                <th class="text-center">TOM ativo até</th>
+                <th class="text-center">O.A. ativo até</th>
+                <th class="text-center">Afiliação O.A.</th>
+                <th class="text-center">Sigla O.A.</th>
+                <th class="text-center">Afiliação GLP</th>
+                <th class="text-center">Lote Atual</th>
+                <th class="text-center">Grau</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="text-center @(Model.MembroSOA.DataQuitacaoGLP.HasValue ? (Model.MembroSOA.DataQuitacaoGLP.Value > dtAtual ? "info" : (Model.MembroSOA.DataQuitacaoGLP.Value.AddMonths(1) > dtAtual ? "warning" : "danger")) : "")">@(Model.MembroSOA.DataQuitacaoGLP.HasValue ? Model.MembroSOA.DataQuitacaoGLP.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+                <td class="text-center @(Model.MembroSOA.DataQuitacaoTOM.HasValue ? (Model.MembroSOA.DataQuitacaoTOM.Value > dtAtual ? "info" : (Model.MembroSOA.DataQuitacaoTOM.Value.AddMonths(1) > dtAtual ? "warning" : "danger")) : "")">@(Model.MembroSOA.DataQuitacaoTOM.HasValue ? Model.MembroSOA.DataQuitacaoTOM.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+                <td class="text-center @(Model.MembroOA != null && Model.MembroOA.DataVencimentoOA.HasValue ? (Model.MembroOA.DataVencimentoOA.Value > dtAtual ? "info" : (Model.MembroOA.DataVencimentoOA.Value.AddMonths(1) > dtAtual ? "warning" : "danger")) : "")">@(Model.MembroOA != null && Model.MembroOA.DataVencimentoOA.HasValue ? Model.MembroOA.DataVencimentoOA.Value.ToString("MM/yyyy") : "Não possui")</td>
+                <td class="text-center">@(Model.MembroOA != null && Model.MembroOA.DataAdmissaoOA.HasValue ? Model.MembroOA.DataAdmissaoOA.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+                <td class="text-center">@(Model.MembroSOA != null ? Model.MembroSOA.OrganismoAfiliadoNomeTOM : "Não possui")</td>
+                <td class="text-center">@(Model.MembroSOA.DataAfiliacaoGLP.HasValue ? Model.MembroSOA.DataAfiliacaoGLP.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+                <td class="text-center">@(Model.MembroSOA.LoteAtualGLP)</td>
+                <td class="text-center">@(Model.MembroSOA.GrauRC)</td>
+            </tr>
+        </tbody>
+    </table>
+    <br />*@
+<div class="table table-bordered table-hover">
+    <div class="panel-group smart-accordion-default" id="accordion">
+        @{
+            Html.RenderPartial("ConsultaMembroVisaoDadosMembro", Model);
+            Html.RenderPartial("ConsultaMembroVisaoDadosTOM", Model);
+            Html.RenderPartial("ConsultaMembroVisaoDadosRC", Model);
+            Html.RenderPartial("ConsultaMembroVisaoDadosPessoais", Model);
+        }
+    </div>
+</div>
+<br />
+<div>
+    @if (Model.MembroSOA.Identificador == Model.MembroSOA.fSeqCadast && Model.MembroOA == null && (perfilSelecionado.Administrador || perfilSelecionado.AdministradorOrganismo || perfilSelecionado.AdministradorRegiao || perfilSelecionado.AdministradorSegmento || perfilSelecionado.Oficial || perfilSelecionado.Operacional) && (perfilSelecionado.Atendimento == false))
+    {
+        <button type="button" class="btn btn-primary" onclick="AtalhoIncluirMembro('@Model.MembroSOA.PrimeiroNome', '@Model.MembroSOA.Chave');">
+            Incluir Membro no O.A.
+        </button>
+    }
+    <button type="button" class="btn btn-warning" onclick="OpenDialogEntradaTemplo('@Model.MembroSOA.Chave', '@Model.MembroSOA.Nome');">
+        Autorização Templo
+    </button>
+    <button type="button" class="btn btn-warning" onclick="OpenReciboComprovanteQuitacao('@Model.MembroSOA.Chave', '@Model.MembroSOA.Nome');">
+        Comprovante de Quitação
+    </button>
+    <div class="btn-group">
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+            Recebedoria <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <a href="javascript:void(0);" onclick="AtalhoVenda('@Server.UrlEncode(Model.MembroSOA.Nome)', '@Model.MembroSOA.Chave', @((Model.MembroOA!=null).ToString().ToLower()), @((Model.MembroSOA.DataQuitacaoTOM.HasValue).ToString().ToLower()), true)">Dia</a>
+            </li>
+            <li>
+                <a href="javascript:void(0);" onclick="AtalhoVenda('@Server.UrlEncode(Model.MembroSOA.Nome)', '@Model.MembroSOA.Chave', @((Model.MembroOA!=null).ToString().ToLower()), @((Model.MembroSOA.DataQuitacaoTOM.HasValue).ToString().ToLower()), false)">Lançamento retroativo</a>
+            </li>
+        </ul>
+    </div>
+</div>

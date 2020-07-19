@@ -1,0 +1,20 @@
+﻿@{
+    Layout = null;
+    String host = HttpContext.Current.Request.ServerVariables["HTTP_HOST"].ToString().ToLower();
+    Tropical.Infrastructure.Model.User user = null;
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado") != null)
+    {
+        user = (Tropical.Infrastructure.Model.User)Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado");
+    }
+
+    var AppName = Tropical.Infrastructure.Util.ParameterCollection.GetParamValue("AppName");
+}
+<!-- PAGE FOOTER -->
+<div class="page-footer">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">
+            <span class="txt-color-white">@(AppName) 1.0 © @DateTime.Now.Year</span>
+        </div>
+    </div>
+</div>
+<!-- END PAGE FOOTER -->

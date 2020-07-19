@@ -1,0 +1,296 @@
+﻿@model SAL.MVC.Areas.Suprimento.Models.ProdutoModel
+    @{ 
+        bool HabilitarPlanoFamiliar = false;
+        SAL.MVC.Models.UsuarioClientePerfilModel perfilSelecionado = null;
+
+        if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado") != null)
+        {
+            perfilSelecionado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+
+            HabilitarPlanoFamiliar = perfilSelecionado.Cliente.HabilitarPlanoFamiliar;
+        }
+    }
+<div role="content">
+
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body no-padding">
+
+        <!-- Error states for elements -->
+        <form class="smart-form" id="frmRecebedoria">
+            @Html.HiddenFor(m => m.Id)
+            @Html.Hidden("NomeSuprimento", Model.Nome)
+            <fieldset>
+                <div class="row">
+                    <section class="col col-6">
+                        <label class="label">
+                            @Html.LabelFor(m => m.Nome)
+                            <span class="font-xs text-danger">*</span>
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.Nome)
+                        </label>
+                    </section>
+                    <section class="col col-2">
+                        <label class="label">
+                            @Html.LabelFor(m => m.Variacao)
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.Variacao)
+                        </label>
+                    </section>
+                    <section class="col col-2">
+                        <label class="label">
+                            @Html.LabelFor(m => m.Codigo)
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.Codigo)
+                        </label>
+                    </section>
+                    <section class="col col-2">
+                        <label class="label">
+                            @Html.LabelFor(m => m.Ativo)
+                        </label>
+                        <label class="checkbox">
+                            @Html.CheckBoxFor(m => m.Ativo)
+                            <i></i>
+                        </label>
+                    </section>
+                </div>
+                <div class="row">
+                    <section class="col col-6">
+                        <section>
+                            <label class="label">
+                                @Html.LabelFor(m => m.TipoIdSelect)
+                                <span class="font-xs text-danger">*</span>
+                            </label>
+                            <label class="select">
+                                @Html.DropDownListFor(m => m.TipoIdSelect, Model.TipoLista, "Selecione", new { onchange = "SelecionaConta(this);" })
+                                <i></i>
+                            </label>
+                        </section>
+                        <section>
+                            <label class="label">
+                                @Html.LabelFor(m => m.ContaIdSelect)
+                                <span class="font-xs text-danger">*</span>
+                            </label>
+                            <label class="select">
+                                @Html.DropDownListFor(m => m.ContaIdSelect, Model.ContaLista, "Selecione", new { onchange = "AtualizaConta();" })
+                                <i></i>
+                            </label>
+                        </section>
+                        <section>
+                            <label class="label">
+                                @Html.LabelFor(m => m.FornecedorIdSelect)
+                            </label>
+                            <label class="select">
+                                @Html.DropDownListFor(m => m.FornecedorIdSelect, Model.FornecedorLista, "Selecione")
+                                <i></i>
+                            </label>
+                        </section>
+                        <div class="row">
+                            <section class="col col-4">
+                                <label class="label">
+                                    <label for="ValorCusto">Preço</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.ValorCusto, new { onkeypress = "return isDecimal(event);", onkeyup = "return retiraPontos(event);" })
+                                </label>
+                            </section>
+                            <section class="col col-4">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.ValorVenda)
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.ValorVenda, new { onkeypress = "return isDecimal(event);", onkeyup = "return retiraPontos(event);" })
+                                </label>
+                            </section>
+                            <section class="col col-4">&nbsp;</section>
+                        </div>
+                        <div class="row" style="display:none;">
+                            <section class="col col-4">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.QuantidadeEstoque)
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.QuantidadeEstoque, new { type = "number", disabled = "disabled" })
+                                </label>
+                            </section>
+                            <section class="col col-4">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.QuantidadeMinima)
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.QuantidadeMinima, new { type = "number" })
+                                </label>
+                            </section>
+                            <section class="col col-4">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.ControlarEstoque)
+                                </label>
+                                <label class="checkbox">
+                                    @Html.CheckBoxFor(m => m.ControlarEstoque, new { onclick = "HabilitaEstoque(this.checked);" })
+                                    <i></i>
+                                </label>
+                            </section>
+                        </div>
+                    </section>
+                    <section class="col col-6">
+                        <div class="row">
+                            <section class="col col-6">
+                                <section style="border-right:1px solid #eee;">
+                                    <section>
+                                        <label class="label">
+                                            @Html.LabelFor(m => m.MembroGLP)
+                                        </label>
+                                        <label class="checkbox">
+                                            @Html.CheckBoxFor(m => m.MembroGLP, new { onclick = "HabilitaMembroGLP(this.checked);" })
+                                            <i></i><span class="note">Habilita o produto apenas para membros da AMORC</span>
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">
+                                            @Html.LabelFor(m => m.MembroTOM)
+                                        </label>
+                                        <label class="checkbox">
+                                            @Html.CheckBoxFor(m => m.MembroTOM)
+                                            <i></i><span class="note">Habilita o produto apenas para membros da TOM</span>
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">
+                                            @Html.LabelFor(m => m.MembroOGG)
+                                        </label>
+                                        <label class="checkbox">
+                                            @Html.CheckBoxFor(m => m.MembroOGG)
+                                            <i></i><span class="note">Habilita o produto apenas para membros da OGG</span>
+                                        </label>
+                                    </section>
+                                </section>
+                                <section style="border-right:1px solid #eee;">
+                                    <label class="label">
+                                        @Html.LabelFor(m => m.MembroOA)
+                                    </label>
+                                    <label class="checkbox">
+                                        @Html.CheckBoxFor(m => m.MembroOA, new { onclick = "HabilitaQuitacao()" })
+                                        <i></i><span class="note">Habilita o produto apenas para membros do Organismo Afiliado</span>
+                                    </label>
+                                </section>
+                                <section>
+                                    <label class="label">
+                                        @Html.LabelFor(m => m.MembroDual)
+                                    </label>
+                                    <label class="checkbox">
+                                        @Html.CheckBoxFor(m => m.MembroDual)
+                                        <i></i><span class="note">Habilita o produto apenas para membros da AMORC no regime DUAL</span>
+                                    </label>
+                                </section>
+                                <section>
+                                    <label class="label">
+                                        @Html.LabelFor(m => m.MembroIndividual)
+                                    </label>
+                                    <label class="checkbox">
+                                        @Html.CheckBoxFor(m => m.MembroIndividual)
+                                        <i></i><span class="note">Habilita o produto apenas para membros da AMORC no regime INDIVIDUAL</span>
+                                    </label>
+                                </section>
+                                <section @Html.Raw(HabilitarPlanoFamiliar == false ? "style='display:none';" : "")>
+                                    <label class="label">
+                                        @Html.LabelFor(m => m.MembroPlanoFamiliar)
+                                    </label>
+                                    <label class="checkbox">
+                                        @Html.CheckBoxFor(m => m.MembroPlanoFamiliar)
+                                        <i></i><span class="note">Habilita o produto para membros de Planos Familiares</span>
+                                    </label>
+                                </section>
+                            </section>
+                            <section class="col col-6">
+                                <section>&nbsp;</section>
+                                <section>&nbsp;</section>
+                                <section>
+                                    <label class="label">
+                                        @Html.LabelFor(m => m.Remessa)
+                                    </label>
+                                    <label class="checkbox">
+                                        @Html.CheckBoxFor(m => m.Remessa)
+                                        <i></i>
+                                    </label>
+                                </section>
+                                <section>&nbsp;</section>
+                                <section>&nbsp;</section>
+                                <div class="row">
+                                    <section class="col col-3">
+                                        <label class="label">
+                                            @Html.LabelFor(m => m.PrazoQtdeMeses)
+                                        </label>
+                                        <label class="input">
+                                            @Html.TextBoxFor(m => m.PrazoQtdeMeses, new { type = "number", @class = "disabled" })
+                                        </label>
+                                    </section>
+                                </div>
+                            </section>
+                        </div>
+                    </section>
+                </div>
+            </fieldset>
+        </form>
+        <!--/ Error states for elements -->
+    </div>
+    <!-- end widget content -->
+</div>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmRecebedoria"))
+@if (Model.Id == 0)
+{
+    <script>
+        $("#QuantidadeEstoque").removeAttr("disabled");
+        DesabilitaMembroGLP();
+    </script>
+}
+else
+{
+    <script>        
+        HabilitaMembroGLP($("#MembroGLP").prop("checked"));
+    </script>
+}
+@*
+    @if (Model.SuprimentoGLP != null)
+    {
+        <script>
+            $("#frmRecebedoria input").attr("disabled", "disabled");
+            $("#frmRecebedoria select").attr("disabled", "disabled");
+            $("#frmRecebedoria #Variacao").removeAttr("disabled");
+            $("#frmRecebedoria #Id").removeAttr("disabled");
+        </script>
+    }*@
+<script>
+    $("#Codigo").val('@Model.Codigo');
+    HabilitaQuitacao();
+</script>
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        if ($("#line_@(Model.Id)").length == 0) {
+            LoadList();
+        } else {
+            $("#line_@(Model.Id)").children()[0].innerHTML = '@Model.Codigo';
+            $("#line_@(Model.Id)").children()[1].innerHTML = document.forms["frmRecebedoria"].TipoIdSelect.options[document.forms["frmRecebedoria"].TipoIdSelect.selectedIndex].text;
+            $("#line_@(Model.Id)").children()[2].innerHTML = $("#NomeSuprimento").val() + ($("#Variacao").val() != "" ? " - " + $("#Variacao").val() : "");
+            @*
+            if (document.forms["frmRecebedoria"].FornecedorIdSelect.options[document.forms["frmRecebedoria"].FornecedorIdSelect.selectedIndex].text == "Selecione") {
+                $("#line_@(Model.Id)").children()[3].innerHTML = "";
+            } else {
+                $("#line_@(Model.Id)").children()[3].innerHTML = document.forms["frmRecebedoria"].FornecedorIdSelect.options[document.forms["frmRecebedoria"].FornecedorIdSelect.selectedIndex].text;
+            }
+            *@
+            $("#line_@(Model.Id)").children()[4].innerHTML = '@Model.ValorVenda.ToString("0.00")';
+            $("#line_@(Model.Id)").children()[5].innerHTML = '@(Model.Ativo ? "Sim" : "Não")';
+        }
+    </script>
+}

@@ -1,0 +1,84 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-university fa-fw "></i>
+                    Organismo Afiliado | Membros
+                </h1>
+            </div>
+        </div>
+        @*
+    <div class="form-group">
+        <div class="col-md-12">
+            <div class="input-group input-group-md">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-filter"></i></span>
+                <div class="icon-addon addon-md">
+                    <input type="text" placeholder="Nome ou Código de Afiliação" class="form-control" id="txtMembroBusca" name="txtMembroBusca">
+                    <label for="txtMembroBusca" class="glyphicon glyphicon-search" rel="tooltip" title="" data-original-title="Nome ou Código de Afiliação"></label>
+                </div>
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" onclick="ExecutaFiltroMembroBusca($('#txtMembroBusca'))">Buscar</button>
+                </span>
+            </div>
+        </div>
+        <div class="col-md-12 has-warning">
+            <div class="input-group input-group-md">
+                <span class="help-block">preencha o código de afiliação sem pontos ou traços</span>
+            </div>
+        </div>
+        @if (listaLetra != null && listaLetra.Any())
+        {
+            <div class="col-md-12">
+                <div class="well well-sm well-light hidden-xs">
+                    <div class="text-center">
+                        <ul class="pagination">
+                            @foreach (var itemLetra in listaLetra)
+                            {
+                                <li>
+                                    <a href="javascript:void(0);" onclick="FiltroMembroPorLetra(this, '@itemLetra')">@itemLetra</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+        *@
+        <div class="col-md-12" id="ListaMembro" style="margin-bottom:70px;">
+            @*@{Html.RenderPartial("Lista", Model.Lista);}*@
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+        ExecutaFiltroMembroBusca();
+    });
+
+    function AtualizarListaMembro(Id) {
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Membro/ListaLinha',
+            data: { Id: Id },
+            beforeSend: function () {
+
+            },
+            success: function (data) {
+                $("#line_" + Id).html(data);
+            },
+            error: function (xhr, st, str) {
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+</script>

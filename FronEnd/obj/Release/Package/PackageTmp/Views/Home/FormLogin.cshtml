@@ -1,0 +1,115 @@
+﻿@model SAL.MVC.Models.FormLoginModel
+@{
+    Layout = null;
+}
+@using (Html.BeginForm("FormLogin", "Home", FormMethod.Post, new { @class = "smart-form client-form", id = "frmLogin" }))
+{
+    @Html.AntiForgeryToken()
+    <header>
+        Painel de Controle
+    </header>
+    <fieldset id="pnlForm">
+        @if (TempData["MsgErrorPag"] != null)
+        {
+            <div class="alert alert-danger fade in">
+                <a class="close" data-dismiss="alert" href="#">×</a>
+                <h4 class="alert-heading">SAL</h4>
+                @TempData["MsgErrorPag"].ToString()
+            </div>
+        }
+        <section>
+            <label class="label" for="Email">E-mail</label>
+            <label class="input">
+                <i class="icon-append fa fa-user"></i>
+                @Html.TextBoxFor(o => o.Email, new { @autoautocomplete = false })
+                @Html.Raw(Model.ReturnAttribute.GetError("Email"))
+            </label>
+        </section>
+        <section>
+            <label class="label" for="Senha">Senha</label>
+            <label class="input">
+                <i class="icon-append fa fa-lock"></i>
+                @Html.TextBoxFor(o => o.Senha, new { @type = "password", @autoautocomplete = false })
+                @Html.Raw(Model.ReturnAttribute.GetError("Senha"))
+                @*<b class="tooltip tooltip-top-right"><i class="fa fa-lock txt-color-teal"></i> @Html.ValidationMessageFor(x => x.Senha, "")</b>*@
+            </label>
+        </section>
+        @*<section>
+                <label class="checkbox">
+                    @Html.CheckBoxFor(o => o.Lembrar)
+                    <i></i>Lembrar de mim
+                </label>
+            </section>*@
+    </fieldset>
+    <footer>
+        <div class="note">
+            <a href="javascript:EsqueciMinhaSenha();">Esqueci minha senha</a>
+        </div>
+        <button type="submit" class="btn btn-primary" id="btnFormLogin">
+            Entrar!
+        </button>
+    </footer>
+}
+<script type="text/javascript">
+    $("#frmLogin").submit(function (e) {
+        var postData = $(this).serializeArray();
+        var formURL = $(this).attr("action");
+
+        $("#btnFormLogin").prop("disabled", true);
+
+        $.ajax(
+        {
+            url: formURL,
+            type: "POST",
+            data: postData,
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data, textStatus, jqXHR) {
+                $("#pnlFormLogin").html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                OnCompleteForm();
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+        e.preventDefault(); //STOP default action
+    });
+
+    function EsqueciMinhaSenha() {
+        $(".alert").remove();
+
+        var email = $("#Email").val();
+
+        if (email == "") {
+            ShowNotify('danger', 'Esqueci Minha Senha', 'Informe seu e-mail.', 'pnlForm');
+        } else {
+            $.ajax(
+        {
+            url: rootURL + 'Home/EsqueciMinhaSenha',
+            type: "POST",
+            data: {Email: email},
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data, textStatus, jqXHR) {
+                ShowNotify('success', 'Esqueci Minha Senha', data, 'pnlForm');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                ShowNotify('danger', 'Esqueci Minha Senha', 'Não foi possível realizar essa operação.', 'pnlForm');
+                OnCompleteForm();
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+        }
+    }
+
+    $(document).ready(function () {
+        $("#Email").focus();
+    });
+</script>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "pnlForm"))

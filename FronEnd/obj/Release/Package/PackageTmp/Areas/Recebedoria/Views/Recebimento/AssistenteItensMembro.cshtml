@@ -1,0 +1,24 @@
+﻿@model SAL.MVC.Areas.Recebedoria.Models.AssistenteCompradorMembroModel
+<table class="table table-bordered table-striped table-hover table-responsive" style="margin-bottom: 0; border-right:0; border-bottom:0">
+    <thead>
+        <tr>
+            <th class="text-center hidden-sm hidden-xs bg-color-greenLight txt-color-white" style="width:180px;">Tipo</th>
+            <th class="text-left bg-color-greenLight txt-color-white">Descrição</th>
+            <th class="text-center bg-color-greenLight txt-color-white" style="width:140px;">Qtde</th>
+            <th class="text-center bg-color-greenLight txt-color-white" style="width:140px;">Valor</th>
+            <th class="text-center bg-color-greenLight txt-color-white" style="width:140px;">Total</th>
+            <th class="text-center bg-color-greenLight txt-color-white" style="width:80px;">&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ListaItens)
+            {
+                { Html.RenderPartial("AssistenteItensMembroItem", item); }
+            }
+    </tbody>
+    @*<tfoot>
+        <tr>
+            <td colspan="6" class="text-right">@(Model.ListaItens.Count) ite@(Model.ListaItens.Count > 1 ? "ns" : "m")</td>
+        </tr>
+    </tfoot>*@
+</table>

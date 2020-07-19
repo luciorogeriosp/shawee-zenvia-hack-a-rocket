@@ -1,0 +1,113 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.ClasseModel
+
+<div role="content">
+
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body no-padding">
+        <form class="smart-form" id="frmClasse" onsubmit="$('#btnConfirmar').click(); return false;">
+            @Html.HiddenFor(m => m.IdClasse)
+            <fieldset>
+                <div class="row">
+                    <section class="col col-6">
+                        <label class="label">
+                            @Html.LabelFor(m => m.OrganismoAfiliadoIdSelect)
+                            <span class="font-xs text-danger">*</span>
+                        </label>
+                        <label class="select">
+                            @Html.DropDownListFor(m => m.OrganismoAfiliadoIdSelect, Model.OrganismoAfiliadoLista, "Selecione")
+                            <i></i>
+                        </label>
+                    </section>
+                    <section class="col col-2">
+                        <label class="label">
+                            @Html.LabelFor(m => m.GrauIdSelect)
+                            <span class="font-xs text-danger">*</span>
+                        </label>
+                        <label class="select">
+                            @Html.DropDownListFor(m => m.GrauIdSelect, Model.GrauLista, "Selecione")
+                            <i></i>
+                        </label>
+                    </section>
+                    <section class="col col-2">
+                        <label class="label">
+                            @Html.LabelFor(m => m.AnoInicio)
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.AnoInicio, new { type = "number" })
+                        </label>
+                    </section>
+                    <section class="col col-2">
+                        <label class="label">
+                            @Html.LabelFor(m => m.AnoTermino)
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.AnoTermino, new { type = "number" })
+                        </label>
+                    </section>
+                </div>
+                <section>
+                    <label class="label">
+                        @Html.LabelFor(m => m.MestreIdSelect)
+                        <span class="font-xs text-danger">*</span>
+                    </label>
+                    <label class="select">
+                        @Html.DropDownListFor(m => m.MestreIdSelect, Model.MestreLista, "Selecione")
+                        <i></i>
+                    </label>
+                </section>
+                <section>
+                    <label class="label">
+                        @Html.LabelFor(m => m.Patrono)
+                    </label>
+                    <label class="input">
+                        @Html.TextBoxFor(m => m.Patrono)
+                        <i></i>
+                    </label>
+                </section>
+            </fieldset>
+            <footer>
+                <button type="button" class="btn btn-success" onclick="ConfirmDialogClasse();" id="btnConfirmar">Confirmar</button>
+            </footer>
+        </form>
+        @if (Model.IdClasse > 0)
+        {
+            <div class="tab-content">
+                <div class="tab-pane active">
+                    <ul class="nav nav-tabs bordered">
+                        <li class="active">
+                            <a href="#ClasseMembros" data-toggle="tab" onclick="LoadMembrosLista();">Membros</a>
+                        </li>
+                        <li class="">
+                            <a href="#ClasseAtividades" data-toggle="tab" onclick="LoadAtividadesLista()">Lista de Presença</a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+            <div class="tab-content padding-10">
+                <div class="tab-pane active" id="ClasseMembros"></div>
+                <div class="tab-pane" id="ClasseAtividades"></div>
+            </div>
+        }
+    </div>
+</div>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmClasse"))
+@if (Model.IdClasse > 0)
+{
+    <script>
+        $("#IdClasse").val("@Model.IdClasse");
+        LoadMembrosLista();
+    </script>
+}
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        LoadList();
+    </script>
+}

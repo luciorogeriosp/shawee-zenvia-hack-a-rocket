@@ -1,0 +1,316 @@
+﻿@model SAL.MVC.Areas.Tesouraria.Models.FechamentoModel
+@{
+    Layout = null;
+}
+<div role="content">
+
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body no-padding">
+        <h3>@SAL.MVC.Helpers.Constantes.DescricaoMes(Convert.ToInt32(Model.AnoMes.ToString().Substring(4, 2))).ToUpper() / @Model.AnoMes.ToString().Substring(0, 4)</h3>
+        <!-- Error states for elements -->
+        <form class="smart-form" id="frmFechamento">
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.StatusId)
+            <ul id="myTab1" class="nav nav-tabs bordered">
+                <li class="active">
+                    <a href="#pnlSaldos" data-toggle="tab">Saldos</a>
+                </li>
+                <li class="">
+                    <a href="#pnlDividas" data-toggle="tab">Dívidas</a>
+                </li>
+                <li class="">
+                    <a href="#pnlInformacoesComplementares" data-toggle="tab">Informações Complementares</a>
+                </li>
+                <li class="">
+                    <a href="#pnlInvestimentos" data-toggle="tab">Investimentos</a>
+                </li>
+                <li class="">
+                    <a href="#pnlOficiaisAdministrativos" data-toggle="tab">Oficiais Administrativos</a>
+                </li>
+                <li class="">
+                    <a href="#pnlVerificacaoContas" data-toggle="tab">Verificação de Contas</a>
+                </li>
+                <li class="">
+                    <a href="#pnlMembrosAtivos" data-toggle="tab">Membros Ativos</a>
+                </li>
+                <li class="">
+                    <a href="#pnlInstrucoes" data-toggle="tab">Instruções</a>
+                </li>
+            </ul>
+            <div id="myTabContent1" class="tab-content padding-10">
+                <div class="tab-pane fade active in" id="pnlSaldos">
+                    <section>
+                        <label class="label">Caixa (mês anterior)</label>
+                        <label class="input">
+                            <input type="hidden"@Html.Raw(Model.HabilitarSaldoInicial == false ? " id=\"SaldoInicial\" name=\"SaldoInicial\"" : "") value="@(Model.SaldoInicial.HasValue ? Model.SaldoInicial.Value.ToString("0.00") : "0,00")" />
+                            <input type="text"@Html.Raw(Model.HabilitarSaldoInicial == true ? " id=\"SaldoInicial\" name=\"SaldoInicial\"" : "") onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.SaldoInicial.HasValue ? Model.SaldoInicial.Value.ToString("0.00") : "0,00")" @Html.Raw(Model.HabilitarSaldoInicial == false ? " disabled=\"disabled\"" : "") />
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Conta Corrente (mês anterior)</label>
+                        <label class="input">
+                            <input type="hidden"@Html.Raw(Model.HabilitarSaldoInicial == false ? " id=\"SaldoContaCorrente\" name=\"SaldoContaCorrente\"" : "") value="@(Model.SaldoContaCorrente.HasValue ? Model.SaldoContaCorrente.Value.ToString("0.00") : "0,00")" />
+                            <input type="text"@Html.Raw(Model.HabilitarSaldoInicial == true ? " id=\"SaldoContaCorrente\" name=\"SaldoContaCorrente\"" : "") onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.SaldoContaCorrente.HasValue ? Model.SaldoContaCorrente.Value.ToString("0.00") : "0,00")" @Html.Raw(Model.HabilitarSaldoInicial == false ? " disabled=\"disabled\"" : "")>
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Aplicação (mês anterior)</label>
+                        <label class="input">
+                            <input type="hidden"@Html.Raw(Model.HabilitarSaldoInicial == false ? " id=\"SaldoContaAplicacao\" name=\"SaldoContaAplicacao\"" : "") value="@(Model.SaldoContaAplicacao.HasValue ? Model.SaldoContaAplicacao.Value.ToString("0.00") : "0,00")" />
+                            <input type="text"@Html.Raw(Model.HabilitarSaldoInicial == true ? " id=\"SaldoContaAplicacao\" name=\"SaldoContaAplicacao\"" : "") onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.SaldoContaAplicacao.HasValue ? Model.SaldoContaAplicacao.Value.ToString("0.00") : "0,00")" @Html.Raw(Model.HabilitarSaldoInicial == false ? " disabled=\"disabled\"" : "")>
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Poupança (mês anterior)</label>
+                        <label class="input">
+                            <input type="hidden"@Html.Raw(Model.HabilitarSaldoInicial == false ? " id=\"SaldoContaPoupanca\" name=\"SaldoContaPoupanca\"" : "") value="@(Model.SaldoContaPoupanca.HasValue ? Model.SaldoContaPoupanca.Value.ToString("0.00") : "0,00")" />
+                            <input type="text"@Html.Raw(Model.HabilitarSaldoInicial == true ? " id=\"SaldoContaPoupanca\" name=\"SaldoContaPoupanca\"" : "") onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.SaldoContaPoupanca.HasValue ? Model.SaldoContaPoupanca.Value.ToString("0.00") : "0,00")" @Html.Raw(Model.HabilitarSaldoInicial == false ? " disabled=\"disabled\"" : "")>
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Caixa (atual)</label>
+                        <label class="input">
+                            <input type="hidden" value="@(Model.SaldoFinal.HasValue ? Model.SaldoFinal.Value.ToString("0.00") : "0,00")" />
+                            <input type="text" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.SaldoFinal.HasValue ? Model.SaldoFinal.Value.ToString("0.00") : "0,00")" disabled="disabled" />
+                        </label>
+                    </section>
+                </div>
+                <div class="tab-pane fade" id="pnlDividas">
+                    <section>
+                        <label class="label">GLP</label>
+                        <label class="input">
+                            <input type="hidden" id="SaldoDividaGLP" name="SaldoDividaGLP" value="@(Model.SaldoDividaGLP.HasValue ? Model.SaldoDividaGLP.Value.ToString("0.00") : "0,00")" />
+                            <input type="text" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.SaldoDividaGLP.HasValue ? Model.SaldoDividaGLP.Value.ToString("0.00") : "0,00")" disabled="disabled">
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Caução Locação</label>
+                        <label class="input">
+                            <input type="text" id="SaldoCaucao" name="SaldoCaucao" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.SaldoCaucao.HasValue ? Model.SaldoCaucao.Value.ToString("0.00") : "0,00")" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Constitutiva</label>
+                        <label class="input">
+                            <input type="text" id="SaldoConstitutiva" name="SaldoConstitutiva" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.SaldoConstitutiva.HasValue ? Model.SaldoConstitutiva.Value.ToString("0.00") : "0,00")" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Convenção/Erin</label>
+                        <label class="input">
+                            <input type="text" id="SaldoSP1" name="SaldoSP1" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.SaldoSP1.HasValue ? Model.SaldoSP1.Value.ToString("0.00") : "0,00")" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                        </label>
+                    </section>
+                </div>
+                <div id="pnlInformacoesComplementares" class="tab-pane fade">
+                    <section>
+                        <label class="label">Cartão - Lançamentos futuros (bruto)</label>
+                        <label class="input">
+                            <input type="text" id="CartaoLancamentosFuturos" name="CartaoLancamentosFuturos" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.CartaoLancamentosFuturos.HasValue ? Model.CartaoLancamentosFuturos.Value.ToString("0.00") : "0,00")" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Cartão - Lançamentos futuros (parcelado bruto)</label>
+                        <label class="input">
+                            <input type="text" id="CartaoLancamentosFuturosParcelas" name="CartaoLancamentosFuturosParcelas" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.CartaoLancamentosFuturosParcelas.HasValue ? Model.CartaoLancamentosFuturosParcelas.Value.ToString("0.00") : "0,00")" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Cartão D+1 (bruto)</label>
+                        <label class="input">
+                            <input type="text" id="CartaoDMai1" name="CartaoDMai1" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.CartaoDMai1.HasValue ? Model.CartaoDMai1.Value.ToString("0.00") : "0,00")" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Valor em espécie no caixa</label>
+                        <label class="input">
+                            <input type="text" id="ValorCaixaDinheiro" name="ValorCaixaDinheiro" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.ValorCaixaDinheiro.HasValue ? Model.ValorCaixaDinheiro.Value.ToString("0.00") : "0,00")" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                        </label>
+                    </section>
+                </div>
+                <div id="pnlInvestimentos" class="tab-pane fade">
+                    <section>
+                        <label class="label">Rendimento</label>
+                        <label class="input">
+                            <input type="text" id="InvestimentoRendimento" name="InvestimentoRendimento" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.InvestimentoRendimento.HasValue ? Model.InvestimentoRendimento.Value.ToString("0.00") : "0,00")" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Resgate (valor creditado em conta)</label>
+                        <label class="input">
+                            <input type="text" id="InvestimentoResgate" name="InvestimentoResgate" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.InvestimentoResgate.HasValue ? Model.InvestimentoResgate.Value.ToString("0.00") : "0,00")" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Imposto de Renda</label>
+                        <label class="input">
+                            <input type="text" id="InvestimentoImpostoRenda" name="InvestimentoImpostoRenda" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.InvestimentoImpostoRenda.HasValue ? Model.InvestimentoImpostoRenda.Value.ToString("0.00") : "0,00")" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Aplicação</label>
+                        <label class="input">
+                            <input type="text" id="InvestimentoAplicacao" name="InvestimentoAplicacao" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.InvestimentoAplicacao.HasValue ? Model.InvestimentoAplicacao.Value.ToString("0.00") : "0,00")" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                        </label>
+                    </section>
+                </div>
+                <div id="pnlOficiaisAdministrativos" class="tab-pane fade">
+                    @if (Model.OficiaisAdministrativos != null)
+                    {
+                        for (int i = 0; i < Model.OficiaisAdministrativos.Count; i++)
+                        {
+                            <section>
+                                <label class="label">@Model.OficiaisAdministrativos[i].Cargo</label>
+                                <label class="input">
+                                    <input type="hidden" name="OficiaisAdministrativos[@i].Cargo" id="OficiaisAdministrativos[@i].Cargo" value="@Model.OficiaisAdministrativos[i].Cargo">
+                                    <input type="hidden" name="OficiaisAdministrativos[@i].CargoId" id="OficiaisAdministrativos[@i].CargoId" value="@Model.OficiaisAdministrativos[i].CargoId">
+                                    <input type="hidden" name="OficiaisAdministrativos[@i].Ordem" id="OficiaisAdministrativos[@i].Ordem" value="@Model.OficiaisAdministrativos[i].Ordem">
+                                    <input type="text" name="OficiaisAdministrativos[@i].Nome" id="OficiaisAdministrativos[@i].Nome" value="@Model.OficiaisAdministrativos[i].Nome" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                                </label>
+                            </section>
+                        }
+                    }
+                </div>
+                <div id="pnlVerificacaoContas" class="tab-pane fade">
+                    @if (Model.OficiaisAdministrativosVerificacaoContas != null)
+                    {
+                        for (int i = 0; i < Model.OficiaisAdministrativosVerificacaoContas.Count; i++)
+                        {
+                            <section>
+                                <label class="input">
+                                    <input type="text" name="OficiaisAdministrativosVerificacaoContas[@i]" id="OficiaisAdministrativosVerificacaoContas[@i]" value="@Model.OficiaisAdministrativosVerificacaoContas[i]" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                                </label>
+                            </section>
+                        }
+                    }
+                </div>
+                <div id="pnlMembrosAtivos" class="tab-pane fade">
+                    <section>
+                        <label class="label">Número Anterior</label>
+                        <label class="input">
+                            <input type="text" value="@(Model.MembrosMesAnterior.HasValue ? Model.MembrosMesAnterior.Value : 0)" disabled="disabled">
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Reintegrados</label>
+                        <label class="input">
+                            <input type="text" value="@(Model.MembrosReintegrados.HasValue ? Model.MembrosReintegrados.Value : 0)" disabled="disabled">
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Desligados / Suspensos / Atrasados</label>
+                        <label class="input">
+                            <input type="text" value="@(Model.MembrosDesligados.HasValue ? Model.MembrosDesligados.Value : 0)" disabled="disabled">
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Novos Afiliados</label>
+                        <label class="input">
+                            <input type="text" value="@(Model.MembrosNovos.HasValue ? Model.MembrosNovos.Value : 0)" disabled="disabled">
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Numero atual Ativos</label>
+                        <label class="input">
+                            <input type="text" value="@(Model.MembrosAtivos.HasValue ? Model.MembrosAtivos.Value : 0)" disabled="disabled">
+                        </label>
+                    </section>
+                </div>
+                <div id="pnlInstrucoes" class="tab-pane fade">
+                    <section>
+                        <div class="well well-sm padding-10 no-border">
+                            <h3 class="text-primary">Roteiro Fechamento Financeiro mensal<br /><br /></h3>
+                            <div class="bs-example">
+                                <dl>
+                                    <dt>Entradas</dt>
+                                    <dd>
+                                        Conferir Caixas semanais;<br />
+                                        Lançar Recibos de pagamentos em dinheiro;<br />
+                                        Lançar extrato (Conta Corrente);<br />
+                                        Lançar Saida Taxa Cartão - (saida "dinheiro") - extrato operadora, depende da liberação da operadora de cartão.<br />
+                                    </dd>
+                                    <dd>&nbsp;</dd>
+                                    <dt>Investimentos</dt>
+                                    <dd>
+                                        Rendimento - Lançar Rendimento Aplicação (somar rendimentos CDB e DI) - obs. LANÇAR EM 2 LUGARES, Na tesouraria e no fechamento mensal / investimentos.;<br />
+                                        Resgate - (Se houver resgate, lançar saída imposto IR);<br />
+                                        Aplicação como saida conta corrente.<br />
+                                    </dd>
+                                    <dd>&nbsp;</dd>
+                                    <dt>Lançar Parcelado</dt>
+                                    <dd>Valor bruto.<br /></dd>
+                                    <dd>&nbsp;</dd>
+                                    <dt>Lançar Futuros</dt>
+                                    <dd>Valor bruto.<br /></dd>
+                                    <dd>&nbsp;</dd>
+                                    <dt>Valor em espécie no caixa</dt>
+                                    <dd>Lançar no fechamento mensal / informações complementares<br /></dd>
+                                    <dd>&nbsp;</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </form>
+        <!--/ Error states for elements -->
+
+    </div>
+    <!-- end widget content -->
+</div>
+<script>
+    $("#btnGravar").hide();
+    $("#btnGravar").removeAttr("disabled");
+
+    $("#btnReabrir").hide();
+    $("#btnReabrir").removeAttr("disabled");
+
+    $("#btnConferencia").hide();
+    $("#btnConferencia").removeAttr("disabled");
+
+    $("#btnFechar").hide();
+    $("#btnFechar").removeAttr("disabled");
+
+    $("#lblWarning").hide();
+</script>
+@switch (Model.StatusId)
+{
+    case "A":
+        <script>
+            $("#btnGravar").show();
+            $("#btnConferencia").show();
+        </script>
+        break;
+    case "V":
+        <script>
+            $("#btnReabrir").show();
+            $("#btnFechar").show();
+        </script>
+        break;
+    case "F":
+
+        break;
+    default:
+        break;
+}
+@if (Model.Return.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        ShowNotify('success', 'Fechamento', '@Model.Return.Mensagem', 'frmFechamento');
+    </script>
+}
+@if (Model.Return.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Alerta || Model.Return.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Erro)
+{
+    {
+        <script>
+            ShowNotify('@(Model.Return.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Alerta ? "warning" : "danger")', 'Fechamento', '@Model.Return.Mensagem', 'frmFechamento');
+        </script>
+    }
+}
+

@@ -1,0 +1,208 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-university"></i>
+                    Organismo Afiliado | Bens
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:10px;">
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" onclick="AbrirModalBem();">
+                        Incluir Bem
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="widget-body" id="BemLista">
+
+        </div>
+    </div>
+</div>
+<div id="myModalBem" title="Formulário de Bem" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalBemContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogBem();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmDialogBem();" id="btnConfirmar">Confirmar</button>
+    </div>
+</div>
+<script>
+    var dialogBem;
+
+    function CloseDialogBem() {
+        dialogBem.dialog("close");
+    }
+
+    function LoadList() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Inventario/BensLista',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#BemLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmDialogBem() {
+        ClearNotify();
+        $("#btnConfirmar").attr("disabled", "disabled");
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Inventario/BensForm',
+            data: $.param($("#frmBem").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalBemContent").html("");
+                $("#myModalBemContent").html(data);
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfigureDialogBem() {
+        dialogBem = $("#myModalBem").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()),
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' })
+            }
+        });
+    }
+    
+    function AbrirModalBem() {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Inventario/BensForm',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalBemContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogBem.dialog("open");
+                dialogBem.dialog("moveToTop");
+
+                $("#myModalBemContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Editar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Inventario/BensForm',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalBemContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogBem.dialog("open");
+                dialogBem.dialog("moveToTop");
+
+                $("#myModalBemContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Apagar(Id, Nome) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente excluir o Bem " + Nome + "?", "ApagarConfirmar(" + Id + ", '" + Nome + "');")
+    }
+
+    function ApagarConfirmar(Id, Nome) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Inventario/BensExcluir',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'OrganismoAfiliado | Bem', data.msg);
+                    $("#line_" + Id).remove();
+                }
+                else {
+                    ShowNotify('danger', 'OrganismoAfiliado | Bem', data.msg);
+                }
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    $(window).resize(function () {
+        ConfigureDialogBem();
+    });
+
+    $(document).ready(function () {
+        ConfigureDialogBem();
+        LoadList();
+    });
+</script>

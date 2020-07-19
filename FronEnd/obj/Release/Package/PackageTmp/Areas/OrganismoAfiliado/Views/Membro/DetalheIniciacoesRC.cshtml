@@ -1,0 +1,61 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.MembroDetalheIniciacoesModel
+@{
+    string strClass = string.Empty;
+}
+<div class="widget-body">
+    <form class="form-horizontal">
+        <fieldset>
+            <legend>Iniciações R+C</legend>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th class="text-center" width="30%">Iniciação</th>
+                        <th class="text-center" width="20%">Data</th>
+                        <th class="text-center" width="50%"><span class="visible-lg visible-md visible-sm">Organismo Afiliado</span><span class="visible-xs">OA</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var itemIniacao in Model.ListaIniciacao.Where(w => w.OrganismoAfiliadoTipoId == SAL.MVC.Util.GLP.TipoOrganismoAfiliado.LojaRosacruz))
+                    {
+                        <tr>
+                            <td>@itemIniacao.IniciacaoExibicao</td>
+                            <td class="text-center">@itemIniacao.Data.ToString("dd/MM/yyyy")</td>
+                            <td class="text-left">@(string.IsNullOrEmpty(itemIniacao.Sigla) == false ? itemIniacao.OrganismoAfiliado + " - " + itemIniacao.Sigla : "")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </fieldset>
+        @*<fieldset>
+            <legend>Iniciações TOM</legend>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th class="text-center" width="40%">Iniciação</th>
+                        <th class="text-center" width="25%">Data</th>
+                        <th class="text-center" width="25%"><span class="visible-lg visible-md visible-sm">Organismo Afiliado</span><span class="visible-xs">OA</span></th>
+                        <th class="text-center" width="10%">Iniciador</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var itemIniacao in Model.ListaIniciacao.Where(w => w.OrganismoAfiliadoTipoId == SAL.MVC.Util.GLP.TipoOrganismoAfiliado.HeptadaMartinista))
+                    {
+                        strClass = string.Empty;
+                        if (itemIniacao.RecebidoGLP == false)
+                        {
+                            strClass = "danger";
+                        }
+                        <text>
+                            <tr class="@strClass">
+                                <td>@itemIniacao.IniciacaoExibicao</td>
+                                <td class="text-center">@itemIniacao.Data.ToString("dd/MM/yyyy")</td>
+                                <td class="text-center">@itemIniacao.Sigla</td>
+                                <td class="text-center">@itemIniacao.Iniciador</td>
+                            </tr>
+                        </text>
+                    }
+                </tbody>
+            </table>
+        </fieldset>*@
+    </form>
+</div>

@@ -1,0 +1,127 @@
+﻿@model SAL.MVC.Areas.Recebedoria.Models.AssistenteItensModel
+@{
+    string btnItensSearchTexto = "Recebedoria/Suprimentos";
+    Tropical.Infrastructure.Model.User user = new Tropical.Infrastructure.Model.User();
+    int Filtro = 0;
+    int PerfilId = 0;
+    SAL.MVC.Models.UsuarioClientePerfilModel perfilSelecionado = null;
+
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado") != null)
+    {
+        user = (Tropical.Infrastructure.Model.User)Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado");
+        Filtro = user.Filtro;
+
+        perfilSelecionado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+
+        switch (Filtro)
+        {
+            case 1:
+                btnItensSearchTexto = "Recebedoria";
+                break;
+            case 2:
+                btnItensSearchTexto = "Suprimentos";
+                break;
+        }
+    }
+}
+@if (Model != null && Model.ListaItens.Any())
+{
+    <form class="form-horizontal" onsubmit="return false">
+        <section>
+            <div class="row visible-xs visible-sm hidden-md hidden-lg" id="pnlFiltroTabletMobile">
+                <div class="col-sm-12">
+                    <div class="input-group">
+                        <div class="input-group-btn" style="padding-left:42px;">
+                            <button type="button" class="btn btn-default" tabindex="-1" id="btnItensSearch" style="width:100%; margin:0 0 0 -42px;"><i class="fa fa-search"></i> @(btnItensSearchTexto)</button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" tabindex="-1" style="width: 75px; left:-32px;">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="javascript:SelecionaFiltroRecebedoria(0);">Recebedoria/Suprimentos</a></li>
+                                <li><a href="javascript:SelecionaFiltroRecebedoria(1);">Recebedoria</a></li>
+                                <li><a href="javascript:SelecionaFiltroRecebedoria(2);">Suprimentos</a></li>
+                                <li class="divider"></li>
+                                <li><a href="javascript:void(0);">Fechar</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="input-group">
+                        <input type="text" class="form-control" onkeyup="FiltroItens(this);" id="txtItensSearch" autocomplete="off" placeholder="digite aqui...">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default" tabindex="-1" onclick="LimpaTextoFiltroRecebedoria()" rel="tooltip" data-placement="bottom" data-original-title="Limpar texto" style="width:75px;"><i class="fa fa-eraser"></i> </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row visible-lg visible-md hidden-sm hidden-xs" id="pnlFiltroPCNotebook">
+                <div class="col-sm-12">
+                    <div class="input-group">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default" tabindex="-1" id="btnItensSearch"><i class="fa fa-search"></i> @(btnItensSearchTexto)</button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" tabindex="-1">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="javascript:SelecionaFiltroRecebedoria(0);">Recebedoria/Suprimentos</a></li>
+                                <li><a href="javascript:SelecionaFiltroRecebedoria(1);">Recebedoria</a></li>
+                                <li><a href="javascript:SelecionaFiltroRecebedoria(2);">Suprimentos</a></li>
+                                <li class="divider"></li>
+                                <li><a href="javascript:void(0);">Fechar</a></li>
+                            </ul>
+                        </div>
+                        <input type="text" class="form-control" onkeyup="FiltroItens(this);" id="txtItensSearch" autocomplete="off" placeholder="Digite o nome do item que deseja adicionar ao carrinho.">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default" tabindex="-1" onclick="LimpaTextoFiltroRecebedoria()" rel="tooltip" data-placement="bottom" data-original-title="Limpar texto" style="width:61px;"><i class="fa fa-eraser"></i> </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </form>
+    <fieldset>
+        <table class="table table-bordered table-striped table-hover table-responsive">
+            @*<caption>
+                    Itens disponíveis para compra
+                </caption>*@
+            <thead>
+                <tr>
+                    <th class="text-center hidden-sm hidden-xs">Código</th>
+                    <th class="text-center hidden-sm hidden-xs">Tipo</th>
+                    <th class="text-center" width="100%">Descrição</th>
+                    <th class="text-center">Qtde</th>
+                    <th class="text-center">Valor</th>
+                    <th style="width:80px;">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ListaItens)
+                {
+                    { Html.RenderPartial("AssistenteItensItem", item); }
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="6" class="text-right">@(Model.ListaItens.Count) ite@(Model.ListaItens.Count > 1 ? "ns" : "m")</td>
+                </tr>
+            </tfoot>
+        </table>
+    </fieldset>
+    <script>
+        $("#txtItensSearch").focus();
+        blnLoadingShowScroll = true;
+        $("body").css({ overflow: 'inherit' });
+
+        if ($("#pnlFiltroTabletMobile").css("display") == "none") {
+            $("#pnlFiltroTabletMobile").remove();
+        };
+
+        if ($("#pnlFiltroPCNotebook").css("display") == "none") {
+            $("#pnlFiltroPCNotebook").remove();
+        };
+
+        $("button[rel=tooltip]").tooltip();
+    </script>
+}
+

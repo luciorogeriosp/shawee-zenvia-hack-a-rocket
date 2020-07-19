@@ -1,0 +1,116 @@
+﻿@model List<SAL.MVC.Areas.OrganismoAfiliado.Models.CalendarioItemModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+
+    bool ExibirBotoes = Request.ServerVariables["HTTP_REFERER"] == null || (Request.ServerVariables["HTTP_REFERER"] != null && Request.ServerVariables["HTTP_REFERER"].ToString().Contains("OrganismoAfiliado"));
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+    dtAtual = new DateTime(dtAtual.Year, dtAtual.Month, dtAtual.Day);
+    DateTime dtLista;
+}
+<table id="datatable_tabletools" class="table table-striped table-bordered table-hover" width="100%" @(Html.Raw(!ExibirBotoes ? " style=\"display:none;\"" : ""))>
+    <thead>
+        <tr>
+            <th class="text-center">Dia</th>
+            <th class="text-center">Horário</th>
+            <th class="text-center">Atividade</th>
+            <th class="text-center">Título</th>
+            <th class="text-center">Responsável</th>
+            <th class="text-center">Somente Membros</th>
+            @if (ExibirBotoes)
+            {
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            dtLista = new DateTime(Convert.ToInt32(item.DataAno), Convert.ToInt32(item.DataMes), Convert.ToInt32(item.DataDia));
+        <tr id="line_@item.Id">
+            <td class="text-center">@item.DataDia</td>
+            <td class="text-center">@item.Horario</td>
+            <td class="text-left">@item.TipoNome</td>
+            <td class="text-left">@item.Titulo.ToUpper()</td>
+            <td class="text-left">@(item.OrganismoAfiliadoNome + (string.IsNullOrEmpty(item.OrganismoAfiliadoNome) == false && string.IsNullOrEmpty(item.Responsavel) == false ? " - " : "") + item.Responsavel)</td>
+            <td class="text-center">@(item.SomenteMembros.HasValue ? item.SomenteMembros.Value ? "Sim" : "Não" : "")</td>
+            @if (ExibirBotoes)
+            {
+                <td class="text-center" data-hide="print"><a href="javascript:void(0);" onclick="AbrirModalImprimir(@item.Id);" class="btn btn-default"><i class="fa fa-print"></i> Imprimir</a></td>
+                @*<td class="text-center" data-hide="print" style="width:150px;">
+                <div class="btn-group dropdown">
+                    <a class="btn btn-default" href="javascript:ImprimirListas(@item.Id, 1);"><i class="fa fa-print"></i> Imprimir</a>
+                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="javascript:ImprimirListas(@item.Id, 1);">1 Folha</a>
+                        </li>
+                        <li>
+                            <a href="javascript:ImprimirListas(@item.Id, 2);">2 Folhas</a>
+                        </li>
+                        <li>
+                            <a href="javascript:ImprimirListas(@item.Id, 3);">3 Folhas</a>
+                        </li>
+                        @if (item.HabilitarDignitarios)
+                        {
+                            <li class="divider"></li>
+                            <li class="dropdown-submenu" id="MenuDiginitarios_@item.Id">
+                                <input type="hidden" id="QtdeDiginitarios_@item.Id" value="0">
+                                <a tabindex="-1" href="javascript:void(0);">Quantidade de Dignitários <span id="MenuDiginitariosLegenda_@item.Id">(0)</span></a>
+                                <ul class="dropdown-menu">
+                                    @for (int i = 0; i <= 10; i++)
+                                    {
+                                        <li id="MenuDiginitarios_@(item.Id)_@i">
+                                            <a tabindex="-1" href="javascript:AtualizaQtdeDiginitarios(@item.Id, @i);">@i</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </td>*@
+                <td class="text-center" data-hide="print"><a href="javascript:void(0);" onclick="AbrirModalPresenca(@item.Id);" id="btnPresenca_@item.Id" class="btn btn-@(item.PresencaLancada ? "success" : item.PresencaMembroLancada ? "warning" : "default")"><i class="glyphicon glyphicon-list-alt"></i> Presença</a></td>
+                <td class="text-center" data-hide="print"><a href="javascript:void(0);" onclick="Editar(@item.Id);" class="btn btn-default"><i class="fa fa-edit"></i> Editar</a></td>
+                <td class="text-center" data-hide="print"><a href="javascript:void(0);" onclick="Apagar(@item.Id, '@item.Titulo');" class="btn btn-default"><i class="fa fa-trash-o"></i> Apagar</a></td>
+            }
+        </tr>
+        }
+    </tbody>
+</table>
+@if (!ExibirBotoes)
+{
+    <script>
+    $('#datatable_tabletools').dataTable({
+        "preDrawCallback": function () {
+            // Initialize the responsive datatables helper once.
+            if (!responsiveHelper_datatable_tabletools) {
+                responsiveHelper_datatable_tabletools = new ResponsiveDatatablesHelper($('#datatable_tabletools'), breakpointDefinition);
+            }
+        },
+        "rowCallback": function (nRow) {
+            try {
+                responsiveHelper_datatable_tabletools.createExpandIcon(nRow);
+            } catch (e) {
+
+            }   
+        },
+        "drawCallback": function (oSettings) {
+            $("#datatable_tabletools").show();
+            responsiveHelper_datatable_tabletools.respond();
+        }
+        @if (ExibirBotoes)
+    {
+    <text>
+        ,
+        "pageLength": 5
+        </text>
+       }
+    });
+    </script>
+}

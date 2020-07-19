@@ -1,0 +1,237 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.RecepcaoSelecionarComissaoModel
+<div role="content">
+
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body padding">
+        <form class="form-horizontal" onsubmit="return false;" style="padding-bottom:0!important">
+            @if (Model.Membro != null)
+            {
+                string RecepcaoLoteRC = string.Empty;
+                if (Model.Membro.LoteAtualGLP > 0)
+                {
+                    RecepcaoLoteRC = Model.Membro.LoteAtualGLP + " / " + Model.Membro.GrauRC;
+                }
+                else
+                {
+                    if (Model.Membro.GrauRC != "")
+                    {
+                        RecepcaoLoteRC = Model.Membro.GrauRC;
+                    }
+                    else
+                    {
+                        RecepcaoLoteRC = "Não possui.";
+                    }
+                }
+
+                string RecepcaoLoteTOM = string.Empty;
+                if (Model.Membro.LoteAtualTOM > 0)
+                {
+                    RecepcaoLoteTOM = Model.Membro.LoteAtualTOM.ToString();
+                }
+                else
+                {
+                    RecepcaoLoteTOM = "Não possui.";
+                }
+
+                string RecepcaoIniciacaoRCData = "Não possui.";
+                string RecepcaoIniciacaoRCTitle = string.Empty;
+                if (Model.Membro.ListaIniciacaoRC != null && Model.Membro.ListaIniciacaoRC.Any() && Model.Membro.ListaIniciacaoRC[0] != null)
+                {
+                    RecepcaoIniciacaoRCData = Model.Membro.ListaIniciacaoRC[0].Iniciacao + " - " + Model.Membro.ListaIniciacaoRC[0].Data.ToString("dd/MM/yyyy");
+                    RecepcaoIniciacaoRCTitle = Model.Membro.ListaIniciacaoRC[0].OrganismoNome + " (" + Model.Membro.ListaIniciacaoRC[0].Organismo + ")";
+                }
+
+                string RecepcaoIniciacaoTOMData = "Não possui.";
+                string RecepcaoIniciacaoTOMTitle = string.Empty;
+                if (Model.Membro.ListaIniciacaoTOM != null && Model.Membro.ListaIniciacaoTOM.Any() && Model.Membro.ListaIniciacaoTOM[0] != null)
+                {
+                    RecepcaoIniciacaoTOMData = Model.Membro.ListaIniciacaoTOM[0].Iniciacao + " - " + Model.Membro.ListaIniciacaoTOM[0].Data.ToString("dd/MM/yyyy");
+                    RecepcaoIniciacaoTOMTitle = Model.Membro.ListaIniciacaoTOM[0].OrganismoNome + " (" + Model.Membro.ListaIniciacaoTOM[0].Organismo + ")";
+                }
+
+                string DataQuitacaoOA = "Não possui.";
+                if (Model.Membro.DataQuitacaoOA.HasValue)
+                {
+                    DataQuitacaoOA = Model.Membro.DataQuitacaoOA.Value.ToString("MM/yyyy");
+                }
+                else
+                {
+                    if (Model.Membro.MembroOA)
+                    {
+                        DataQuitacaoOA = "Não possui.";
+                    }
+                    else
+                    {
+                        DataQuitacaoOA = "Outro O.A.";
+                    }
+                }
+
+                string DataQuitacaoGLP = "Não possui.";
+                if (Model.Membro.DataQuitacaoGLP.HasValue)
+                {
+                    DataQuitacaoGLP = Model.Membro.DataQuitacaoGLP.Value.ToString("dd/MM/yyyy");
+                }
+
+
+                string DataQuitacaoTOM = "Não possui.";
+                if (Model.Membro.DataQuitacaoTOM.HasValue)
+                {
+                    DataQuitacaoTOM = Model.Membro.DataQuitacaoTOM.Value.ToString("dd/MM/yyyy");
+                }
+                <fieldset>
+                    <div class="col-md-9">
+                        <div class="form-group">
+                            <label class="col-md-2 control-label font-lg">Número de Afiliação</label>
+                            <label class="col-md-10 control-label font-lg text-left">@Model.Membro.Chave</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label font-lg" for="ddlNomeMembro">Nome</label>
+                            <label class="col-md-10 control-label font-lg text-left">@Model.Membro.Nome.ToUpper()</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label font-lg">O.A. R+C</label>
+                            <label class="col-md-4 control-label font-lg text-left">@(Model.Membro.OrganismoAfiliadoNomeRC + " - " + Model.Membro.OrganismoAfiliadoSiglaRC)</label>
+                            <label class="col-md-2 control-label font-lg">O.A. TOM</label>
+                            <label class="col-md-4 control-label font-lg text-left">@(Model.Membro.OrganismoAfiliadoNomeTOM + " - " + Model.Membro.OrganismoAfiliadoSiglaTOM)</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label font-lg">Lote / Grau</label>
+                            <label class="col-md-4 control-label font-lg text-left">@RecepcaoLoteRC</label>
+                            <label class="col-md-2 control-label font-lg">Lote</label>
+                            <label class="col-md-4 control-label font-lg text-left">@RecepcaoLoteTOM</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label font-lg">Última Iniciação</label>
+                            <label class="col-md-4 control-label font-lg text-left" rel="tooltip" data-placement="bottom" data-original-title="@RecepcaoIniciacaoRCTitle">@RecepcaoIniciacaoRCData</label>
+                            <label class="col-md-2 control-label font-lg">Última Iniciação</label>
+                            <label class="col-md-4 control-label font-lg text-left" rel="tooltip" data-placement="bottom" data-original-title="@RecepcaoIniciacaoTOMTitle">@RecepcaoIniciacaoTOMData</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="jarviswidget jarviswidget-color-darken" id="wid-id-16" data-widget-sortable="false" data-widget-colorbutton="false" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-deletebutton="false" role="widget" style="">
+                                <header role="heading">
+                                    <span class="widget-icon"> <i class="fa fa-lock"></i> </span>
+                                    <h2><strong>Datas de Quitação</strong> </h2>
+                                </header>
+                                <div role="content" style="border-width: 1px 1px 1px; padding-bottom:18px;">
+
+                                    <!-- widget edit box -->
+                                    <div class="jarviswidget-editbox">
+                                        <!-- This area used as dropdown edit box -->
+                                    </div>
+                                    <!-- end widget edit box -->
+                                    <!-- widget content -->
+                                    <div class="widget-body">
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label"> O.A.</label>
+                                            <div class="col-md-10">
+                                                <input class="form-control" readonly="readonly" style="cursor:text; background-color:@(Model.Membro.CorQuitacaoOA)" value="@DataQuitacaoOA">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label"> GLP</label>
+                                            <div class="col-md-10">
+                                                <input class="form-control" readonly="readonly" style="cursor:text; background-color:@(Model.Membro.CorQuitacaoGLP)" value="@DataQuitacaoGLP">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label"> TOM</label>
+                                            <div class="col-md-10">
+                                                <input class="form-control" readonly="readonly" style="cursor:text; background-color:@(Model.Membro.CorQuitacaoTOM)" value="@DataQuitacaoTOM">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <!-- end widget content -->
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label font-lg">Comissão</label>
+                                <div class="col-md-10 control-label font-lg">
+                                    <blockquote class="font-lg text-left">
+                                        @Html.Raw(Model.Comissao.Nome.Replace("\n", "<br />"))
+                                    </blockquote>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.ComissaoFuncao.Nome))
+                            {
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label font-lg">Função</label>
+                                    <div class="col-md-10 control-label font-lg">
+                                        <blockquote class="font-lg text-left">
+                                            @Html.Raw(Model.ComissaoFuncao.Nome.Replace("\n", "<br />"))
+                                        </blockquote>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </fieldset>
+            }
+            @if (Model.Visitante != null)
+            {
+                <fieldset>
+                    <div class="col-md-9">
+                        <div class="form-group">
+                            <label class="col-md-2 control-label font-lg">@Model.Visitante.DocumentoTipo</label>
+                            <label class="col-md-10 control-label font-lg text-left">@Model.Visitante.DocumentoNumero</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label font-lg" for="ddlNomeMembro">Nome</label>
+                            <label class="col-md-10 control-label font-lg text-left">@Model.Visitante.Nome.ToUpper()</label>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label font-lg">Comissão</label>
+                                <div class="col-md-10 control-label font-lg">
+                                    <blockquote class="font-lg text-left">
+                                        @Html.Raw(Model.Comissao.Nome.Replace("\n", "<br />"))
+                                    </blockquote>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.ComissaoFuncao.Nome))
+                            {
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label font-lg">Função</label>
+                                    <div class="col-md-10 control-label font-lg">
+                                        <blockquote class="font-lg text-left">
+                                            @Html.Raw(Model.ComissaoFuncao.Nome.Replace("\n", "<br />"))
+                                        </blockquote>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </fieldset>
+            }
+            <div class="form-group">
+                <label class="col-md-2 control-label font-lg" for="txtSenha">Senha</label>
+                <div class="col-md-10">
+                    <input class="form-control input-lg font-lg" id="txtSenha" style="width:150px; text-transform:uppercase;" maxlength="8">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    var timerId = 0;
+
+    timerId = setTimeout(function () {
+        $("body").css({ overflow: 'hidden' });
+        clearInterval(timerId);
+    }, 300);
+</script>

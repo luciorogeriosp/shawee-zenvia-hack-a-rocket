@@ -1,0 +1,42 @@
+﻿@model List<SAL.MVC.Areas.Ferramenta.Models.ImportacaoBibliotecaModel>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (Model != null && Model.Count > 0)
+{
+    var jsonSerialiser = new System.Web.Script.Serialization.JavaScriptSerializer();
+    var json = jsonSerialiser.Serialize(Model.Select(s => s.TableID).ToList());
+    <table class="table table-striped table-bordered table-hover" width="100%" id="pnlTableContent">
+        <thead>
+            <tr>
+                <th class="text-center">ID</th>
+                <th class="text-center">CODIGO</th>
+                <th>TIPO</th>
+                <th>AUTOR</th>
+                <th>CATEGORIA</th>
+                <th>TITULO</th>
+                <th class="text-left">OBSERVACAO</th>
+                <th class="text-center">Situação</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="pnlImportacaoLinha_@(item.TableID)">
+                    <td class="text-center">@item.CODIGO</td>
+                    <td>@item.TIPO_NOME</td>
+                    <td>@item.AUTOR_NOME</td>
+                    <td>@item.CATEGORIA_NOME</td>
+                    <td>@item.TITULO</td>
+                    <td class="text-left">@item.OBSERVACAO</td>
+                    <td class="text-center" coltype="situacao">Processando</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <script>
+        parent.UpdateTableContent($("#pnlTableContent")[0].outerHTML);
+        var lista = @(json);
+        parent.Iniciar(lista);
+    </script>
+}

@@ -1,0 +1,61 @@
+﻿@model List<SAL.MVC.Areas.OrganismoAfiliado.Models.AutorizarTemploModel>
+@{
+    SAL.MVC.Models.UsuarioClientePerfilModel OrganismoAfiliado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    string mestre = string.Empty;
+    string oficial = string.Empty;
+    switch ((SAL.MVC.Util.GLP.TipoOrganismoAfiliado)OrganismoAfiliado.Cliente.OrganismoAfiliadoTipoId)
+    {
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.AtriumMartinista:
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.HeptadaMartinista:
+            mestre = "Mestre da Heptada";
+            oficial = "Mestre da Classe";
+            break;
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.PronaosRosacruz:
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.CapituloRosacruz:
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.LojaRosacruz:
+            mestre = "Mestre";
+            oficial = "Oficial";
+            break;
+        default:
+            mestre = "Mestre";
+            oficial = "Oficial";
+            break;
+    }
+}
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+            <tr>
+                <th class="text-center" width="5%">Data</th>
+                <th class="text-center" width="30%">Jurisdição</th>
+                <th class="text-center" width="5%">Chave</th>
+                <th class="text-center" width="30%">Nome</th>
+                <th class="text-center" width="15%">Oficial</th>
+                <th class="text-center" width="15%">Emitido por</th>
+                <th class="text-center">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr mov-id="@item.Id">
+                <td class="text-center">@item.Data</td>
+                <td class="text-left">@item.NomeJurisdicao</td>
+                <td class="text-left">@item.MembroAfiliacaoNumero</td>
+                <td class="text-left">@item.MembroNome</td>
+                <td class="text-left">@item.MestreNome</td>
+                <td class="text-left">@item.OficialNome</td>
+                <td>
+                    <a href="javascript:void(0);" onclick="EmitirReciboEntradaTemplo(@item.Id);" class="btn btn-success"><i class="fa fa-file-text-o"></i> Emitir</a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div>Não existem autorizações emitidas para o dia de hoje.</div>
+    <button type="button" class="btn btn-sm btn-info" onclick="ListaEntradaTemplo(true);">Exibir Todas</button>
+}

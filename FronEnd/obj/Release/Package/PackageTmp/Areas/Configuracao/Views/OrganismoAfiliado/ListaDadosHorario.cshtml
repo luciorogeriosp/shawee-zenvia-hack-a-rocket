@@ -1,0 +1,25 @@
+﻿@model List<SAL.MVC.Areas.Configuracao.Models.HorarioModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<table class="table table-striped table-bordered table-hover" width="100%">
+        <tr>
+            <td class="text-center" nowrap="nowrap"><b>Dia da Semana</b></td>
+            <td class="text-center" nowrap="nowrap"><b>Horário</b></td>
+            <td width="100%"><b>Descrição</b></td>
+            <td>&nbsp;</td>
+        </tr>
+        @foreach (var item in Model.OrderBy(o => o.DiaDaSemanaId).ThenBy(o => o.Horario).ThenBy(o => o.Descricao))
+        {
+            <tr id="lineProdutoGLP_@item.Id">
+                <td nowrap="nowrap">@item.DiaDaSemanaIdDescricao</td>
+                <td class="text-center" nowrap="nowrap">@item.Horario</td>
+                <td>@item.Descricao</td>
+                <td>
+                    <a href="javascript:void(0);" onclick="ExcluirHorario(@item.Id, '@item.DiaDaSemanaIdDescricao - @item.Horario - @item.Descricao');" class="btn btn-default" style="padding:10px;"><i class="fa fa-trash-o"></i> </a>
+                </td>
+            </tr>
+        }
+</table>
+<br /><br /><br /><br />

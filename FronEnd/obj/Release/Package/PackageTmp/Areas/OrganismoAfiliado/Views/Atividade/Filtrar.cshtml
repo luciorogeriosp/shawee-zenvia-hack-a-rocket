@@ -1,0 +1,54 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.CalendarioFiltroViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+
+    bool ExibirBotoes = Request.ServerVariables["HTTP_REFERER"] == null || (Request.ServerVariables["HTTP_REFERER"] != null && Request.ServerVariables["HTTP_REFERER"].ToString().Contains("OrganismoAfiliado"));
+
+    string AnoMesAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual().ToString("yyyy-MM");
+}
+<form class="smart-form" id="frmCalendarioFiltrar">
+    @if (ExibirBotoes)
+    {
+        <header>
+            Filtro
+        </header>
+    }
+    <fieldset>
+        <section>
+            <label class="label">
+                <label for="DataDia">Mês  / Ano</label>
+                <span class="font-xs text-danger">*</span>
+            </label>
+            <label class="select">
+                <select id="AnoMes" name="AnoMes" onchange="LoadCalendario($(this).val())">
+                    <option value="">Selecione</option>
+                    @foreach (var item in Model.AnoMesLista)
+                    {
+                        <option value="@item.Value.ToString()">@item.Text</option>
+                    }
+                </select>
+                <i></i>
+            </label>
+        </section>
+    </fieldset>
+</form>
+@if (Model != null && Model.AnoMesLista.Any())
+{
+    <script>
+        $(document).ready(function () {
+
+            if ($("#AnoMes option[value='@(AnoMesAtual)']").length > 0) {
+                $("#AnoMes option[value='@(AnoMesAtual)']").prop("selected", "selected");
+            }
+            else {
+                $("#frmCalendarioFiltrar #AnoMes")[0].selectedIndex = 1;
+            }
+
+            LoadCalendario($("#frmCalendarioFiltrar #AnoMes").val());
+        });
+    </script>
+}
+<div class="widget-body" id="pnlCalendario">
+</div>
+

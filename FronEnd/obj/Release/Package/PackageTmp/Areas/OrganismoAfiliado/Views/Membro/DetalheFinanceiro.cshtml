@@ -1,0 +1,26 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.MembroDetalheFinanceiroModel
+<div class="widget-body">
+    <form class="form-horizontal">
+        <fieldset>
+            <legend>Ativo até:</legend>
+            <div class="form-group">
+                <label class="col-md-2 control-label">GLP</label>
+                <div class="col-md-10">
+                    <input class="form-control" type="text" disabled="disabled" value="@(Model.Membro.DataVencimentoGLP.HasValue ? Model.Membro.DataVencimentoGLP.Value.ToString("dd/MM/yyyy") : "Não possui")" style="cursor:text; background-color:#@(Model.Membro.DataVencimentoGLP.HasValue ? (Model.Membro.DataVencimentoGLP.Value > Model.Membro.DataAtual ? "c6d0de" : (Model.Membro.DataVencimentoGLP.Value.AddMonths(1) > Model.Membro.DataAtual ? "faf2cc" : "ebcccc")) : "ebcccc")">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">TOM</label>
+                <div class="col-md-10">
+                    <input class="form-control" type="text" disabled="disabled" value="@(Model.Membro.DataVencimentoTOM.HasValue ? Model.Membro.DataVencimentoTOM.Value.ToString("dd/MM/yyyy") : "Não possui")" style="cursor:text; background-color:#@(Model.Membro.DataVencimentoTOM.HasValue ? (Model.Membro.DataVencimentoTOM.Value > Model.Membro.DataAtual ? "c6d0de" : (Model.Membro.DataVencimentoTOM.Value.AddMonths(1) > Model.Membro.DataAtual ? "faf2cc" : "ebcccc")) : "ebcccc")">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">Organismo Afiliado</label>
+                <div class="col-md-10">
+                    <input class="form-control" type="text" disabled="disabled" value="@(Model.Membro.DataVencimentoOA.HasValue ? Model.Membro.DataVencimentoOA.Value.ToString("MM/yyyy") : "Não possui")" style="cursor:text; background-color:#@(Model.Membro.DataVencimentoOA.HasValue ? (Model.Membro.DataVencimentoOA.Value > Model.Membro.DataAtual ? "c6d0de" : (Model.Membro.DataVencimentoOA.Value.AddMonths(1) > Model.Membro.DataAtual ? "faf2cc" : "ebcccc")) : "ebcccc")">
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>

@@ -1,0 +1,82 @@
+﻿@model SAL.MVC.Areas.Biblioteca.Models.ConfiguracaoModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-book"></i>
+                    Biblioteca | Configurações
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <article class="col-sm-12 col-md-4 col-lg-4">
+                <fieldset>
+                    <legend>Dias de Empréstimo por Tipo de Item</legend>
+                    <form id="frmQuantidadeDias" onsubmit="return false;">
+                        <table class="table table-striped table-bordered table-hover" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" nowrap="nowrap">Tipo</th>
+                                    <th class="text-center" nowrap="nowrap">Quantidade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Lista.Count; i++)
+                                {
+                                    <tr>
+                                        <td class="text-center" nowrap="nowrap">@Model.Lista[i].Nome</td>
+                                        <td class="text-center" nowrap="nowrap">
+                                            @Html.HiddenFor(m => Model.Lista[i].IdTipo)
+                                            <label class="input">
+                                                @Html.TextBoxFor(m => Model.Lista[i].QuantidadeDias, new { onkeypress = "return isNumber(event);" })
+                                            </label>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <div class="pull-right"><button type="button" class="btn btn-success" onclick="Confirm();" id="btnConfirmar">Confirmar</button></div>
+                    </form>
+                </fieldset>
+            </article>
+        </div>
+    </div>
+</div>
+
+<script>
+    function Confirm() {
+        ClearNotify();
+
+        $("#btnConfirmar").attr("disabled", "disabled")
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Biblioteca/Configuracao/FormQuantidadeDias',
+            data: $.param($("#frmQuantidadeDias").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Biblioteca - Configurações', 'Quantidades gravadas com sucesso', 'frmQuantidadeDias');
+                } else {
+                    ShowNotify('danger', 'Biblioteca - Configurações', data.msg, 'frmQuantidadeDias');
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowNotify('danger', 'Biblioteca - Configurações', MsgNaoFoiPossivelCompletarOperacao, 'frmQuantidadeDias');
+            },
+            complete: function () {
+                OnCompleteForm();
+                $("#btnConfirmar").removeAttr("disabled")
+            }
+        });
+    }
+</script>

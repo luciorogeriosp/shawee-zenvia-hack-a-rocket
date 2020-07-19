@@ -1,0 +1,42 @@
+﻿@model List<SAL.MVC.Areas.Biblioteca.Models.ItemModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<table id="datatable_tabletools" class="table table-striped table-bordered table-hover" width="100%">
+    <caption>Livros Emprestados em Atraso</caption>
+    <thead>
+        <tr>
+            <th>Tombo</th>
+            <th>FA</th>
+            <th class="hidden-xs hidden-md">Tipo</th>
+            <th>Título</th>
+            @if (ViewBag.MostrarMembro != null && ViewBag.MostrarMembro)
+            {
+                <th class="text-center">Membro</th>
+            }
+            <th class="text-center hidden-xs hidden-md">Autor</th>
+
+            <th class="text-center">Data Devolução</th>
+            <th class="text-center">Dias</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="line_@item.IdBiblioteca">
+                <td align="center">@item.Codigo</td>
+                <td align="center">@item.CodigoFA</td>
+                <td class="text-center hidden-xs hidden-md">@item.TipoNome</td>
+                <td>@item.Nome</td>
+                @if (ViewBag.MostrarMembro != null && ViewBag.MostrarMembro)
+                {
+                    <td class="text-center">@item.MembroNome</td>
+                }
+                <td class="text-center hidden-xs hidden-md">@item.AutorNome</td>
+                <td class="text-center">@item.DataDevolucao.ToString("dd/MM/yyyy")</td>
+                <td class="text-center txt-color-red"><strong>@(item.QuantidadeDiasAtraso.HasValue ? item.QuantidadeDiasAtraso.Value.ToString() : "")</strong></td>
+            </tr>
+        }
+    </tbody>
+</table>

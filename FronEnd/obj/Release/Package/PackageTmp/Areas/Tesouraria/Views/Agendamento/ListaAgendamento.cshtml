@@ -1,0 +1,121 @@
+﻿@model SAL.MVC.Areas.Tesouraria.Models.AgendamentoListViewModel
+@{ 
+    Layout = null;
+}
+@if (Model != null && Model.ListaAgendamento != null && Model.ListaAgendamento.Any())
+{
+    <table class="table table-striped table-bordered table-hover" id="tblAgendamentoListaContas@(Model.TipoLancamento)">
+        <thead>
+            <tr>
+                <th class="text-center" width="6%">Código</th>
+                <th class="text-center" width="27%">Conta</th>
+                <th class="text-center" width="20%">Detalhamento</th>
+                <th class="text-center" width="7%">Déb. Aut.</th>
+                <th class="text-center" width="10%">Controle</th>
+                <th class="text-center" width="10%">Início</th>
+                <th class="text-center" width="5%">Venc.</th>
+                <th class="text-center" width="5%">Parc. / Period.</th>
+                <th class="text-center" width="10%">Valor</th>
+                @*
+    <th class="text-center" width="10%">Documento</th>
+    <th class="text-center" width="10%">Nome / Razão Social</th>
+    <th class="text-center" width="10%">CPF / CNPJ</th>
+                *@
+                <th class="text-center" width="10%">Situação</th>
+                <th class="text-center">&nbsp;</th>
+                <th class="text-center">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ListaAgendamento)
+            {
+                <tr id="row_agendamento_@item.Id">
+                    <td class="text-center">@item.CodCont</td>
+                    <td class="text-left">@item.ContaNome.ToUpper()</td>
+                    <td class="text-left">@item.Observacao.ToUpper()</td>
+                    <td class="text-center">@(item.DebitoAutomatico ? "Sim" : "Não")</td>
+                    <td class="text-center">
+                        @switch (item.TipoControleId)
+                    {
+                        case "R":
+                            @("Recorrente");
+                            break;
+                        case "P":
+                            @("Parcelamento");
+                            break;
+                        case "U":
+                            @("Lançamento Único");
+                            break;
+                    }
+                </td>
+                <td class="text-center">@item.DataInicio.ToString("dd/MM/yyyy")</td>
+                <td class="text-center">@(item.Vencimento.HasValue ? item.Vencimento.Value.ToString("00") : "")</td>
+                <td class="text-center">
+                    @switch (item.TipoControleId)
+                    {
+                        case "R":
+                            switch (item.Periodicidade.Value)
+                            {
+                                case 1:
+                                    @("Mensal")
+                                    break;
+                                case 2:
+                                    @("Bimenstral")
+                                    break;
+                                case 3:
+                                    @("Trimenstral")
+                                    break;
+                                case 6:
+                                    @("Semenstral")
+                                    break;
+                                case 12:
+                                    @("Anual")
+                                    break;
+                            }
+
+                            break;
+                        case "P":
+                            @item.QtdeParcelas;
+                            break;
+                    }
+                </td>
+                <td class="text-right">@item.Valor</td>
+                    @*
+    <td class="text-center">@item.Documento</td>
+    <td class="text-center">@item.NomeRazaoSocial</td>
+    <td class="text-center">@item.CPFCNPJ</td>
+                    *@
+                <td class="text-center">
+                    @switch (item.Situacao)
+                    {
+                        case "A":
+                            @("Ativo");
+                            break;
+                        case "I":
+                            @("Inativo");
+                            break;
+                        case "R":
+                            @("Revalidar");
+                            break;
+                    }
+                </td>
+                <td><a href="javascript:void(0);" onclick="AgendamentoEditar(@(item.Id));" class="btn btn-default"><i class="fa fa-edit"></i> Editar</a></td>
+                <td>
+                    @if (item.Situacao != "R")
+                    {
+                        <a href="javascript:ApagarAgendamento(@item.Id, '@item.ContaNome.ToUpper()');" class="btn btn-danger" id="tblAgendamentoListaContasItemAtivo_@(item.Id)"><i class="fa fa-trash-o"></i> Excluir</a>
+                    }
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    <script>
+        $("#pnlAgendamentoContadorConta@(Model.TipoLancamento)").html("@(Model.ListaAgendamento.Count)");
+        $("#pnlAgendamentoContadorConta@(Model.TipoLancamento)").show();
+    </script>
+}
+else
+{
+    <text>Não existem contas ativas.</text>
+}

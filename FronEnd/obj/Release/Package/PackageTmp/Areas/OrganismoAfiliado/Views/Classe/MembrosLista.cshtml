@@ -1,0 +1,111 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.ClasseMembroListaModel
+@{
+    Layout = null;
+
+    SAL.MVC.Models.UsuarioClientePerfilModel perfilSelecionado = null;
+
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado") != null)
+    {
+        perfilSelecionado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    }
+}
+<form class="smart-form" onsubmit="return false;">
+    <fieldset>
+        <section>
+            <label class="label">
+                @Html.LabelFor(m => m.MembroIdSelect)
+                <span class="font-xs text-danger">*</span>
+            </label>
+            <label class="select">
+                @Html.DropDownListFor(m => m.MembroIdSelect, Model.MembroLista, "Selecione")
+                <i></i>
+            </label>
+        </section>
+    </fieldset>
+    <footer>
+        <button type="button" class="btn btn-primary" onclick="ConfirmMembrosListaConfirmar();" id="btnMembrosListaConfirmar">Adicionar Membro</button>
+        <button type="button" class="btn btn-primary" onclick="LoadMembrosAtualizarSOA();">Atualizar SOA</button>
+    </footer>
+</form>
+@if (Model.ListaVinculados != null && Model.ListaVinculados.Any())
+{
+    <table class="table table-striped table-bordered table-hover" width="100%">
+        <caption>Total de Membros da Classe: @Model.ListaVinculados.Count</caption>
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                <th data-class="expand">Chave</th>
+                <th>Nome</th>
+                <th class="text-center">GLP ativo até</th>
+                <th class="text-center">TOM ativo até </th>
+                <th class="text-center">O.A. ativo até</th>
+                <th class="text-center">Data SOA</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ListaVinculados)
+            {
+            <tr id="line_@item.Id">
+                <td class="text-center">
+                    <div class="btn-group">
+                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            Ações <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu multi-level">
+                            <li><a href="javascript:void(0);" onclick="AbrirDetalhesMembro(@item.Id);">Detalhes</a></li>
+                            @if (perfilSelecionado.SomenteLeitura == false)
+                            {
+                                <li><a href="javascript:void(0);" onclick="AtalhoVenda('@Server.UrlEncode(item.Nome)', '@item.AfiliacaoNumero.Replace(".", "")', true, @((item.DataVencimentoTOM.HasValue).ToString().ToLower()), true)">Recebedoria</a></li>
+                            }
+                            <li>
+                                <a href="javascript:OpenDialogEntradaTemplo('@item.AfiliacaoNumero.Replace(".", "")', '@item.Nome');">Autorização Templo</a>
+                            </li>
+                            @if (item.Ativo.HasValue && item.Ativo.Value)
+                            {
+                                <li>
+                                    <a href="javascript:OpenReciboComprovanteQuitacao('@item.AfiliacaoNumero.Replace(".", "")', '@item.Nome');">Comprovante de Quitação</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <a href="javascript:ClearNotify(); ShowNotify('warning', 'Recebedoria', 'É necessario realizar a recebedoria do Membro, antes de emitir um comprovante de quitação.');">Comprovante de Quitação</a>
+                                </li>
+                            }
+                            <li class="divider"></li>
+                            <li>
+                                <a href="javascript:ApagarMembro('@item.Id', '@item.Nome');">Remover da Classe</a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+                <td>@item.AfiliacaoNumero</td>
+                <td>@item.Nome</td>
+                <td class="text-center @(item.DataVencimentoGLP.HasValue ? (item.DataVencimentoGLP.Value > item.DataAtual ? "info" : (item.DataVencimentoGLP.Value.AddMonths(1) > item.DataAtual ? "warning" : "danger")) : "danger")">
+                    @(item.DataVencimentoGLP.HasValue ? item.DataVencimentoGLP.Value.ToString("dd/MM/yyyy") : "Não Possui")
+                </td>
+                <td class="text-center @(item.DataVencimentoTOM.HasValue ? (item.DataVencimentoTOM.Value > item.DataAtual ? "info" : (item.DataVencimentoTOM.Value.AddMonths(1) > item.DataAtual ? "warning" : "danger")) : "danger")">
+                    @(item.DataVencimentoTOM.HasValue ? item.DataVencimentoTOM.Value.ToString("dd/MM/yyyy") : "Não Possui")
+                </td>
+                <td class="text-center @(item.DataVencimentoOA.HasValue ? (item.DataVencimentoOA.Value > item.DataAtual ? "info" : (item.DataVencimentoOA.Value.AddMonths(1) > item.DataAtual ? "warning" : "danger")) : "danger")">
+                    @(item.DataVencimentoOA.HasValue ? item.DataVencimentoOA.Value.ToString("dd/MM/yyyy") : "Não Possui")
+                </td>
+                <td class="text-center" id="pnlGLPRefreshSOA_@(item.Id)">
+                    @(item.DataAtualizacaoSOA.HasValue ? item.DataAtualizacaoSOA.Value.ToString("dd/MM/yyyy") : "Não possui")
+                    <br /><div id="pnlGLPRefreshLista_@(item.Id)">
+                        @if (item.DataAtualizacaoSOA.HasValue == false || (item.DataAtualizacaoSOA.HasValue && item.DataAtual.Date != item.DataAtualizacaoSOA.Value.Date))
+                        {
+                            <a href="javascript:void(0);" onclick="AtualizarMembroGLP(@item.Id, 'pnlGLPRefreshLista_@(item.Id)', 'AtualizarListaMembro');" class="btn btn-primary"> <i class="fa fa-refresh"></i></a>
+                        }
+                        else
+                        {
+                            <a href="javascript:void(0);" onclick="AtualizarMembroGLP(@item.Id, 'pnlGLPRefreshLista_@(item.Id)', 'AtualizarListaMembro');" class="btn btn-default"><i class="fa fa-check"></i></a>
+                        }
+                    </div>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>   
+}
+

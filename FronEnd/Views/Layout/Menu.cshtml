@@ -1,0 +1,111 @@
+﻿@using FrontEnd.Helpers;
+@{
+    Layout = null;
+
+    String host = HttpContext.Current.Request.ServerVariables["HTTP_HOST"].ToString().ToLower();
+
+    Tropical.Infrastructure.Model.User user = null;
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado") != null)
+    {
+        user = (Tropical.Infrastructure.Model.User)Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado");
+    }
+
+    FrontEnd.Models.UsuarioClientePerfilModel perfilSelecionado = FrontEnd.Util.Configuracao.PerfilSelecionadoLogado;
+
+
+    var strPageUrl = Request.RawUrl.ToLower();
+
+    string MenuMeusDados = "";
+    string MenuCadastros = "";
+    string MenuCadastrosCategorias = "";
+    string MenuCadastrosProdutos = "";
+    string MenuDashboard = "";
+
+    if (strPageUrl.Contains("/home/profile"))
+    {
+        MenuMeusDados = " class=\"active\"";
+    }
+
+    if (strPageUrl.Contains("/maintenance/"))
+    {
+        MenuCadastros = " style=\"display:block\"";
+
+        if (strPageUrl.Contains("/maintenance/category/"))
+        {
+            MenuCadastrosCategorias = " class=\"active\"";
+        }
+
+        if (strPageUrl.Contains("/maintenance/product/"))
+        {
+            MenuCadastrosProdutos = " class=\"active\"";
+        }
+    }
+
+    if (strPageUrl.Contains("/dashboard/"))
+    {
+        MenuDashboard = " style=\"display:block\"";
+    }
+}
+@if (user != null)
+{
+    <!-- Left panel : Navigation area -->
+    <aside id="left-panel">
+        <!-- User info -->
+        <div class="login-info">
+            <span>
+                <a href="@Url.Action("Profile", "Home")">
+                    @if (perfilSelecionado != null)
+                    {
+                        <img src="@perfilSelecionado.Cliente.Logotipo" alt="@(perfilSelecionado.Cliente.Nome)" class="online" style="border-left:none;" />
+                    }
+                    else
+                    {
+                        <img src="img/avatars/male.png" alt="me" class="online" style="border-left:none;" />
+                    }
+                    <span id="lblTopoUsuarioNome">
+                        @user.Nome
+                    </span>
+                </a>
+            </span>
+        </div>
+        <!-- end user info -->
+        @if (perfilSelecionado != null)
+        {
+            <nav>
+                <ul>
+                    <li @Html.Raw(MenuMeusDados)>
+                        <a href="@Url.Action("Profile", "Home")">
+                            <i class="fa fa-lg fa-fw fa-user"></i> Meus Dados
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);">
+                            <i class="fa fa-lg fa-fw fa-database"></i> <span class="menu-item-parent">Cadastros</span>
+                        </a>
+                        <ul @Html.Raw(MenuCadastros)>
+                            <li @Html.Raw(MenuCadastrosCategorias)>
+                                <a href="@Url.Action("Index", "Category", new { Area = "Maintenance" })">Categorias</a>
+                            </li>
+                            <li @Html.Raw(MenuCadastrosProdutos)>
+                                <a href="@Url.Action("Index", "Product", new { Area = "Maintenance" })">Produtos</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li @Html.Raw(MenuDashboard)>                        
+                        <a href="@Url.Action("Index", "Dashboard")">
+                            <i class="fa fa-lg fa-fw fa-bar-chart-o"></i> Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Logout", "Home", new { Area = "" })" title="Logout" data-action="userLogout" data-logout-msg="Deseja sair do sistema ?"><i class="fa fa-lg fa-sign-out fa-home"></i> <span class="menu-item-parent">Sair do Sistema</span></a>
+                    </li>
+
+                </ul>
+            </nav>
+            <span class="minifyme" data-action="minifyMenu">
+                <i class="fa fa-arrow-circle-left hit"></i>
+            </span>
+        }
+    </aside>
+    <!-- END NAVIGATION -->
+}

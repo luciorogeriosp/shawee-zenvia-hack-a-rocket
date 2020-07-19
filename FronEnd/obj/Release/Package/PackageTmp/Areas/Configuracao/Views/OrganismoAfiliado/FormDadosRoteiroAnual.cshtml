@@ -1,0 +1,66 @@
+﻿@model SAL.MVC.Areas.Configuracao.Models.OrganismoAfiliadoDadosRoteiroAnualModel
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<!-- Error states for elements -->
+<form class="smart-form" id="frmDadosRoteiroAnual">
+    <fieldset>
+        <section>
+            <label class="label">
+                <label for="MesId">Mês</label>
+                <span class="font-xs text-danger">*</span>
+            </label>
+            <label class="select">
+                @Html.DropDownListFor(m => m.MesId, Model.MesesLista, "Selecione", new { onchange = "RoteiroAnualSelecionaAno($(this).val());" })
+                <i></i>
+            </label>
+        </section>
+        <section style="display:none;" id="pnlRoteiroAnualTexto">
+            <label class="label" for="Roteiro">Descrição</label>
+            <label class="textarea">
+                <textarea id="Roteiro" name="Roteiro" rows="12">@Model.Roteiro</textarea>
+            </label>
+        </section>
+        <section style="display:none;" id="pnlRoteiroAnualBotao">
+            <button type="submit" class="btn btn-primary" style="float:right; padding:10px;">
+                Gravar Roteiro
+            </button>
+        </section>
+    </fieldset>
+</form>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmDadosRoteiroAnual"))
+<script>
+    $("#frmDadosRoteiroAnual").submit(function (e) {
+        var postData = $(this).serializeArray();
+
+        $("#frmDadosRoteiroAnual button").prop("disabled", true);
+
+        $.ajax(
+        {
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosRoteiroAnual',
+            type: "POST",
+            data: postData,
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data, textStatus, jqXHR) {
+                $("#pnlRoteiroAnual").html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                OnCompleteForm();
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+        e.preventDefault(); //STOP default action
+    });
+</script>
+@if (string.IsNullOrEmpty(Model.MesId) == false)
+{
+    <script>
+        $("#pnlRoteiroAnualTexto").show();
+        $("#pnlRoteiroAnualBotao").show();
+    </script>
+}

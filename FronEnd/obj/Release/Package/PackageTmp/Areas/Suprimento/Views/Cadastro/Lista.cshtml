@@ -1,0 +1,97 @@
+﻿@model List<SAL.MVC.Areas.Suprimento.Models.ProdutoModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<table id="datatable_tabletools" class="table table-striped table-bordered table-hover" width="100%" style="display:none;">
+    <thead>
+        <tr>
+            <th data-hide="phone">Código</th>
+            <th data-class="expand">Tipo</th>
+            <th>Nome</th>
+            <th>Imagem</th>
+            <th>Estoque</th>
+            <th>Preço Venda</th>
+            <th>Ativo</th>
+            <th>Editar</th>
+            <th>Estoque</th>
+            <th>Apagar</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="line_@item.Id">
+                <td>@item.Codigo</td>
+                <td>@item.TipoNome</td>
+                <td>
+                    @item.Nome
+                </td>
+                <td class="text-center">
+                    @if (item.SuprimentoGLP != null)
+                    {
+                        <a href="javascript:OpenImagemDialog('@item.Nome', '@(item.SuprimentoGLP.ImagemGrande)')"><i class="fa fa-file-image-o"></i></a>
+                    }
+                    else
+                    {
+                        <text>&nbsp;</text>
+                    }
+                </td>
+                <td class="text-right">@item.QuantidadeEstoque</td>
+                <td class="text-right">@item.ValorVenda</td>
+                <td class="text-center">@(item.Ativo ? "Sim" : "Não")</td>
+                <td class="text-center"><a href="javascript:void(0);" onclick="Editar(@item.Id);" class="btn btn-default"><i class="fa fa-edit"></i> </a></td>
+                <td class="text-center">
+                    @if (item.ControlarEstoque)
+                    {
+                        <a href="javascript:void(0);" onclick="Estoque(@item.Id);" class="btn btn-default"><i class="fa fa-tasks"></i> </a>
+                        @*if (item.SuprimentoGLP != null && item.SuprimentoGLP.RecebedoriaGLP)
+                        {
+                            <span class="label label-warning">integração glp</span>
+                        }
+                        else
+                        {
+                            <a href="javascript:void(0);" onclick="Estoque(@item.Id);" class="btn btn-default"><i class="fa fa-tasks"></i> </a>
+                        }*@
+                    }
+                    else
+                    {
+                        <span class="label label-warning">não controla estoque</span>
+                    }
+                </td>
+                <td class="text-center">
+                    <a href="javascript:void(0);" onclick="Apagar(@item.Id, '@item.Codigo - @item.Nome');" class="btn btn-default"><i class="fa fa-trash-o"></i> </a>
+                    @*@if (item.SuprimentoGLP != null)
+                    {
+                        <span class="label label-success">integração glp</span>
+                    }
+                    else
+                    {
+                        <a href="javascript:void(0);" onclick="Apagar(@item.Id, '@item.Codigo - @item.Nome');" class="btn btn-default"><i class="fa fa-trash-o"></i> </a>
+                    }*@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $('#datatable_tabletools').dataTable({
+        "preDrawCallback": function () {
+            // Initialize the responsive datatables helper once.
+            if (!responsiveHelper_datatable_tabletools) {
+                responsiveHelper_datatable_tabletools = new ResponsiveDatatablesHelper($('#datatable_tabletools'), breakpointDefinition);
+            }
+        },
+        "rowCallback": function (nRow) {
+            try {
+                responsiveHelper_datatable_tabletools.createExpandIcon(nRow);
+            } catch (e) {
+
+            }   
+        },
+        "drawCallback": function (oSettings) {
+            $("#datatable_tabletools").show();
+            responsiveHelper_datatable_tabletools.respond();
+        }
+    });
+</script>

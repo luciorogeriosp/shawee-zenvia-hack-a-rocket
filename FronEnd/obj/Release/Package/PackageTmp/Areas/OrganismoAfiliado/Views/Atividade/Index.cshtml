@@ -1,0 +1,647 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-university"></i>
+                    Organismo Afiliado | Calendário de Atividades | Cadastro
+                </h1>
+            </div>
+        </div>
+        <ul id="myTab1" class="nav nav-tabs bordered">
+            <li class="active">
+                <a href="#pnlFormulario" data-toggle="tab">Formulário </a>
+            </li>
+            <li class="">
+                <a href="#pnlListagem" data-toggle="tab">Listagem</a>
+            </li>
+        </ul>
+        <div id="myTabContent1" class="tab-content padding-10">
+            <div class="tab-pane fade active in" id="pnlFormulario">
+                <div class="row">
+                    <article class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+                            <div role="content" style="border-width: 1px 1px 1px 1px; border-style: solid; border-top-color: #CCC!important;">
+                                <div class="widget-body no-padding" id="myModalFullCalendarioContent">
+
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="pnlListagem">
+                <div class="row">
+                    <article class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+                            <div role="content" style="border-width: 1px 1px 1px 1px; border-style: solid; border-top-color: #CCC!important;">
+                                <div class="widget-body no-padding">
+                                    @{
+                                        Html.RenderAction("Filtrar");
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModalPresenca" title="Formulário de Presença" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalPresencaContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogPresenca();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmarDialogPresenca();">Confirmar</button>
+    </div>
+</div>
+<div id="myModalImprimir" title="Formulário de Impressão" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalImprimirContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogImprimir();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmarDialogImprimir();">Confirmar</button>
+    </div>
+</div>
+<script>
+    var dialogPresenca;
+    var dialogImprimir;
+
+    $(window).resize(function () {
+        ConfigureDialogPresenca();
+        ConfigureDialogImprimir();
+    });
+
+
+    function CloseDialogPresenca() {
+        dialogPresenca.dialog("close");
+    }
+
+    function CloseDialogImprimir() {
+        dialogImprimir.dialog("close");
+    }
+
+    function VerificaDiaSemana() {
+        var DataDia = $("#DataDia").val();
+        var DataMes = $("#DataMes").val();
+        var DataAno = $("#DataAno").val();
+
+        $("#pnlDiaSemana").html("");
+
+        if (DataDia != "" && DataMes != "" && DataAno != "") {
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'OrganismoAfiliado/Atividade/VerificaDiaSemana',
+                data: { DataDia: DataDia, DataMes: DataMes, DataAno: DataAno },
+                beforeSend: function () {
+
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $("#pnlDiaSemana").html("(" + data.dia.toLowerCase() + ")");
+                    }
+                },
+                error: function (xhr, st, str) {
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+
+                }
+            });
+        }
+    }
+
+    function AbrirModalPresenca(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Atividade/PresencaForm',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalPresencaContent").html("");
+                $("#myModalPresencaContent").html(data);
+                dialogPresenca.dialog("open");
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function AbrirModalImprimir(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Atividade/Imprimir',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalImprimirContent").html("");
+                $("#myModalImprimirContent").html(data);
+                dialogImprimir.dialog("open");
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmarDialogPresenca() {
+        ClearNotify();
+        $("#btnConfirmar").attr("disabled", "disabled");
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Atividade/PresencaForm',
+            data: $.param($("#frmPresenca").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalPresencaContent").html("");
+                $("#myModalPresencaContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowNotify('danger', 'Falha no sistema', MsgNaoFoiPossivelCompletarOperacao, 'myModalPresencaContent');
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmarDialogImprimir() {
+        ClearNotify();
+
+
+        var QtdeDiginitarios = 0;
+        if (parseInt($("#QtdeDiginitarios").val()) != NaN) {
+            QtdeDiginitarios = $("#QtdeDiginitarios").val();
+        }
+
+        var QuantidadePaginas = 1;
+        if (parseInt($("#QuantidadePaginas").val()) != NaN) {
+            QuantidadePaginas = $("#QuantidadePaginas").val();
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Atividade/ListasImprimir',
+            data: { Id: $("#AtividadeImprimirId").val(), QuantidadePaginas: QuantidadePaginas, QtdeDiginitarios: QtdeDiginitarios },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalFullContent").html(data);
+                OpenFullDialog();
+            },
+            error: function (xhr, st, str) {
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfigureDialogPresenca() {
+        dialogPresenca = $("#myModalPresenca").dialog({
+            autoOpen: false,
+            width: (thisDevice == "mobile") ? parseInt($(window).width()) : parseInt($("#content").css("width")) / 2,
+            resizable: false,
+            modal: true,
+            closeOnEscape: true,
+            position: { my: "center top", at: "center top", of: $("#content") }
+        });
+    }
+
+    function ConfigureDialogImprimir() {
+        dialogImprimir = $("#myModalImprimir").dialog({
+            autoOpen: false,
+            width: (thisDevice == "mobile") ? parseInt($(window).width()) : parseInt($("#content").css("width")) / 2,
+            resizable: false,
+            modal: true,
+            closeOnEscape: true,
+            position: { my: "center top", at: "center top", of: $("#content") }
+        });
+    }
+
+    function AbrirFormulario() {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Atividade/Form',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                OnCompleteForm();
+
+                $("#myModalFullCalendarioContent").html(data);
+                $("#frmCalendarioCriar #DataDia").focus();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+    function Editar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Atividade/Form',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                OnCompleteForm();
+
+                $("#myModalFullCalendarioContent").html(data);
+                $("#myTab1 a[href='#pnlFormulario']").click();
+                $("#frmCalendarioCriar #DataDia").focus();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+    function Apagar(Id, Titulo) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente excluir o Item " + Titulo + "?", "ApagarConfirmar(" + Id + ");")
+    }
+
+    function ApagarConfirmar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Atividade/Excluir',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                OnCompleteForm();
+
+                AbrirFormulario();
+                LoadCalendario($("#frmCalendarioFiltrar #AnoMes").val());
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+    function SelecionaTipo() {
+        ClearNotify();
+
+        $("#frmCalendarioCriar #titulo").show();
+        $("#frmCalendarioCriar #Responsavel").show();
+        $("#pnlNomeAtividade").show();
+        $("#pnlClasse").hide();
+        $("#pnlIniciacao").hide();
+        $("#pnlManuscrito").hide();
+
+        $("#pnlLinkEvento").hide();
+        $("#pnlDescricao").hide();
+
+        $("#ClasseId").empty();
+        $("#ManuscritoId").empty();
+        $("#IniciacaoId").val("");
+
+        Id = $("#frmCalendarioCriar #TipoId").val();
+
+        $("#Titulo_DataList").html("");
+        $("#Responsavel_DataList").html("");
+
+        if (Id != "") {
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'OrganismoAfiliado/Atividade/SelecionaTipo',
+                data: { Id: Id },
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    OnCompleteForm();
+
+                    if (data.success) {
+                        for (var i = 0; i < data.lista_titulo.length; i++) {
+                            var opt = $("<option></option>").attr("value", data.lista_titulo[i]);
+                            $("#Titulo_DataList").append(opt);
+                        }
+
+                        for (var i = 0; i < data.lista_responsavel.length; i++) {
+                            var opt = $("<option></option>").attr("value", data.lista_responsavel[i]);
+                            $("#Responsavel_DataList").append(opt);
+                        }
+
+                        if (data.model.SomenteMembros != null) {
+                            if (data.model.SomenteMembros) {
+                                $("#frmCalendarioCriar #SomenteMembros").prop("checked", true);
+                                $("#frmCalendarioCriar #SomenteMembros").attr("disabled", "disabled");
+                            } else {
+                                $("#frmCalendarioCriar #SomenteMembros").prop("checked", false);
+                                $("#frmCalendarioCriar #SomenteMembros").removeAttr("disabled");
+
+                                //$("#pnlLinkEvento").show();
+                                //$("#pnlDescricao").show();
+                            }
+                        }
+                        else {
+                            $("#frmCalendarioCriar #SomenteMembros").prop("checked", false);
+                            $("#frmCalendarioCriar #SomenteMembros").attr("disabled", "disabled");
+                        }
+
+                        var OrganismoAfiliadoId = $("#frmCalendarioCriar #OrganismoAfiliadoId").val();
+
+                        if (OrganismoAfiliadoId == "") {
+                            OrganismoAfiliadoId = 0;
+                        }
+
+                        if (data.model.ConventiculoMartinista) {
+                            $.ajax({
+                                type: 'POST',
+                                url: rootURL + 'OrganismoAfiliado/Atividade/SelecionaClasse',
+                                data: { TipoId: Id, OrganismoAfiliadoId: OrganismoAfiliadoId },
+                                beforeSend: function () {
+                                    OnBeginForm();
+                                },
+                                success: function (data) {
+                                    OnCompleteForm();
+
+                                    if (data.success) {
+
+                                        $("#pnlNomeAtividade").hide();
+                                        $("#pnlClasse").show();
+                                        $("#pnlManuscrito").show();
+
+                                        var dataList = $("#ClasseId");
+                                        dataList.empty();
+                                        dataList.append($("<option>Selecione</option>").attr("value", "0"));
+                                        if (data.list.length) {
+                                            for (var i = 0; i < data.list.length; i++) {
+                                                var opt = $("<option>" + data.list[i].GrauNome + " - Mestre: " + data.list[i].MestreNome + " - " + data.list[i].AnoInicio + "/" + data.list[i].AnoTermino + "</option>").attr("value", data.list[i].IdClasse);
+                                                dataList.append(opt);
+                                            }
+                                        }
+
+                                        var dataList = $("#ManuscritoId");
+                                        dataList.empty();
+                                        dataList.append($("<option>Selecione</option>").attr("value", "0"));
+                                    } else {
+                                        ShowWarning(data.msg);
+                                    }
+                                },
+                                error: function (xhr, st, str) {
+                                    OnCompleteForm();
+                                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                                },
+                                complete: function () {
+
+                                }
+                            });
+                        } else {
+                            if (data.model.Iniciacao) {
+                                $("#pnlIniciacao").show();
+                                $("#pnlTitulo").hide();
+                            }
+
+                            if (data.model.Titulo != null) {
+                                $("#Titulo").val(data.model.Titulo);
+                            }
+
+                            if (data.model.ExibirTitulo || data.model.ExibirResponsavel) {
+                                $("#pnlNomeAtividade").show();
+                                $("#pnlResponsavel").hide();
+                                $("#pnlTitulo").hide();
+
+                                if (data.model.ExibirTitulo && data.model.ExibirResponsavel) {
+                                    $("#pnlTitulo").removeClass("col-10");
+                                    $("#pnlResponsavel").removeClass("col-10");
+
+                                    $("#pnlTitulo").addClass("col-6");
+                                    $("#pnlResponsavel").addClass("col-6");
+
+                                    $("#pnlResponsavel").show();
+
+                                    if (!data.model.Iniciacao) {
+                                        $("#pnlTitulo").show();
+                                        $("#Titulo").focus();
+                                    } else {
+                                        $("#IniciacaoId").focus();
+                                    }
+
+
+                                } else {
+                                    if (data.model.ExibirTitulo) {
+                                        $("#pnlTitulo").removeClass("col-6");
+                                        $("#pnlTitulo").addClass("col-10");
+                                        $("#pnlTitulo").show();
+
+                                        $("#Titulo").focus();
+
+                                    } else {
+                                        $("#pnlResponsavel").removeClass("col-6");
+                                        $("#pnlResponsavel").addClass("col-10");
+                                        $("#pnlResponsavel").show();
+
+                                        $("#Responsavel").focus();
+                                    }
+                                }
+                            } else {
+                                $("#pnlNomeAtividade").hide();
+                            }
+                        }
+                    } else {
+                        ShowError(data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+                    OnCompleteForm();
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+
+                }
+            });
+        }
+    }
+
+    function SelecionaClasse() {
+        var ClasseId = $("#ClasseId").val();
+
+        if (ClasseId > 0) {
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'OrganismoAfiliado/Atividade/SelecionaManuscrito',
+                data: { ClasseId: ClasseId },
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    OnCompleteForm();
+
+                    if (data.success) {
+
+                        var dataList = $("#ManuscritoId");
+                        dataList.empty();
+                        dataList.append($("<option>Selecione</option>").attr("value", "0"));
+                        if (data.manuscritos.length) {
+                            for (var i = 0; i < data.manuscritos.length; i++) {
+                                var opt = $("<option>" + data.manuscritos[i].Numero + ". " + data.manuscritos[i].Nome + (data.manuscritos[i].QuantidadeClasses > 0 ? " #" : "") + "</option>").attr("value", data.manuscritos[i].IdAtividade);
+                                dataList.append(opt);
+                            }
+                        }
+
+                    } else {
+                        ShowError(data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+                    OnCompleteForm();
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+
+                }
+            });
+        }
+    }
+
+    function SelecionaIniciacao() {
+        $("#Titulo").val("");
+
+        if ($("#IniciacaoId option:selected").val() != "") {
+            $("#Titulo").val($("#IniciacaoId option:selected").text());
+            $("#Responsavel").focus();
+        }
+    }
+
+    function SelecionaResponsavel() {
+        var Titulo = $("#frmCalendarioCriar #Titulo").val();
+        $("#Responsavel_DataList").html("");
+
+        if (Titulo != "") {
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'OrganismoAfiliado/Atividade/SelecionaResponsavel',
+                data: { Titulo: Titulo },
+                beforeSend: function () {
+
+                },
+                success: function (data) {
+                    if (data.success) {
+                        for (var i = 0; i < data.lista_responsavel.length; i++) {
+                            var opt = $("<option></option>").attr("value", data.lista_responsavel[i]);
+                            $("#Responsavel_DataList").append(opt);
+                        }
+                    } else {
+                        ShowError(data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+                    OnCompleteForm();
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+
+                }
+            });
+        }
+    }
+
+    function ImprimirListas(Id, QuantidadePaginas) {
+
+        var QtdeDiginitarios = 0;
+
+        if ($("#QtdeDiginitarios_" + Id).length > 0) {
+            QtdeDiginitarios = $("#QtdeDiginitarios_" + Id).val();
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Atividade/ListasImprimir',
+            data: { Id: Id, QuantidadePaginas: QuantidadePaginas, QtdeDiginitarios: QtdeDiginitarios },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalFullContent").html(data);
+                OpenFullDialog();
+            },
+            error: function (xhr, st, str) {
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function AtualizaQtdeDiginitarios(Id, Quantidade) {
+        $("#QtdeDiginitarios_" + Id).val(Quantidade);
+        $("#MenuDiginitarios_" + Id + "_" + Quantidade).addClass("active");
+        $("#MenuDiginitariosLegenda_" + Id).text("(" + Quantidade + ")");
+    }
+
+    $(document).ready(function () {
+        AbrirFormulario();
+
+        ConfigureDialogPresenca();
+
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            var target = $(e.target).attr("href") // activated tab
+            switch (target) {
+                case "#pnlFormulario":
+                    $("#frmCalendarioCriar #DataDia").focus();
+
+                    break;
+                case "#pnlListagem":
+                    $("#frmCalendarioFiltrar #AnoMes").focus();
+                    break;
+            }
+        });
+    });
+</script>

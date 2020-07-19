@@ -1,0 +1,342 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-book"></i>
+                    Biblioteca | Empréstimo
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:10px;">
+                <div class="text-right" id="pnlBotoes">
+                    @{
+                        Html.Action("HabilitaBotoes");
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="widget-body" id="ItemLista">
+        </div>
+    </div>
+</div>
+<div id="myModalItem" title="Formulário de Item" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalItemContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogItem();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmDialogItem();" id="btnConfirmar">Confirmar</button>
+    </div>
+</div>
+<script>
+    var dialogEstoque;
+    var dialogItem;
+
+    function CloseDialogItem() {
+        dialogItem.dialog("close");
+    }
+
+    function CloseDialogEstoque() {
+        dialogEstoque.dialog("close");
+    }
+
+    function LoadList() {
+        $("#btnTodos").attr("disabled", "disabled");
+        $("#btnDisponiveis").removeAttr("disabled");
+        $("#btnEmprestados").removeAttr("disabled");
+        $("#btnAtrasados").removeAttr("disabled");
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Biblioteca/Emprestimo/Lista',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#ItemLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function RefreshBotoes() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Biblioteca/Emprestimo/HabilitaBotoes',
+            beforeSend: function () {
+                //OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlBotoes").html(data);
+            },
+            error: function (xhr, st, str) {
+                //OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                //OnCompleteForm();
+            }
+        });
+    }
+
+    function LoadEmprestados() {
+        $("#btnEmprestados").attr("disabled", "disabled");
+        $("#btnDisponiveis").removeAttr("disabled");
+        $("#btnTodos").removeAttr("disabled");
+        $("#btnAtrasados").removeAttr("disabled");
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Biblioteca/Emprestimo/ListaEmprestados',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#ItemLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function LoadDisponiveis() {
+        $("#btnDisponiveis").attr("disabled", "disabled");
+        $("#btnEmprestados").removeAttr("disabled");
+        $("#btnTodos").removeAttr("disabled");
+        $("#btnAtrasados").removeAttr("disabled");
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Biblioteca/Emprestimo/ListaDisponiveis',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#ItemLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function LoadAtrasados() {
+        $("#btnAtrasados").attr("disabled", "disabled");
+        $("#btnDisponiveis").removeAttr("disabled");
+        $("#btnEmprestados").removeAttr("disabled");
+        $("#btnTodos").removeAttr("disabled");
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Biblioteca/Emprestimo/ListaAtrasados',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#ItemLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmDialogItem() {
+        ClearNotify();
+
+        $("#btnConfirmar").attr("disabled", "disabled")
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Biblioteca/Emprestimo/Form',
+            data: $.param($("#frmEmprestimo").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalItemContent").html("");
+                $("#myModalItemContent").html(data);
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowNotify('danger', 'Biblioteca - Empréstimo', MsgNaoFoiPossivelCompletarOperacao, 'frmEmprestimo');
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfigureDialogItem() {
+        dialogItem = $("#myModalItem").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()),
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' })
+            }
+        });
+    }
+
+    function Editar(Id) {
+        ClearNotify();
+
+        $("#btnConfirmar").removeAttr("disabled")
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Biblioteca/Emprestimo/Form',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalItemContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogItem.dialog("open");
+                dialogItem.dialog("moveToTop");
+
+                $("#myModalItemContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Apagar(Id, Nome) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente excluir o Item " + Nome + "?", "ApagarConfirmar(" + Id + ", '" + Nome + "');")
+    }
+
+    function BibliotecaBuscarMembro() {
+        ClearNotify();
+
+        var texto = $("#MembroNumeroAfiliacaoNome").val();
+        $("#MembroIdSelect").empty();
+        $("#pnlItens").html("");
+
+        if (texto.length > 0) {
+            $.ajax({
+                type: 'GET',
+                url: rootURL + 'Biblioteca/Emprestimo/BuscarMembro',
+                data: { texto: texto },
+                beforeSend: function () {
+                    ShowProgress('myModalItemContent');
+                },
+                success: function (data) {
+                    if (data.success) {
+                        if (data.Lista.length > 1) {
+                            $("#MembroIdSelect").append("<option value=''>Selecione");
+                        }
+
+                        $.each(data.Lista, function () {
+                            $("#MembroIdSelect").append("<option value='" + this.Id + "'>" + this.Text);
+                        });
+
+                        $("#MembroIdSelect").focus();
+
+                        if (data.Lista.length == 1) {
+                            BibliotecaBuscarEmprestimos();
+                        }
+                    }
+                    else {
+                        $("#MembroIdSelect").append("<option value=''>Selecione");
+
+                        ShowNotify('danger', 'Biblioteca - Empréstimo', data.msg, 'frmEmprestimo');
+                    }
+                },
+                error: function (xhr, st, str) {
+                    OnCompleteForm();
+                    ShowNotify('danger', 'Biblioteca - Empréstimo', MsgNaoFoiPossivelCompletarOperacao, 'frmEmprestimo');
+                },
+                complete: function () {
+                    HideProgress();
+                }
+            });
+        } else {
+            ShowNotify('danger', 'Biblioteca - Empréstimo', 'Informe o Número de Afiliação ou Nome do Membro', 'frmEmprestimo');
+        }
+    }
+
+    function BibliotecaBuscarEmprestimos() {
+        ClearNotify();
+
+        $("#pnlItens").html("");
+
+        var IdMembro = $("#MembroIdSelect").val();
+
+        if (IdMembro.length > 0) {
+
+
+            $.ajax({
+                type: 'GET',
+                url: rootURL + 'Biblioteca/Emprestimo/BuscarMembroItens',
+                data: { IdMembro: IdMembro },
+                beforeSend: function () {
+                    ShowProgress('myModalItemContent');
+                },
+                success: function (data) {
+                    $("#pnlItens").html(data);
+                },
+                error: function (xhr, st, str) {
+                    OnCompleteForm();
+                    ShowNotify('danger', 'Biblioteca - Empréstimo', MsgNaoFoiPossivelCompletarOperacao, 'frmEmprestimo');
+                },
+                complete: function () {
+                    HideProgress();
+                }
+            });
+        }
+    }
+
+    function Recibo(Id) {
+        $("#iFrameRecibo").attr("src", "@Url.Action("Recibo", "Emprestimo", new { Area = "Biblioteca" })?Id=" + Id);
+    }
+
+    $(window).resize(function () {
+        ConfigureDialogItem();
+    });
+
+    $(document).ready(function () {
+        ConfigureDialogItem();
+        LoadList();
+    });
+</script>

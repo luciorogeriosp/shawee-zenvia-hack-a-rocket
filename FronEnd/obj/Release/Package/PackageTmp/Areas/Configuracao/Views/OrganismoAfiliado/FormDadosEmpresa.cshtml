@@ -1,0 +1,136 @@
+﻿@model SAL.MVC.Areas.Configuracao.Models.OrganismoAfiliadoDadosEmpresaViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+
+    string Telefone1 = string.Empty;
+    if (string.IsNullOrEmpty(Model.Telefone1DDD) == false && string.IsNullOrEmpty(Model.Telefone1Numero) == false)
+    {
+        Telefone1 = "(" + Model.Telefone1DDD + ") " + Convert.ToUInt64(Model.Telefone1Numero).ToString(@"0000\-0000");
+    }
+
+    string Telefone2 = string.Empty;
+    if (string.IsNullOrEmpty(Model.Telefone2DDD) == false && string.IsNullOrEmpty(Model.Telefone2Numero) == false)
+    {
+        Telefone2 = "(" + Model.Telefone2DDD + ") " + Convert.ToUInt64(Model.Telefone2Numero).ToString(@"0000\-0000");
+    }
+
+    string CNPJ = string.Empty;
+    if (string.IsNullOrEmpty(Model.CNPJ) == false)
+    {
+        CNPJ = Convert.ToUInt64(Model.CNPJ).ToString(@"00\.000\.000\/0000\-00");
+    }
+}
+<!-- Error states for elements -->
+<form class="smart-form" id="frmDadosEmpresa">
+    <fieldset>
+        <div class="row">
+            <section class="col col-6">
+                <label class="label">
+                    <label for="Nome">Nome Fantasia</label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.Nome, new { style = "text-transform: uppercase" })
+                </label>
+            </section>
+            <section class="col col-6">
+                <label class="label">
+                    <label for="RazaoSocial">Razão Social</label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.RazaoSocial, new { style = "text-transform: uppercase" })
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col col-4">
+                <label class="label">
+                    <label for="CNPJ">CNPJ</label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="input">
+                    <input type="text" name="CNPJ" id="CNPJ" data-mask="99.999.999/9999-99" value="@CNPJ">
+                </label>
+            </section>
+            <section class="col col-4">
+                <label class="label" for="IE">Inscrição Estadual</label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.IE)
+                </label>
+            </section>
+            <section class="col col-4">
+                <label class="label" for="CCM">CCM</label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.CCM)
+                </label>
+            </section>
+        </div>
+    </fieldset>
+    <fieldset>
+        <div class="row">
+            <section class="col col-3">
+                <label class="label" for="Telefone1">Telefone</label>
+                <label class="input">
+                    <input type="text" name="Telefone1" id="Telefone1" data-mask="(99) 9999-9999" value="@Telefone1">
+                </label>
+            </section>
+            <section class="col col-3">
+                <label class="label" for="Telefone2">Fax</label>
+                <label class="input">
+                    <input type="text" name="Telefone2" id="Telefone2" data-mask="(99) 9999-9999" value="@Telefone2">
+                </label>
+            </section>
+        </div>
+        <div>
+            <section>
+                <label class="label" for="Site">Site</label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.Site)
+                </label>
+            </section>
+            <section>
+                <label class="label" for="Facebook">Facebook</label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.Facebook)
+                </label>
+            </section>
+        </div>
+    </fieldset>
+    <footer>
+        <button type="submit" class="btn btn-primary">
+            Gravar Dados da Empresa
+        </button>
+    </footer>
+</form>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmDadosEmpresa"))
+<script>
+    $("[data-mask]").each(function () { var a = $(this), b = a.attr("data-mask") || "error...", c = a.attr("data-mask-placeholder") || "X"; a.mask(b, { placeholder: c }), a = null });
+
+    $("#frmDadosEmpresa").submit(function (e) {
+        var postData = $(this).serializeArray();
+
+        $("#frmDadosEmpresa button").prop("disabled", true);
+
+        $.ajax(
+            {
+                url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosEmpresa',
+                type: "POST",
+                data: postData,
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data, textStatus, jqXHR) {
+                    $("#pnlDadosEmpresa").html(data);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    OnCompleteForm();
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+        e.preventDefault(); //STOP default action
+    });
+</script>

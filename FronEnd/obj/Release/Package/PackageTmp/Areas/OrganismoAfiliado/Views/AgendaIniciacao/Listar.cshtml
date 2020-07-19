@@ -1,0 +1,189 @@
+﻿@model List<SAL.MVC.Areas.OrganismoAfiliado.Models.CalendarioItemModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+
+    List<string> mesesDescricao = ViewBag.Meses as List<string>;
+    string corLinha = string.Empty;
+
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+    dtAtual = new DateTime(dtAtual.Year, dtAtual.Month, dtAtual.Day);
+}
+<table id="datatable_tabletools" class="table table-bordered table-hover" width="100%">
+    <thead>
+        <tr>
+            <th class="text-center" style="display:none;">Data</th>
+            <th class="text-center">Dia</th>
+            <th class="text-center">Horário</th>
+            <th class="text-center">Atividade</th>
+            <th class="text-center">Título</th>
+            <th class="text-center">Mestre</th>
+            <th class="text-center">Vagas</th>
+            <th class="text-center">Inscritos</th>
+            <th class="text-center">Aptos</th>
+            <th class="text-center">Espera</th>
+            <th class="text-center">Cancelado</th>
+            <th class="text-center">Presença</th>
+            <th class="text-center">Inscrição</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            if (item.DataOriginal < dtAtual)
+            {
+                corLinha = "bg-color-blueLight";
+            }
+            else
+            {
+                corLinha = "";
+            }
+        <tr id="line_@item.Id" class="@corLinha">
+            <td class="text-center" style="display:none;">@item.DataOriginal.ToString("yyyyMM")</td>
+            <td class="text-center">@item.DataDia</td>
+            <td class="text-center">@item.Horario</td>
+            <td class="text-left">@item.TipoNome</td>
+            <td class="text-left">@item.Titulo.ToUpper()</td>
+            <td class="text-left">@(item.OrganismoAfiliadoNome + (string.IsNullOrEmpty(item.OrganismoAfiliadoNome) == false && string.IsNullOrEmpty(item.Responsavel) == false ? " - " : "") + item.Responsavel)</td>
+            <td class="text-center">@item.TotalVagas</td>
+            <td class="text-center">
+                @if (item.TotalInscritos > 0)
+                {
+                    <div class="btn-group">
+                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            @item.TotalInscritos <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            @foreach (var membro in item.ListaMembrosInscritos)
+                            {
+                                <li>
+                                    <a href="javascript:AbrirInscricao(@item.Id, @membro.fSeqCadast);">@membro.AfiliacaoNumero - @membro.Nome</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <text>0</text>
+                }
+            </td>
+            <td class="text-center">
+                @if (item.TotalApto > 0)
+                {
+                    <div class="btn-group">
+                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            @item.TotalApto <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            @foreach (var membro in item.ListaMembrosAptos)
+                            {
+                                <li>
+                                    <a href="javascript:AbrirInscricao(@item.Id, @membro.fSeqCadast);">@membro.AfiliacaoNumero - @membro.Nome</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <text>0</text>
+                }
+            </td>
+            <td class="text-center">
+                @if (item.TotalListaEspera > 0)
+                {
+                    <div class="btn-group">
+                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            @item.TotalListaEspera <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            @foreach (var membro in item.ListaMembrosEmEspera)
+                            {
+                                <li>
+                                    <a href="javascript:AbrirInscricao(@item.Id, @membro.fSeqCadast);">@membro.AfiliacaoNumero - @membro.Nome</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <text>0</text>
+                }
+            </td>
+            <td class="text-center">
+                @if (item.TotalListaCancelado > 0)
+                {
+                    <div class="btn-group">
+                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            @item.TotalListaCancelado <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            @foreach (var membro in item.ListaMembrosCancelado)
+                            {
+                                <li>
+                                    <a href="javascript:AbrirInscricao(@item.Id, @membro.fSeqCadast);">@membro.AfiliacaoNumero - @membro.Nome</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <text>0</text>
+                }
+            </td>
+            <td class="text-center">@item.PresencaTotalMembro</td>
+            <td class="text-center" data-hide="print"><a href="javascript:void(0);" onclick="OpenDialogAbrirMembroGLPInscricao(@item.Id);" class="btn btn-default"><i class="fa fa-file-text-o"></i> Inscrição</a></td>
+        </tr>
+        }
+    </tbody>
+</table>
+<script>
+    var mesDescricao = [];
+    @for (var i = 0; i < mesesDescricao.Count; i++)
+    {
+        <text>
+    mesDescricao[@(i + 1)] = '@mesesDescricao[i]';
+        </text>
+    }
+    var groupColumn = 0;
+    $('#datatable_tabletools').dataTable({
+        "columnDefs": [
+            { "visible": false, "targets": groupColumn }
+        ],
+        "order": [[groupColumn, 'desc'], [1, 'asc']],
+        "preDrawCallback": function () {
+            // Initialize the responsive datatables helper once.
+            if (!responsiveHelper_datatable_tabletools) {
+                responsiveHelper_datatable_tabletools = new ResponsiveDatatablesHelper($('#datatable_tabletools'), breakpointDefinition);
+            }
+        },
+        "rowCallback": function (nRow) {
+            try {
+                responsiveHelper_datatable_tabletools.createExpandIcon(nRow);
+            } catch (e) {
+
+            }
+        },
+        "drawCallback": function (oSettings) {
+            $("#datatable_tabletools").show();
+            responsiveHelper_datatable_tabletools.respond();
+
+            var api = this.api();
+            var rows = api.rows({ page: 'current' }).nodes();
+            var last = null;
+
+            api.column(groupColumn, { page: 'current' }).data().each(function (group, i) {
+                if (last !== group) {
+                    $(rows).eq(i).before(
+                        '<tr class="group"><td colspan="12" class="bg-color-blueDark txt-color-white"><strong>' + mesDescricao[parseInt(group.substr(4, 2))] + " - " + group.substr(0, 4) + '</strong></td></tr>'
+                    );
+
+                    last = group;
+                }
+            });
+        }
+    });
+</script>

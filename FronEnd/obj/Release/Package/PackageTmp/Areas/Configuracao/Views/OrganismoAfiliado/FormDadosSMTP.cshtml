@@ -1,0 +1,105 @@
+﻿@model SAL.MVC.Areas.Configuracao.Models.OrganismoAfiliadoDadosEmpresaViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<!-- Error states for elements -->
+<form class="smart-form" id="frmDadosSMTP" autocomplete="off">
+    <fieldset>
+        <section>
+            <label class="label">
+                <label for="EmailServer">Endereço do Servidor</label>
+                <span class="font-xs text-danger">*</span>
+            </label>
+            <label class="input">
+                @Html.HiddenFor(m => m.EmailPasswordValidate)
+                @Html.TextBoxFor(m => m.EmailServer)
+            </label>
+        </section>
+        <div class="row">
+            <section class="col col-2">
+                <label class="label">
+                    <label for="EmailPort">Porta</label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.EmailPort, new { type = "number" })
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col col-4">
+                <label class="label">
+                    <label for="Email">E-mail</label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.Email)
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col col-4">
+                <label class="label">
+                    <label for="EmailPassword">Senha</label>
+                    @if (Model.EmailPasswordValidate)
+                    {
+                        <span class="font-xs text-danger">*</span>
+                    }
+                </label>
+                <label class="input">
+                    @Html.PasswordFor(m => m.EmailPassword, new { autocomplete = "off" })
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col col-2">
+                <label class="checkbox">
+                    @Html.CheckBoxFor(m => m.EmailUseDefaultCredencials)
+                    <i></i>Usar credenciais padrão
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section class="col col-2">
+                <label class="checkbox">
+                    @Html.CheckBoxFor(m => m.EmailEnableSsl)
+                    <i></i>Habilitar SSL
+                </label>
+            </section>
+        </div>
+    </fieldset>
+    <footer>
+        <button type="submit" class="btn btn-primary">
+            Gravar Dados SMTP
+        </button>
+    </footer>
+</form>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmDadosSMTP"))
+<script>
+    $("#frmDadosSMTP").submit(function (e) {
+        var postData = $(this).serializeArray();
+
+        $("#frmDadosSMTP button").prop("disabled", true);
+
+        $.ajax(
+        {
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosSMTP',
+            type: "POST",
+            data: postData,
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data, textStatus, jqXHR) {
+                $("#pnlDadosSMTP").html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                OnCompleteForm();
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+        e.preventDefault(); //STOP default action
+    });
+</script>

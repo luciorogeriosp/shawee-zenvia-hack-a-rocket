@@ -1,0 +1,217 @@
+﻿@model SAL.MVC.Models.RelatorioModel<SAL.MVC.Areas.OrganismoAfiliado.Models.RelatorioAutorizarTemplo>
+@{
+    SAL.MVC.Models.UsuarioClientePerfilModel OrganismoAfiliado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    string mestre = string.Empty;
+    string oficial = string.Empty;
+    switch ((SAL.MVC.Util.GLP.TipoOrganismoAfiliado)OrganismoAfiliado.Cliente.OrganismoAfiliadoTipoId)
+    {
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.AtriumMartinista:
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.HeptadaMartinista:
+            mestre = "Mestre da Heptada";
+            oficial = "Mestre da Classe";
+            break;
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.PronaosRosacruz:
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.CapituloRosacruz:
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.LojaRosacruz:
+            mestre = "Mestre";
+            oficial = "Oficial";
+            break;
+        default:
+            mestre = "Mestre";
+            oficial = "Oficial";
+            break;
+    }
+}
+<html>
+<body>
+    <meta name="viewport" content="width=device-width">
+    <!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script>
+        if (!window.jQuery) {
+            document.write('<script src="@Url.Content("~/js/libs/jquery-2.0.2.min.js")" ><\/script>');
+        }
+    </script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script>
+        if (!window.jQuery.ui) {
+            document.write('<script src="@Url.Content("~/js/libs/jquery-ui-1.10.3.min.js")" ><\/script>');
+        }
+    </script>
+    <link rel="stylesheet" href="@Url.Content("~/js/jsPDF-AutoTable-master/pure-min.css")">
+    <link rel="stylesheet" href="@Url.Content("~/js/jsPDF-AutoTable-master/grids-responsive-min.css")">
+    <script src="@Url.Content("~/js/jsPDF-AutoTable-master/jspdf.min.js")"></script>
+    <script>if (window.define) delete window.define.amd;</script>
+    <script src="@Url.Content("~/js/jsPDF-AutoTable-master/jspdf.plugin.autotable.src.js")"></script>
+    <div id="pnlTitle" style="display:none;">@Model.ReportTitle</div>
+    <div id="pnlSubTitle" style="display:none;">@Model.ReportSubitle</div>
+    <table id="pnlDadosItens" class="table table-striped" style="display:none;">
+        <thead>
+            <tr>
+                <th class="text-center" width="5%">Data</th>
+                <th class="text-center" width="20%">Jurisdição</th>
+                <th class="text-center" width="10%">Número de Afiliação</th>
+                <th class="text-center" width="25%">Nome</th>
+                <th class="text-center" width="20%">Oficial</th>
+                <th class="text-center" width="20%">Emitido por</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Dados.Lista)
+            {
+            <tr>
+                <td>@item.Data</td>
+                <td>@item.NomeJurisdicao</td>
+                <td>@item.MembroAfiliacaoNumero</td>
+                <td>@item.MembroNome</td>
+                <td>@item.MestreNome</td>
+                <td>@item.OficialNome</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    <table id="pnlDadosTotal" class="table table-striped" style="display:none;">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>TOTAL: </td>
+                    <td>@Model.Dados.Lista.Count</td>
+                </tr>
+        </tbody>
+    </table>
+    <script type="text/javascript">
+        $(function () {
+
+            var doc = new jsPDF('L', 'pt', 'a4', true);
+            var HeaderOK = false;
+
+            doc.setProperties({
+                title: '@Model.ReportTitle',
+                subject: '@Model.ReportSubitle'
+            });
+
+            var header = function (data) {
+
+                if (!HeaderOK) {
+
+                    doc.setFontSize(20);
+                    doc.setTextColor(40);
+                    doc.setFontStyle('normal');
+                    doc.text($("#pnlTitle").html(), 40, 45);
+                    doc.setFontSize(12);
+                    doc.text($("#pnlSubTitle").html(), 40, 65);
+
+                    HeaderOK = true;
+                }
+            };
+
+            var totalPagesExp = "{total_pages_count_string}";
+            var footer = function (data) {
+                var str = "Página " + doc.internal.getCurrentPageInfo().pageNumber;
+                // Total page number plugin only available in jspdf v1.0+
+                if (typeof doc.putTotalPages === 'function') {
+                    str = str + " de " + totalPagesExp;
+                }
+
+                doc.setFontStyle('normal');
+                doc.setFontSize(10);
+                doc.setFillColor(255, 255, 255);
+                doc.rect(50, doc.internal.pageSize.height - 35, 200, 20, 'F');
+
+                doc.text(str, 50, doc.internal.pageSize.height - 30);
+            };
+
+            var options = {
+            };
+
+            var dataTipoSuprimento = '';
+            var contadorSpan = 0;
+
+            var dataTipoSuprimento = '';
+            var contadorSpan = 0;
+            var res;
+            var resItens;
+            var contadorRecebedoria = 0;
+
+            resItens = doc.autoTableHtmlToJson(document.getElementById("pnlDadosItens"));
+            doc.autoTable(resItens.columns, resItens.data, {
+                startY: (contadorRecebedoria == 0) ? 80 : doc.autoTableEndPosY() + 20,
+                margin: { left: 40, bottom: 60 },
+                pageBreak: 'auto',
+                tableWidth: 'auto',
+                styles: {
+                    font: 'Arial',
+                    fillStyle: 'DF',
+                    lineColor: [44, 62, 80],
+                    lineWidth: 1,
+                    overflow: 'linebreak'
+                },
+                headerStyles: { fontSize: 13, fontStyle: 'bold', halign: 'center', valign: 'middle' },
+                beforePageContent: header,
+                afterPageContent: footer,
+                columnStyles: {
+                    0: {
+                        halign: 'center'
+                    },
+                    1: {
+                        halign: 'center'
+                    },
+                    2: {
+                        halign: 'left',
+                    },
+                    3: {
+                        halign: 'left'
+                    },
+                    4: {
+                        halign: 'left'
+                    }                   
+                }
+        });
+
+        contadorRecebedoria++;
+
+        resTotal = doc.autoTableHtmlToJson(document.getElementById("pnlDadosTotal"));
+        doc.autoTable(resTotal.columns, resTotal.data, {
+            startY: doc.autoTableEndPosY() + 30,
+            tableWidth: 200,
+            drawHeaderRow: function (row, data)
+            {
+                return false;
+            },
+            margin: {left: 606},
+            styles: {
+                font: 'Arial',
+                fillStyle: 'DF',
+                lineColor: [44, 62, 80],
+                lineWidth: 1,
+                overflow: 'linebreak'
+            },
+            columnStyles: {
+                0: {
+                    halign: 'right',
+                    fontStyle: 'bold',
+                    fontSize: 12
+                },
+                1: {
+                    halign: 'right',
+                    columnWidth: 100,
+                    fontSize: 12
+                }
+            },
+        });
+
+        // Total page number plugin only available in jspdf v1.0+
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPagesExp);
+        }
+
+        parent.document.getElementById("iframeImprimir").src = doc.output('datauristring');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,992 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+    DateTime dtSemana = dtAtual.AddDays(-7);
+    DateTime dtQuinzena = dtAtual.AddDays(-15);
+    DateTime dtMes = new DateTime(dtAtual.Year, dtAtual.Month, 1);
+
+    Tropical.Infrastructure.Model.User user = null;
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado") != null)
+    {
+        user = (Tropical.Infrastructure.Model.User)Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado");
+    }
+
+    SAL.MVC.Models.UsuarioClientePerfilModel perfilSelecionado = null;
+
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado") != null)
+    {
+        perfilSelecionado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    }
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-cut"></i>
+                    Tesouraria | Pagamentos e Recebimentos
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            @if (perfilSelecionado.SomenteLeitura == false)
+            {
+                <div class="col-md-12" style="margin-bottom:10px;">
+                    <div class="text-right">
+                        <button type="button" class="btn btn-primary" onclick="OpenDialogEfetivarConta();">
+                            Novo Lançamento
+                        </button>
+                    </div>
+                </div>
+            }
+            <div class="col-md-12">
+                <div class="widget-body">
+                    <ul id="myTab1" class="nav nav-tabs bordered">
+                        <li class="active">
+                            <a href="#pnlListaEmAberto" onclick="ListaEmAberto();" data-toggle="tab">Contas em aberto </a>
+                        </li>
+                        <li class="">
+                            <a href="#pnlListaHistorico" onclick="ListaHistorico();" data-toggle="tab">Histórico</a>
+                        </li>
+                    </ul>
+
+                    <div id="myTabContent1" class="tab-content padding-10">
+                        <div class="tab-pane fade active in" id="pnlListaEmAberto">
+                            @{
+                                Html.RenderAction("ListaAgendamentoEmAberto");
+                            }
+                        </div>
+                        <div class="tab-pane fade" id="pnlListaHistorico">
+                            <div class="row">
+                                <article class="col-sm-12 col-md-12 col-lg-12">
+                                    <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+                                        <div role="content" style="border-width: 1px 1px 1px 1px; border-style: solid; border-top-color: #CCC!important;">
+                                            <div class="widget-body no-padding">
+                                                <form id="frmConsultaRemessa" class="smart-form" novalidate="novalidate" onsubmit="return false">
+                                                    <header>
+                                                        Defina o filtro
+                                                    </header>
+                                                    <fieldset>
+                                                        <div class="row">
+                                                            <section class="col col-4">
+                                                                <label class="input">
+                                                                    <input type="text" name="txtTexto" id="txtTexto" placeholder="Texto" onkeypress="OnEnter(event, 'ListaHistorico')">
+                                                                    <label class="note"><strong>Obs.::</strong> busque por Número, Código, Conta, Detalhamento, Nome/Razão Social ou CPF/CNPJ.</label>
+                                                                </label>
+                                                            </section>
+                                                            <section class="col col-4">
+                                                                <label class="input">
+                                                                    <i class="icon-append fa fa-calendar"></i>
+                                                                    <input type="date" name="txtDataInicial" id="txtDataInicial" placeholder="Data Inicial" class="hasDatepicker" onkeypress="OnEnter(event, 'ListaHistorico')">
+                                                                </label>
+                                                            </section>
+                                                            <section class="col col-4">
+                                                                <label class="input">
+                                                                    <i class="icon-append fa fa-calendar"></i>
+                                                                    <input type="date" name="txtDataFinal" id="txtDataFinal" placeholder="Data Final" class="hasDatepicker" onkeypress="OnEnter(event, 'ListaHistorico')">
+                                                                </label>
+                                                            </section>
+                                                        </div>
+                                                    </fieldset>
+                                                    <footer>
+                                                        <button type="button" class="btn btn-success" onclick="ListaHistorico();">
+                                                            Buscar
+                                                        </button>
+                                                        <button type="button" class="btn btn-default" onclick="FiltroMes();">
+                                                            Este Mês
+                                                        </button>
+                                                        <button type="button" class="btn btn-default" onclick="FiltroQuizena();">
+                                                            Esta Quinzena
+                                                        </button>
+                                                        <button type="button" class="btn btn-default" onclick="FiltroSemana();">
+                                                            Esta Semana
+                                                        </button>
+                                                        <button type="button" class="btn btn-default" onclick="FiltroHoje();">
+                                                            Hoje
+                                                        </button>
+                                                    </footer>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                            <div class="row" id="pnlListaHistoricoContent">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModalEfetivarConta" title="Formulário de Pagamentos e Recebimentos" class="no-padding">
+    <div class="modal-body" id="myModalEfetivarContaContent">
+        <div role="content">
+
+            <!-- widget edit box -->
+            <div class="jarviswidget-editbox">
+                <!-- This area used as dropdown edit box -->
+
+            </div>
+            <!-- end widget edit box -->
+            <!-- widget content -->
+            <div class="widget-body no-padding">
+
+                <!-- Error states for elements -->
+                <form class="smart-form" id="frmEfetivarConta">
+                    <input type="hidden" id="Id" />
+                    <input type="hidden" id="MovimentoId" />
+                    <input type="hidden" id="Remessa" value="false" />
+                    <fieldset>
+                        <div class="row">
+                            <section class="col col-3" style="height:250px;">
+                                <label class="label">
+                                    <label for="EfetivarPagamento">Data do Pagamento/Recebimento</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    <input type="date" id="EfetivarPagamento" onblur="VerificaDuplicidade();">
+                                </label>
+                                <div class="note note-error text-right"><a href="javascript:$('#EfetivarPagamento').val('@(dtAtual.ToString("yyyy-MM-dd"))');">hoje</a></div>
+                                <div class="row" id="pnlEfetivarContaFonte">
+                                    <br />
+                                    <section class="col col-12">
+                                        <label class="label">
+                                            <label>Fonte de Pagamento/Recebimento</label>
+                                            <span class="font-xs text-danger">*</span>
+                                        </label>
+                                        <div class="inline-group">
+                                            <label class="radio" id="pnlEfetivarContaFonteContaCorrente">
+                                                <input type="radio" name="EfetivarFonteSaida" id="EfetivarContaFonteContaCorrente" value="C" onclick="SelecionaFonte(this);">
+                                                <i></i>Conta Corrente
+                                            </label>
+                                            <label class="radio" id="pnlEfetivarContaFonteDinheiro">
+                                                <input type="radio" name="EfetivarFonteSaida" id="EfetivarContaFonteDinheiro" value="D" onclick="SelecionaFonte(this);">
+                                                <i></i>Dinheiro
+                                            </label>
+                                        </div>
+                                    </section>
+                                </div>
+                            </section>
+                            <section class="col col-9">
+                                <label class="label">
+                                    <label>Tipo de Lançamento</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <div class="inline-group">
+                                    <div class="row">
+                                        <div style="padding:10px; margin-left:15px; background-color:#adbfcd;" class="radio">
+                                            <label class="radio">
+                                                <input type="radio" name="Tipo" id="EfetivarContaPagamento" value="4,5" onclick="SelecionaAgendamento(this); MonstrarFonte(true, true);">
+                                                <i></i>Pagamento
+                                            </label>
+                                            <label class="radio">
+                                                <input type="radio" name="Tipo" id="EfetivarContaRecebimento" value="2,6" onclick="SelecionaAgendamento(this); MonstrarFonte(true, true);">
+                                                <i></i>Recebimento
+                                            </label>
+                                            <label class="radio">
+                                                <input type="radio" name="Tipo" id="EfetivarContaRecebimento" value="1" onclick="SelecionaAgendamento(this); MonstrarFonte(true, true);">
+                                                <i></i>Recebedoria
+                                            </label>
+                                            <label class="radio">
+                                                <input type="radio" name="Tipo" id="EfetivarContaRecebimento" value="3" onclick="SelecionaAgendamento(this); MonstrarFonte(true, true);">
+                                                <i></i>Suprimento
+                                            </label>
+                                            <label class="radio">
+                                                <input type="radio" name="Tipo" id="EfetivarContaAplicacao" value="10" onclick="SelecionaAgendamento(this); MonstrarFonte(false, false);">
+                                                <i></i>Saque Conta
+                                            </label>
+                                            <label class="radio">
+                                                <input type="radio" name="Tipo" id="EfetivarContaAplicacao" value="9" onclick="SelecionaAgendamento(this); MonstrarFonte(false, false);">
+                                                <i></i>Depósito Conta
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div style="padding:10px; margin-left: 15px; background-color:#e4e4e4;" class="radio">
+                                            <label class="radio">
+                                                <input type="radio" name="Tipo" id="EfetivarContaAplicacao" value="7" onclick="SelecionaAgendamento(this); MonstrarFonte(false, false);">
+                                                <i></i>Rendimento Aplicação
+                                            </label>
+                                            <label class="radio">
+                                                <input type="radio" name="Tipo" id="EfetivarContaAplicacao" value="8" onclick="SelecionaAgendamento(this); MonstrarFonte(false, false);">
+                                                <i></i>Resgate Aplicação
+                                            </label>
+                                            <label class="radio">
+                                                <input type="radio" name="Tipo" id="EfetivarContaAplicacao" value="11" onclick="SelecionaAgendamento(this); MonstrarFonte(false, false);">
+                                                <i></i>Depósito Aplicação
+                                            </label>
+                                            <label class="radio">
+                                                <input type="radio" name="Tipo" id="EfetivarContaAplicacao" value="12" onclick="SelecionaAgendamento(this); MonstrarFonte(false, false);">
+                                                <i></i>Taxa Cartão
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="col col-9">
+                                <label class="label">
+                                    <label for="EfetivarContaAutoComplete">Conta</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    <a href="javascript:void(null);" onclick="EfetivarContasClean();"><i class="icon-append glyphicon glyphicon-list-alt"></i></a>
+                                    <input type="hidden" id="EfetivarContaId">
+                                    <input type="text" id="EfetivarContaAutoComplete" onkeyup="EfetivarFiltroContas()">
+                                </label>
+                                <div id="pnlConta" style="height:150px; overflow-y:scroll; border-left:1px solid #BDBDBD; border-bottom:1px solid #BDBDBD; border-right:1px solid #BDBDBD; width:100%;"></div>
+                            </section>
+                        </div>
+                        <div class="row">
+                            <section class="col col-3">
+                                <label class="label">
+                                    <label for="EfetivarValorPagto">Valor Pago/Recebido</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="EfetivarValorPagto" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event)" onblur="VerificaDuplicidade();">
+                                </label>
+                            </section>
+                            <section class="col col-3">
+                                <label class="label">
+                                    <label for="EfetivarObservacao">Detalhamento</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="EfetivarObservacao" style="text-transform: uppercase">
+                                </label>
+                            </section>
+                            <section class="col col-3" id="pnlVencimento">
+                                <label class="label">
+                                    <label for="EfetivarVencimento">Data de Vencimento</label>
+                                    <span class="font-xs text-danger" id="lblEfetivarVencimentoObrigatorio">*</span>
+                                </label>
+                                <label class="input">
+                                    <input type="date" id="EfetivarVencimento">
+                                </label>
+                            </section>
+                            <section class="col col-3">
+                                <label class="label">
+                                    <label for="EfetivarValor">Valor Original</label>
+                                    <span class="font-xs text-danger" id="lblEfetivarValorObrigatorio">*</span>
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="EfetivarValor" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event)">
+                                </label>
+                            </section>
+                        </div>
+                        <div class="row">
+                            <section class="col col-3">
+                                <label class="label">
+                                    <label for="EfetivarDocumento">Documento</label>
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="EfetivarDocumento" style="text-transform: uppercase">
+                                </label>
+                            </section>
+                            <section class="col col-6">
+                                <label class="label">
+                                    <label for="EfetivarNomeRazaoSocial">Nome / Razão Social</label>
+                                </label>
+                                <label class="input">
+                                    @*<input type="text" id="EfetivarNomeRazaoSocial" style="text-transform: uppercase">*@<i class="icon-append fa fa-eraser" onclick="$('#EfetivarNomeRazaoSocial').val(''); $('#EfetivarCPFCNPJ').val(''); $('#EfetivarNomeRazaoSocial').focus();"></i>
+                                    <input class="form-control" id="EfetivarNomeRazaoSocial" placeholder="" type="text" list="EfetivarNomeRazaoSocialList">
+                                    <datalist id="EfetivarNomeRazaoSocialList"></datalist>
+
+                                </label>
+                            </section>
+                            <section class="col col-3">
+                                <label class="label">
+                                    <label for="EfetivarCPFCNPJ">CPF / CNPJ</label>
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="EfetivarCPFCNPJ">
+                                </label>
+                            </section>
+                        </div>
+                    </fieldset>
+                </form>
+                <!--/ Error states for elements -->
+
+            </div>
+            <!-- end widget content -->
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogEfetivarConta();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="AgendamentoEmitirRecibo($('#frmEfetivarConta #MovimentoId').val());" id="btnEmitirRecibo">Emitir Recibo</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmDialogEfetivarConta();" id="btnConfirmarEfetivarConta">Confirmar</button>
+        <button type="button" class="btn btn-primary" onclick="NovoEfetivarConta();" id="btnNovoEfetivarConta">Novo Lançamento</button>
+    </div>
+</div>
+<div id="myModalCancelarMovimento" title="SAL - Cancelar Lançamento" class="no-padding">
+    <div class="modal-body" id="myModalCancelarMovimentoContent">
+        <span class="font-lg">O Cancelamento de Lançamento não pode ser desfeito<br> Deseja continuar ?</span>
+        <p>Motivo</p>
+        <input type="hidden" id="txtCancelarMovimentoId" />
+        <textarea cols="35" rows="7" id="txtCancelarMovimento" style="width:100%; text-transform:uppercase;"></textarea>
+    </div>
+    <div class="modal-footer">
+        <button id="btnCancelarVoltar" type="button" class="btn btn-default" onclick="CloseDialogCancelarMovimento();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button id="btnCancelarSim" type="button" class="btn btn-default" onclick="CloseDialogCancelarMovimento();" tabindex="-1">Não</button>
+        <button id="btnCancelarNao" type="button" class="btn btn-success" onclick="CloseDialogConfirmarMovimento();"><i class="fa fa-check"></i>&nbsp; SIM</button>
+    </div>
+</div>
+
+<script>
+    var blnLimparContas = true;
+    var dialogEfetivarConta = null;
+    var dialogCancelar = null;
+
+    var id = 0;
+    var remessa = false;
+    var TipoTransacao = "";
+    var Fonte = "";
+    var EditarContaId = 0;
+    var EditarContaNome = "";
+
+    history.pushState('', null, '@Url.Action("Index", "PagamentoRecebimento", new { Area = "Tesouraria" })');
+
+    $(document).ready(function () {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Suprimento/Fornecedor/CapturaFornecedores',
+            beforeSend: function () {
+
+            },
+            success: function (data) {
+                var dataList = $("#EfetivarNomeRazaoSocialList");
+                dataList.empty();
+                if(data.length) {
+                    for(var i=0; i<data.length; i++) {
+                        var opt = $("<option>" + (data[i].CPFCNPJ != undefined ? data[i].CPFCNPJ : "(cnpj não informado)") + "</option>").attr("value", data[i].Nome);
+                        dataList.append(opt);
+                    }
+                }
+            },
+            error: function (xhr, st, str) {
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+
+            }
+        });
+
+        EfetivarNomeRazaoSocialList
+
+        $("#EfetivarNomeRazaoSocial").on('input', function () {
+            var val = this.value;
+            if($('#EfetivarNomeRazaoSocialList').find('option').filter(function(){
+                return this.value.toUpperCase() === val.toUpperCase();
+            }).length) {
+                var FornecedorNome = this.value;
+
+                $.ajax({
+                    type: 'GET',
+                    url: rootURL + 'Suprimento/Fornecedor/CapturaFornecedor',
+                    data: {nome: FornecedorNome},
+                    beforeSend: function () {
+
+                    },
+                    success: function (data) {
+                        if (data.CPFCNPJ != undefined){
+                            $("#EfetivarCPFCNPJ").val(data.CPFCNPJ);
+                        } else {
+                            $("#EfetivarCPFCNPJ").val("");
+                            $("#EfetivarCPFCNPJ").focus();
+                        }
+                    },
+                    error: function (xhr, st, str) {
+
+                        ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                    },
+                    complete: function () {
+
+                    }
+                });
+            }
+        });
+    });
+
+    $(window).resize(function () {
+        ConfigureDialogTesouraria();
+    });
+
+    function ConfigureDialogTesouraria() {
+        dialogEfetivarConta = $("#myModalEfetivarConta").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()) + 16,
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' })
+            }, open: function (event, ui) {
+                siHidden = setInterval(function () {
+                    $("body").css({ overflow: 'hidden' });
+                    clearInterval(siHidden);
+                }, 300);
+            }
+        });
+
+        dialogCancelar = $("#myModalCancelarMovimento").dialog({
+            autoOpen: false,
+            width: (thisDevice == "mobile") ? parseInt($(window).width()) : parseInt($("#content").css("width")) / 2,
+            resizable: false,
+            modal: true,
+            closeOnEscape: true,
+            position: { my: "center top", at: "center top", of: $("#content") }
+        });
+    }
+
+    $(document).ready(function () {
+
+        ConfigureDialogTesouraria();
+
+        @{
+            if (Request["Id"] != null)
+            {
+                <text>
+        AgendamentoEditar(@Request["Id"], @Request["Remessa"].ToString().ToLower());
+        </text>
+            }
+        }
+    });
+
+    function CloseDialogCancelarMovimento() {
+        dialogCancelar.dialog("close");
+    }
+
+    function CloseDialogConfirmarMovimento() {
+        $(".alert").remove();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Tesouraria/PagamentoRecebimento/Cancelar',
+            data: {Id: $("#txtCancelarMovimentoId").val(), Motivo: encodeURIComponent($("#txtCancelarMovimento").val())},
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Pagamentos e Recebimentos', 'Lançamento cancelado com sucesso!', 'myModalCancelarMovimentoContent');
+                    ListaHistorico();
+
+                    $("#btnCancelarVoltar").show();
+                    $("#btnCancelarSim").hide();
+                    $("#btnCancelarNao").hide();
+                    $("#txtCancelarMovimento").attr("disabled", "disabled");
+                } else {
+                    ShowNotify('danger', 'Pagamento e Recebimento', data.msg, 'myModalCancelarMovimentoContent');
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ListaEmAberto() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Tesouraria/PagamentoRecebimento/ListaAgendamentoEmAberto',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlListaEmAberto").html(data);
+
+                $("[rel=popover-hover]").popover({ trigger: "hover" });
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ListaHistorico() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Tesouraria/PagamentoRecebimento/ListaHistorico',
+            data: {DataInicial: $("#txtDataInicial").val(), DataFinal: $("#txtDataFinal").val(), Texto: encodeURIComponent($("#txtTexto").val())},
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlListaHistoricoContent").html(data);
+                $("[rel=popover-hover]").popover({ trigger: "hover" });
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function OpenDialogEfetivarConta() {
+        NovoEfetivarConta();
+
+        $("#lblEfetivarVencimentoObrigatorio").hide();
+        $("#lblEfetivarValorObrigatorio").hide();
+        $("#btnEmitirRecibo").hide();
+
+        dialogEfetivarConta.dialog("open");
+        dialogEfetivarConta.dialog("moveToTop");
+    }
+
+    function NovoEfetivarConta() {
+        $("#frmEfetivarConta :input").prop("disabled", false);
+
+        $("#frmEfetivarConta")[0].reset();
+        $("#Id").val("0");
+        $("#EfetivarContaId").val("0");
+        $("#MovimentoId").val("0");
+        $("#Remessa").val("false");
+
+        $(".alert").remove();
+        $("#pnlConta").hide();
+        $("#pnlEfetivarContaFonte").hide();
+        $("#btnNovoEfetivarConta").hide();
+        $("#btnConfirmarEfetivarConta").show();
+        $("#btnEmitirRecibo").hide();
+
+        $("#EfetivarContaAutoComplete").attr("disabled", "disabled");
+
+        TipoTransacao = "";
+        Fonte = "";
+
+        EditarContaId = 0;
+        EditarContaNome = "";
+
+        $("#EfetivarPagamento").focus();
+    }
+
+    function CloseDialogEfetivarConta() {
+        dialogEfetivarConta.dialog("close");
+    }
+
+    function AgendamentoEditar(Id, Remessa) {
+        id = Id;
+        remessa = Remessa;
+
+        NovoEfetivarConta();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Tesouraria/PagamentoRecebimento/Editar',
+            data: { Id: Id, Remessa: Remessa },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.msg != undefined) {
+                    ShowNotify('danger', 'Pagamento e Recebimento', data.msg, 'myModalEfetivarContaContent');
+                } else {
+                    $("input:radio[name=Tipo]").each(function (index) {
+                        strTipoArray = $(this).val().split(",");
+                        for (var i = 0; i < strTipoArray.length; i++) {
+                            if (strTipoArray[i] == data.Lancamento.TipoTransacao) {
+                                $(this).prop('checked', true);
+                                $(this).click();
+                                break;
+                            }
+                        }
+                    });
+
+                    EditarContaId = data.Lancamento.ContaId;
+                    EditarContaNome = data.Lancamento.ContaNome;
+                    $("#lblEfetivarVencimentoObrigatorio").show();
+                    $("#lblEfetivarValorObrigatorio").show();
+
+                    $("#Id").val(data.Lancamento.Id);
+                    $("#Remessa").val(data.Lancamento.Remessa);
+                    $("#EfetivarVencimento").val(data.Lancamento.Vencimento);
+                    $("#EfetivarValor").val(data.Lancamento.Valor);
+                    $("#EfetivarValor").val($("#EfetivarValor").val().replace(".", ","));
+                    $("#EfetivarObservacao").val(data.Lancamento.Observacao);
+                    $("#EfetivarNomeRazaoSocial").val(data.Lancamento.NomeRazaoSocial);
+                    $("#EfetivarCPFCNPJ").val(data.Lancamento.CPFCNPJ);
+
+                    if (!data.Lancamento.Enabled){
+                        $("#frmEfetivarConta :input").prop("disabled", true);
+                        $("#btnConfirmarEfetivarConta").hide();
+                    }
+
+                    $(".alert").remove();
+
+                    dialogEfetivarConta.dialog("open");
+                    dialogEfetivarConta.dialog("moveToTop");
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+                $("#AgendamentoContaAutoComplete").focus();
+            }
+        });
+    }
+
+    function AgendamentoCancelar(Id) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente cancelar o Agendamento?", "AgendamentoCancelarConfirmar(" + Id + ");")
+    }
+
+    function AgendamentoCancelarConfirmar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Tesouraria/PagamentoRecebimento/CancelarAgendamento',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.msg != undefined) {
+                    ShowNotify('danger', 'Pagamento e Recebimento', data.msg, 'myModalEfetivarContaContent');
+                } else {
+                    $("#btnAgendamentoCancelar_" + Id).parent().parent().remove();
+                    ShowNotify('success', 'Pagamentos e Recebimentos', 'Agendamento cancelado com sucesso!');
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+                $("#AgendamentoContaAutoComplete").focus();
+            }
+        });
+    }
+
+    function SelecionaAgendamento(obj) {
+        $(".alert").remove();
+
+        var objValue = obj.value;
+
+        TipoTransacao = objValue;
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Tesouraria/PagamentoRecebimento/ListaContas',
+            data: { ContaId: objValue },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.msg != undefined) {
+                    ShowNotify('danger', 'Pagamento e Recebimento', data.msg, 'myModalEfetivarContaContent');
+                } else {
+                    if (blnLimparContas) {
+                        EfetivarContasClean();
+                    }
+
+                    $("#pnlConta").html(data);
+
+                    if (EditarContaId > 0) {
+                        EfetivarSelecionaConta(EditarContaId, EditarContaNome);
+                        EditarContaId = 0;
+                        EditarContaNome = "";
+                    }
+
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+                $("#AgendamentoContaAutoComplete").focus();
+                blnLimparContas = true;
+
+                VerificaDuplicidade();
+            }
+        });
+
+        //$("#EfetivarContaAutoComplete").val("");
+        //$("#EfetivarContaAutoComplete").attr("disabled", "disabled");
+        //$("#pnlConta").hide();
+        //$("#EfetivarContaId").val(0);
+    }
+
+    function SelecionaFonte(obj) {
+        var objValue = obj.value;
+        Fonte = objValue;
+    }
+
+    function EfetivarContasClean() {
+        $("#pnlConta").show();
+
+        $("EfetivarContaId").val("");
+        $("#EfetivarContaAutoComplete").val("");
+        $("#EfetivarContaAutoComplete").removeAttr("disabled");
+        $("#EfetivarContaAutoComplete").focus();
+        EfetivarFiltroContas();
+    }
+
+    function EfetivarFiltroContas() {
+        $("#tblEfetivarContaListaContas tr").show();
+
+        var EfetivarContaAutoCompleteValue = stripVowelAccent($("#EfetivarContaAutoComplete").val().trim()).toLowerCase();
+
+        if (EfetivarContaAutoCompleteValue != "") {
+
+            var blnExiste = false;
+            $("#tblEfetivarContaListaContas tbody tr").each(function (index, element) {
+                blnExiste = false;
+                for (var i = 0; i < $(this).children().length; i++) {
+                    if (stripVowelAccent($($(this).children()[i]).text()).toLowerCase().indexOf(EfetivarContaAutoCompleteValue) > -1) {
+                        blnExiste = true;
+                        break;
+                    }
+                }
+
+                if (!blnExiste) {
+                    $(this).hide();
+                }
+            });
+        }
+    }
+
+    function EfetivarSelecionaConta(Id, Texto) {
+        $("#EfetivarContaAutoComplete").val(Texto);
+        $("#EfetivarContaAutoComplete").attr("disabled", "disabled");
+
+        $("#pnlConta").hide();
+
+        $("#EfetivarContaId").val(Id);
+        EfetivarFiltroContas();
+    }
+
+    function MonstrarFonte(ContaCorrente, Dinheiro) {
+        $("#EfetivarContaFonteContaCorrente").prop('checked', false);
+        $("#EfetivarContaFonteDinheiro").prop('checked', false);
+
+        if (ContaCorrente || Dinheiro) {
+            $("#pnlEfetivarContaFonte").show();
+        }
+        else {
+            $("#pnlEfetivarContaFonte").hide();
+            $("#EfetivarContaFonteContaCorrente").prop('checked', false);
+            $("#EfetivarContaFonteDinheiro").prop('checked', false);
+        }
+
+        $("#pnlEfetivarContaFonteContaCorrente").hide();
+        $("#pnlEfetivarContaFonteDinheiro").hide();
+
+        if (ContaCorrente) {
+            $("#pnlEfetivarContaFonteContaCorrente").show();
+
+            if (!Dinheiro) {
+                $("#EfetivarContaFonteContaCorrente").click();
+            } else {
+                $("#EfetivarContaFonteContaCorrente").prop('checked', false);
+                $("#EfetivarContaFonteDinheiro").prop('checked', false);
+            }
+        }
+
+        if (Dinheiro) {
+            $("#pnlEfetivarContaFonteDinheiro").show();
+
+            if (!ContaCorrente) {
+                $("#EfetivarContaFonteDinheiro").click();
+            } else {
+                $("#EfetivarContaFonteContaCorrente").prop('checked', false);
+                $("#EfetivarContaFonteDinheiro").prop('checked', false);
+            }
+        }
+    }
+
+    function ConfirmDialogEfetivarConta() {
+        $(".alert").remove();
+
+        $("#btnConfirmarEfetivarConta").attr("disabled", "disabled");
+
+        var form = {
+            TipoTransacao: TipoTransacao,
+            Id: $("#Id").val(),
+            ContaId: $("#EfetivarContaId").val(),
+            Remessa: $("#Remessa").val(),
+            FonteSaida: Fonte,
+            Vencimento: $("#EfetivarVencimento").val(),
+            Valor: $("#EfetivarValor").val(),
+            Pagamento: $("#EfetivarPagamento").val(),
+            ValorPago: $("#EfetivarValorPagto").val(),
+            Documento: encodeURIComponent($("#EfetivarDocumento").val()),
+            NomeRazaoSocial: encodeURIComponent($("#EfetivarNomeRazaoSocial").val()),
+            CPFCNPJ: $("#EfetivarCPFCNPJ").val(),
+            Observacao: encodeURIComponent($("#EfetivarObservacao").val())
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Tesouraria/PagamentoRecebimento/Gravar',
+            data: form,
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Pagamentos e Recebimentos', 'Lançamento realizado com sucesso!', 'myModalEfetivarContaContent');
+                    $("#frmEfetivarConta :input").prop("disabled", true);
+
+                    $("#btnConfirmarEfetivarConta").hide();
+                    $("#btnNovoEfetivarConta").show();
+
+                    $("#btnEmitirRecibo").show();
+                    $("#frmEfetivarConta #MovimentoId").val(data.Id);
+
+                    if ($("#Id").val() != "0") {
+                        ListaEmAberto();
+                    }
+                } else {
+                    ShowNotify('danger', 'Pagamento e Recebimento', data.msg, 'myModalEfetivarContaContent');
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                $("#btnConfirmarEfetivarConta").removeAttr("disabled");
+
+                OnCompleteForm();
+            }
+        });
+
+        //dialogAgendamentoFormConta.dialog("close");
+    }
+
+    function EfetivarCancelar(Id){
+        $(".alert").remove();
+        dialogCancelar.dialog("open");
+        dialogCancelar.dialog("moveToTop");
+
+        $("#txtCancelarMovimento").removeAttr("disabled", "disabled");
+        $("#txtCancelarMovimento").val("");
+
+        $("#btnCancelarVoltar").hide();
+        $("#btnCancelarSim").show();
+        $("#btnCancelarNao").show();
+
+        $("#txtCancelarMovimentoId").val(Id);
+    }
+
+    function FiltroMes() {
+        $("#txtDataInicial").val('@dtMes.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        ListaHistorico();
+    }
+
+    function FiltroQuizena() {
+        $("#txtDataInicial").val('@dtQuinzena.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        ListaHistorico();
+    }
+
+    function FiltroSemana() {
+        $("#txtDataInicial").val('@dtSemana.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        ListaHistorico();
+    }
+
+    function FiltroHoje() {
+        $("#txtDataInicial").val('@dtAtual.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        ListaHistorico();
+    }
+
+    function AgendamentoEmitirRecibo(MovimentoId){
+        $.ajax({
+            type: 'GET',
+            data: {
+                MovimentoId: MovimentoId
+            },
+            url: rootURL + 'Tesouraria/PagamentoRecebimento/EmitirRecibo',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success == undefined) {
+                    $("#myModalFullContent").html(data);
+                    OpenFullDialog();
+
+                    $("#btnPrintFullDialog").hide();
+                } else {
+                    ShowNotify('danger', 'Tesouraria - Emitir Recibo', data.msg);
+                }
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function VerificaDuplicidade() {
+        ClearNotify();
+
+        var EfetivarContaId = $("#EfetivarContaId").val();
+        var EfetivarPagamento = $("#EfetivarPagamento").val();
+        var EfetivarValorPagto = $("#EfetivarValorPagto").val();
+
+        if (EfetivarContaId != "" && EfetivarPagamento!="" && EfetivarValorPagto!=""){
+            EfetivarValorPagto = EfetivarValorPagto.replace(",", ".");
+
+            $.ajax({
+                type: 'GET',
+                data: {
+                    MovimentoId: MovimentoId
+                },
+                url: rootURL + 'Tesouraria/PagamentoRecebimento/VerificaDuplicidade',
+                data: {EfetivarContaId:EfetivarContaId, EfetivarPagamento:EfetivarPagamento, EfetivarValorPagto: EfetivarValorPagto},
+                beforeSend: function () {
+
+                },
+                success: function (data) {
+                    if (data.success == false) {
+                        ShowNotify('warning', 'Aviso - Identificação de registro já lançado', data.msg, 'myModalEfetivarContaContent');
+                    }
+                },
+                error: function (xhr, st, str) {
+
+                },
+                complete: function () {
+
+                }
+            });
+        }
+    }
+
+    function PrintFullDialog() {
+        window.frames['iframeImprimir'].print();
+    }
+</script>

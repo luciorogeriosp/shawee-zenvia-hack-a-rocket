@@ -1,0 +1,110 @@
+D:\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll.config
+D:\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll
+D:\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.pdb
+D:\DotNet\Tropical.Infrastructure\bin\Debug\FrameWork.Data.WebServiceProxy.dll
+D:\DotNet\Tropical.Infrastructure\bin\Debug\Microsoft.Web.Mvc.dll
+D:\DotNet\Tropical.Infrastructure\bin\Debug\StructureMap.dll
+D:\DotNet\Tropical.Infrastructure\bin\Debug\WebActivator.dll
+D:\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.dll
+D:\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.pdb
+D:\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.csprojResolveAssemblyReference.cache
+E:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll.config
+E:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll
+E:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.pdb
+E:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.csprojResolveAssemblyReference.cache
+E:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.dll
+E:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.pdb
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll.config
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.pdb
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\System.Web.Mvc.dll
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\System.Web.Mvc.xml
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.csprojResolveAssemblyReference.cache
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.dll
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.pdb
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll.config
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.pdb
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\itextsharp.dll
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\itextsharp.xmlworker.dll
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Microsoft.ReportViewer.Common.dll
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Microsoft.ReportViewer.ProcessingObjectModel.DLL
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Microsoft.ReportViewer.WebForms.DLL
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\RazorPDF.dll
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\System.Web.Mvc.dll
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\itextsharp.xml
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\System.Web.Mvc.xml
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.dll
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.pdb
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.csprojResolveAssemblyReference.cache
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll.config
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.pdb
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\itextsharp.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\itextsharp.xmlworker.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Microsoft.ReportViewer.Common.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Microsoft.ReportViewer.ProcessingObjectModel.DLL
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Microsoft.ReportViewer.WebForms.DLL
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\RazorPDF.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\System.Web.Mvc.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\System.Web.Razor.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\System.Web.WebPages.Razor.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\System.Web.WebPages.Deployment.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\itextsharp.xml
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\Microsoft.Web.Infrastructure.xml
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\System.Web.Mvc.xml
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\System.Web.WebPages.xml
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\System.Web.Razor.xml
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\System.Web.WebPages.Razor.xml
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Debug\System.Web.WebPages.Deployment.xml
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.csprojResolveAssemblyReference.cache
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.pdb
+E:\Projetos\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll.config
+E:\Projetos\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll
+E:\Projetos\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.pdb
+E:\Projetos\Tropical.Infrastructure\bin\Debug\System.Web.Mvc.dll
+E:\Projetos\Tropical.Infrastructure\bin\Debug\System.Web.Mvc.xml
+E:\Projetos\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.dll
+E:\Projetos\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.pdb
+E:\Projetos\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.csprojResolveAssemblyReference.cache
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll.config
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.pdb
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\FrameWork.Data.WebServiceProxy.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\itextsharp.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\itextsharp.xmlworker.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\Microsoft.ReportViewer.Common.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\Microsoft.ReportViewer.ProcessingObjectModel.DLL
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\Microsoft.ReportViewer.WebForms.DLL
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\Microsoft.Web.Infrastructure.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\Microsoft.Web.Mvc.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\RazorPDF.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\RazorPDF.Legacy.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\StructureMap.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\System.Web.Mvc.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\System.Web.WebPages.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\WebActivator.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\itextsharp.xml
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Debug\System.Web.Mvc.xml
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.csproj.CopyComplete
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.pdb
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.csprojAssemblyReference.cache
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.csproj.CoreCompileInputs.cache
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll.config
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.dll
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\bin\Debug\Tropical.Infrastructure.pdb
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\bin\Debug\itextsharp.dll
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\bin\Debug\itextsharp.xmlworker.dll
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\bin\Debug\Microsoft.ReportViewer.Common.dll
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\bin\Debug\Microsoft.ReportViewer.ProcessingObjectModel.DLL
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\bin\Debug\Microsoft.ReportViewer.WebForms.DLL
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\bin\Debug\Microsoft.Web.Infrastructure.dll
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\bin\Debug\RazorPDF.dll
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\bin\Debug\RazorPDF.Legacy.dll
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\bin\Debug\itextsharp.xml
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.csproj.CoreCompileInputs.cache
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.csproj.CopyComplete
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.dll
+F:\Projetos\Hackathon\Zenvia - Hack a Rocket\Tropical.Infrastructure\obj\Debug\Tropical.Infrastructure.pdb

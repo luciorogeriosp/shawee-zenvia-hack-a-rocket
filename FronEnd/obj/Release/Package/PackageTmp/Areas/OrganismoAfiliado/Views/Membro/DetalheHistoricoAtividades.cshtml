@@ -1,0 +1,56 @@
+﻿@model List<SAL.MVC.Areas.OrganismoAfiliado.Models.CalendarioItemModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<div class="widget-body">
+    <form class="form-horizontal">
+        <fieldset>
+            <legend style="margin-bottom:0">Lista de Atividades</legend>
+            <table id="datatable_tabletools_atividades" class="table table-striped table-bordered table-hover" width="100%">
+                <thead>
+                    <tr>
+                        <th class="text-center">Data</th>
+                        <th>Atividade</th>
+                        <th class="text-center">Cargo</th>
+                        <th class="text-center">Senha</th>
+                        <th class="text-center">Presença</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center">@item.DataOriginal.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@(item.TipoNome.ToUpper() + (string.IsNullOrEmpty(item.Titulo) == false ? ": " + item.Titulo.ToUpper() : ""))</td>
+                            <td class="text-center">@item.CargoNome.ToUpper().Replace("(S)", "")</td>
+                            <td class="text-center">@item.Senha</td>
+                            <td class="text-center">@item.Data</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </fieldset>
+    </form>
+</div>
+<script>
+    var datatable_tabletools_atividades = undefined;
+
+    $('#datatable_tabletools_atividades').dataTable({
+        // Tabletools options:
+        //   https://datatables.net/extensions/tabletools/button_options
+        "preDrawCallback": function () {
+            // Initialize the responsive datatables helper once.
+            if (!responsiveHelper_datatable_tabletools_atividades) {
+                responsiveHelper_datatable_tabletools_atividades = new ResponsiveDatatablesHelper($('#datatable_tabletools_atividades'), breakpointDefinition);
+            }
+        },
+        "rowCallback": function (nRow) {
+            responsiveHelper_datatable_tabletools_atividades.createExpandIcon(nRow);
+        },
+        "drawCallback": function (oSettings) {
+            $("#datatable_tabletools_atividades").show();
+            responsiveHelper_datatable_tabletools_atividades.respond();
+        }
+    });
+</script>

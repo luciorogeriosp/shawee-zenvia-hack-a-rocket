@@ -1,0 +1,237 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-list-alt"></i>
+                    Suprimentos | Fornecedor
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:10px;">
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" onclick="AbrirModalFornecedor();">
+                        Incluir Fornecedor
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="jarviswidget jarviswidget-color-white" id="wid-id-0" data-widget-editbutton="true">
+                    <header>
+                        <span class="widget-icon"> <i class="fa fa-table"></i> </span>
+                        <h2>Lista de Fornecedores </h2>
+
+                    </header>
+
+                    <!-- widget div-->
+                    <div>
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body no-padding" id="FornecedorLista">
+
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModalFornecedor" title="Formulário de Fornecedor" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalFornecedorContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogFornecedor();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmDialogFornecedor();" id="btnConfirmar">Confirmar</button>
+    </div>
+</div>
+<script>
+    var dialogFornecedor;
+
+    function CloseDialogFornecedor() {
+        dialogFornecedor.dialog("close");
+    }
+
+    function LoadList() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Suprimento/Fornecedor/Lista',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#FornecedorLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmDialogFornecedor() {
+        ClearNotify();
+
+        $("#btnConfirmar").attr("disabled", "disabled")
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Suprimento/Fornecedor/Form',
+            data: $.param($("#frmFornecedor").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalFornecedorContent").html("");
+                $("#myModalFornecedorContent").html(data);
+                LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfigureDialogFornecedor() {
+        dialogFornecedor = $("#myModalFornecedor").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()),
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' })
+            }
+        });
+    }
+
+    function AbrirModalFornecedor() {
+        ClearNotify();
+
+        $("#btnConfirmar").show();
+        $("#btnConfirmar").removeAttr("disabled");
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Suprimento/Fornecedor/Form',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalFornecedorContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogFornecedor.dialog("open");
+                dialogFornecedor.dialog("moveToTop");
+
+                $("#myModalFornecedorContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Editar(Id) {
+        ClearNotify();
+
+        $("#btnConfirmar").show();
+        $("#btnConfirmar").removeAttr("disabled");
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Suprimento/Fornecedor/Form',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalFornecedorContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogFornecedor.dialog("open");
+                dialogFornecedor.dialog("moveToTop");
+
+                $("#myModalFornecedorContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Apagar(Id, Nome) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente excluir o Fornecedor " + Nome + "?", "ApagarConfirmar(" + Id + ", '" + Nome + "');")
+    }
+
+    function ApagarConfirmar(Id, Nome) {
+        ClearNotify();
+
+        $("#line_" + Id).remove();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Suprimento/Fornecedor/Excluir',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                ShowNotify('success', 'Suprimentos | Fornecedor', data.msg);
+                LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    $(window).resize(function () {
+        ConfigureDialogFornecedor();
+    });
+
+    $(document).ready(function () {
+        ConfigureDialogFornecedor();
+        LoadList();
+    });
+</script>

@@ -1,0 +1,22 @@
+﻿@model List<SAL.MVC.Areas.OrganismoAfiliado.Models.IniciacaoWorkflowItemModel>
+@foreach (var workflowItem in Model.OrderByDescending(o => o.Data))
+{
+    <li class="message">
+        <img src="@workflowItem.Imagem" class="online" alt="" width="50">
+        <div class="message-text">
+            <time>
+                @workflowItem.Data.ToString("dd/MM/yyyy HH:mm:ss")
+            </time><a href="javascript:void(0);" class="username">@workflowItem.Usuario</a> @workflowItem.Comentario.Replace(@"\n", "<br />")
+        </div>
+    </li>
+}
+@if (TempData["MembroApto"] != null)
+{
+    <script>
+    @if (Convert.ToBoolean(TempData["MembroApto"]) == true) {
+            <text>$("#pnlMembroApto").show();</text>
+    } else {
+            <text>$("#pnlMembroApto").hide();</text>
+    }
+    </script>
+}

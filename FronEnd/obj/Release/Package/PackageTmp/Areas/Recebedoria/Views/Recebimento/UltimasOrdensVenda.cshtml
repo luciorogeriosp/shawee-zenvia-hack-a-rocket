@@ -1,0 +1,13 @@
+﻿@model List<SAL.MVC.Areas.Recebedoria.Models.OrdemVendaModel>
+@foreach (var ordermVenda in Model)
+{
+    <li>
+        <a href="javascript:void(0);" onclick="OrdemVendaEmitirRecibo(@ordermVenda.Id)">@ordermVenda.Data.ToString("dd/MM/yyyy") - @ordermVenda.ValorTotal</a>
+    </li>
+}
+@if (Model == null || Model.Any() == false)
+{
+    <li>
+        <a href="javascript:void(0);">Não existem lançamentos</a>
+    </li>
+}

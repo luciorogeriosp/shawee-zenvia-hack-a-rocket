@@ -1,0 +1,12 @@
+E:\Projetos\Magna.Infrastructure\bin\Debug\Magna.Infrastructure.dll.config
+E:\Projetos\Magna.Infrastructure\bin\Debug\Magna.Infrastructure.dll
+E:\Projetos\Magna.Infrastructure\bin\Debug\Magna.Infrastructure.pdb
+E:\Projetos\Magna.Infrastructure\bin\Debug\EntityFramework.dll
+E:\Projetos\Magna.Infrastructure\bin\Debug\FrameWork.Data.WebServiceProxy.dll
+E:\Projetos\Magna.Infrastructure\bin\Debug\Microsoft.Web.Mvc.dll
+E:\Projetos\Magna.Infrastructure\bin\Debug\StructureMap.dll
+E:\Projetos\Magna.Infrastructure\bin\Debug\WebActivator.dll
+E:\Projetos\Magna.Infrastructure\bin\Debug\EntityFramework.xml
+E:\Projetos\Magna.Infrastructure\obj\Debug\ResolveAssemblyReference.cache
+E:\Projetos\Magna.Infrastructure\obj\Debug\Magna.Infrastructure.dll
+E:\Projetos\Magna.Infrastructure\obj\Debug\Magna.Infrastructure.pdb

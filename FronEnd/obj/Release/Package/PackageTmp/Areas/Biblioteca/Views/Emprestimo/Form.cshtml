@@ -1,0 +1,160 @@
+﻿@model SAL.MVC.Areas.Biblioteca.Models.EmprestimoModel
+<div role="content">
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body no-padding">
+
+        <!-- Error states for elements -->
+        <form class="smart-form" id="frmEmprestimo" onsubmit="return false;">
+            @Html.HiddenFor(m => m.EmprestimoId)
+            @Html.HiddenFor(m => m.ItemId)
+            <fieldset>
+                <section>
+                    <label class="label">
+                        <label>Item</label>
+                    </label>
+                    <label class="input">
+                        @Html.TextBoxFor(m => m.ItemNome, new { @disabled = "disabled" })
+                    </label>
+                </section>
+                <div class="row">
+                    <section class="col col-2">
+                        <label class="label">
+                            @Html.LabelFor(m => m.MembroNumeroAfiliacaoNome)
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.MembroNumeroAfiliacaoNome, new { onkeypress = "OnEnter(event, 'BibliotecaBuscarMembro')" })
+                            <button type="button" class="btn btn-success" onclick="BibliotecaBuscarMembro();" id="btnBuscaMembro" style="height:32px; padding-left:8px; padding-right:8px;">Buscar Membro</button>
+                        </label>
+                    </section>
+                    <section class="col col-10">
+                        <label class="label">
+                            @Html.LabelFor(m => m.MembroIdSelect)
+                            <span class="font-xs text-danger">*</span>
+                        </label>
+                        <label class="select">
+                            @Html.DropDownListFor(m => m.MembroIdSelect, Model.MembroLista, "Selecione", new { onchange = "BibliotecaBuscarEmprestimos();" })
+                            <i></i>                            
+                        </label>
+                        <div id="pnlItens" style="clear:both"></div>
+                    </section>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Empréstimo</legend>
+                <div class="row">
+                    <section class="col col-6">
+                        <label class="label">
+                            @Html.LabelFor(m => m.EmprestimoComentario)
+                        </label>
+                        <label class="input">
+                            @Html.TextAreaFor(m => m.EmprestimoComentario, new { style = "width:100%", @rows = 5 })
+                        </label>
+                    </section>
+                    <section class="col col-2">
+                        <label class="label">
+                            @Html.LabelFor(m => m.EmprestimoData)
+                        </label>
+                        <label class="input">
+                            @Html.TextBox("EmprestimoDataTexto", Model.EmprestimoData.ToString("dd/MM/yyyy"), new { @disabled = "disabled" })
+                        </label>
+                    </section>
+                    <section class="col col-2">
+                        <label class="label">
+                            @Html.LabelFor(m => m.DevolucaoDataEstimada)
+                        </label>
+                        <label class="input">
+                            @Html.TextBox("DevolucaoDataEstimadaTexto", Model.DevolucaoDataEstimada.ToString("dd/MM/yyyy"), new { @disabled = "disabled" })
+                        </label>
+                    </section>
+                    <section class="col col-2">
+                        <label class="label">
+                            @Html.LabelFor(m => m.EmprestimoUsuario)
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.EmprestimoUsuario, new { @disabled = "disabled" })
+                        </label>
+                    </section>
+                </div>
+            </fieldset>
+            <fieldset id="pnlDevolucao">
+                <legend>Devolução</legend>
+                <div class="row">
+                    <section class="col col-6">
+                        <label class="label">
+                            @Html.LabelFor(m => m.DevolucaoComentario)
+                        </label>
+                        <label class="input">
+                            @Html.TextAreaFor(m => m.DevolucaoComentario, new { style = "width:100%", @rows = 5 })
+                        </label>
+                    </section>
+                    <section class="col col-2">
+                        <label class="label">
+                            @Html.LabelFor(m => m.DevolucaoData)
+                        </label>
+                        <label class="input">
+                            @Html.TextBox("DevolucaoDataEstimadaTexto", (Model.DevolucaoData.HasValue ? Model.DevolucaoData.Value.ToString("dd/MM/yyyy") : ""), new { @disabled = "disabled" })
+                        </label>
+                    </section>
+                    <section class="col col-2">
+                        <label class="label">
+                            @Html.LabelFor(m => m.DevolucaoUsuario)
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.DevolucaoUsuario, new { @disabled = "disabled" })
+                        </label>
+                    </section>
+                </div>
+            </fieldset>
+        </form>
+        <!--/ Error states for elements -->
+    </div>
+    <!-- end widget content -->
+</div>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmEmprestimo"))
+@if (Model.EmprestimoId == 0)
+{
+    <script>
+        $("#btnBuscaMembro").show();
+        $("#pnlDevolucao").hide();
+    </script>
+}
+else
+{
+    <script>
+        $("#MembroNumeroAfiliacaoNome").attr("readonly", "readonly");
+        $("#btnBuscaMembro").hide();
+        $("#MembroIdSelect").attr("readonly", "readonly");
+        $("#EmprestimoComentario").attr("readonly", "readonly");
+
+        $("#pnlDevolucao").show();
+    </script>
+}
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        RefreshBotoes();
+        CloseDialogItem();
+
+        @if (Model.DevolucaoData.HasValue)
+        {
+            <text>
+        $("#btnRecibo_@(Model.ItemId)").hide();
+        $("#btnDevolver_@(Model.ItemId)").hide();
+        $("#btnEmprestar_@(Model.ItemId)").show();
+        </text>
+        } else
+        {
+            <text>
+        Recibo(@Model.ItemId);
+        $("#btnRecibo_@(Model.ItemId)").show();
+        $("#btnDevolver_@(Model.ItemId)").show();
+        $("#btnEmprestar_@(Model.ItemId)").hide();
+        </text>
+        }
+    </script>
+}

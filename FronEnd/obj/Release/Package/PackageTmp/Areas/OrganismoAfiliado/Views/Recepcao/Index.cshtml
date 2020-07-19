@@ -1,0 +1,1374 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-university fa-fw "></i>
+                    Organismo Afiliado | Recepção
+                </h1>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="panel-body" style="padding-bottom:0px; padding-left:0px; padding-right:0px;">
+                <ul class="demo-btns pull-left" style="margin-bottom:-6px; margin-left:0px;">
+                    <li>
+                        <input type="date" id="DataAtividade" class="form-control" value="@(Convert.ToDateTime(Session["RECEPCAO_DATA_INICIAL"]).ToString("yyyy-MM-dd"))" style="font-weight:normal;" onkeypress="return false;" onchange="ConfirmarSelecaoData();" />
+                    </li>
+                    <li>&nbsp;&nbsp;&nbsp;&nbsp;</li>
+                    <li id="RecepcaoOptMembro">
+                        <a href="javascript:void(0);" class="btn btn-default" onclick="RecepcaoHabilitaDados('Membro', this)" id="btnMembroAMORC"> Membro</a>
+                    </li>
+                    <li>&nbsp;&nbsp;&nbsp;&nbsp;</li>
+                    <li id="RecepcaoOptVisitante">
+                        <a href="javascript:void(0);" class="btn btn-default" onclick="RecepcaoHabilitaDados('Visitante', this)"> Visitante</a>
+                    </li>
+                    <li>&nbsp;&nbsp;&nbsp;&nbsp;</li>
+                    <li id="RecepcaoOptListaPresenca">
+                        <a href="javascript:void(0);" class="btn btn-default" onclick="RecepcaoHabilitaDados('ListaPresenca', this)"> Lista de Presença</a>
+                    </li>
+                </ul>
+            </div>
+            <article class="col-sm-12 col-md-12 col-lg-12" id="pnlRecepcaoMembro" style="padding-bottom:0px; padding-left:0px; padding-right:0px; display:none;">
+
+                <!-- Widget ID (each widget will need unique ID)-->
+                <div class="jarviswidget jarviswidget-sortable" id="wid-id-pnlMembro" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="padding-bottom:0!important">
+                    <!-- widget div-->
+                    <div role="content" style="border-width: 1px 1px 1px; border-top: 1px solid #ccc!important;">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body padding-10" style="padding-bottom:0!important">
+                            <form class="form-horizontal" onsubmit="return false;" style="padding-bottom:0!important">
+                                <fieldset>
+                                    <div class="col-md-9">
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">Jurisdição</label>
+                                            <div class="col-md-6">
+                                                <input class="form-control" id="txtJurisdicao" readonly="readonly" style="cursor:text;" rel="tooltip" data-placement="bottom" data-original-title="">
+                                            </div>
+                                            <div class="col-md-4 " id="pnlAutorizacaoTemplo">
+                                                <label class="form-control txt-color-orange" style="cursor:text;" id="lblAutorizacaoResponsavel"></label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label" for="ddlNomeMembro">Nome</label>
+                                            <div class="col-md-10">
+                                                <div class="input-group">
+                                                    <select class="form-control" id="ddlNomeMembro" readonly="readonly" onchange="RecepcaoSelecionaMembro()"></select> <i></i>
+                                                    <div class="input-group-btn">
+                                                        <button class="btn btn-default" type="button" onclick="RecepcaoBuscarMembro();">
+                                                            <i class="fa fa-user"></i> Membro
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                            <div class="form-group" id="pnlNomeResponsavel">
+                                                <label class="col-md-2 control-label">Responsável</label>
+                                                <div class="col-md-10">
+                                                    <input class="form-control" id="txtNomeResponsavel" readonly="readonly" style="cursor:text;">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">O.A. R+C</label>
+                                                <div class="col-md-4">
+                                                    <input class="form-control" id="txtOrganismoAfiliadoRC" readonly="readonly" style="cursor:text;">
+                                                </div>
+                                                <label class="col-md-2 control-label">O.A. TOM</label>
+                                                <div class="col-md-4">
+                                                    <input class="form-control" id="txtOrganismoAfiliadoTOM" readonly="readonly" style="cursor:text;">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Lote / Grau</label>
+                                                <div class="col-md-4">
+                                                    <input class="form-control" id="txtRecepcaoLoteRC" readonly="readonly" style="cursor:text;">
+                                                </div>
+                                                <label class="col-md-2 control-label">Lote</label>
+                                                <div class="col-md-4">
+                                                    <input class="form-control" id="txtRecepcaoLoteTOM" readonly="readonly" style="cursor:text;">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Última Iniciação</label>
+                                                <div class="col-md-4">
+                                                    <input class="form-control" id="txtRecepcaoIniciacaoRC" readonly="readonly" style="cursor:text;" rel="tooltip" data-placement="bottom" data-original-title="">
+                                                </div>
+                                                <label class="col-md-2 control-label">Última Iniciação</label>
+                                                <div class="col-md-4">
+                                                    <input class="form-control" id="txtRecepcaoIniciacaoTOM" readonly="readonly" style="cursor:text;" rel="tooltip" data-placement="bottom" data-original-title="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="jarviswidget jarviswidget-color-darken" id="wid-id-16" data-widget-sortable="false" data-widget-colorbutton="false" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-deletebutton="false" role="widget" style="">
+                                                <header role="heading">
+                                                    <span class="widget-icon"> <i class="fa fa-lock"></i> </span>
+                                                    <h2><strong>Datas de Quitação</strong> </h2>
+                                                </header>
+                                                <div role="content" style="border-width: 1px 1px 1px; padding-bottom:18px;">
+
+                                                    <!-- widget edit box -->
+                                                    <div class="jarviswidget-editbox">
+                                                        <!-- This area used as dropdown edit box -->
+                                                    </div>
+                                                    <!-- end widget edit box -->
+                                                    <!-- widget content -->
+                                                    <div class="widget-body">
+                                                        <div class="form-group">
+                                                            <label class="col-md-2 control-label"> O.A.</label>
+                                                            <div class="col-md-10">
+                                                                <input class="form-control" readonly="readonly" id="txtQuitacaoOA" style="cursor:text;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-2 control-label"> GLP</label>
+                                                            <div class="col-md-10">
+                                                                <input class="form-control" readonly="readonly" id="txtQuitacaoGLP" style="cursor:text;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group" id="pnlResponsavelQuitacaoGLP">
+                                                            <label class="col-md-2 control-label"> Resp.</label>
+                                                            <div class="col-md-10">
+                                                                <input class="form-control" readonly="readonly" id="txtResponsavelQuitacaoGLP" style="cursor:text;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-2 control-label"> TOM</label>
+                                                            <div class="col-md-10">
+                                                                <input class="form-control" readonly="readonly" id="txtQuitacaoTOM" style="cursor:text;">
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <!-- end widget content -->
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="pnlBiblioteca">
+                                        <div class="col-md-12" id="pnlBibliotecaContent"></div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+                    <!-- end widget div -->
+
+                </div>
+                <!-- end widget -->
+            </article>
+            <article class="col-sm-12 col-md-12 col-lg-12" id="pnlRecepcaoVisitante" style="padding-bottom:0px; padding-left:0px; padding-right:0px; display:none;">
+
+                <!-- Widget ID (each widget will need unique ID)-->
+                <div class="jarviswidget jarviswidget-sortable" id="wid-id-pnlVisitante" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-custombutton="false" role="widget">
+
+                    <!-- widget div-->
+                    <div role="content" style="border-width: 1px 1px 1px; border-top: 1px solid #ccc!important;">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body padding-10">
+                            <form class="form-horizontal" onsubmit="return false;">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label" for="txtRecepcaoVisitanteDocumentoNumero">Documento</label>
+                                        <div class="col-md-10">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <span class="radio">
+                                                        <label>
+                                                            <input type="radio" class="radiobox style-0" name="cbRecepcaoVisitanteTipoDocumento" id="cbRecepcaoVisitanteTipoDocumento_RG" onclick="RecepcaoSelecionaDocumentoTipo('RG');">
+                                                            <span rel="tooltip" data-placement="bottom" data-original-title="Registro Geral"> RG</span>
+                                                        </label>
+                                                        <label>&nbsp;</label>
+                                                        <label>
+                                                            <input type="radio" class="radiobox style-0" name="cbRecepcaoVisitanteTipoDocumento" id="cbRecepcaoVisitanteTipoDocumento_CPF" onclick="RecepcaoSelecionaDocumentoTipo('CPF');">
+                                                            <span rel="tooltip" data-placement="bottom" data-original-title="Cadastro de Pessoas Físicas"> CPF</span>
+                                                        </label>
+                                                        <label>&nbsp;</label>
+                                                        <label>
+                                                            <input type="radio" class="radiobox style-0" name="cbRecepcaoVisitanteTipoDocumento" id="cbRecepcaoVisitanteTipoDocumento_RNE" onclick="RecepcaoSelecionaDocumentoTipo('RNE');">
+                                                            <span rel="tooltip" data-placement="bottom" data-original-title="Registro Nacional de Estrangeiros"> RNE</span>
+                                                        </label>
+                                                    </span>
+                                                </span>
+                                                <input type="hidden" id="txtRecepcaoVisitanteDocumentoTipo">
+                                                <input class="form-control" placeholder="" type="text" id="txtRecepcaoVisitanteDocumentoNumero" onkeypress="OnEnter(event, 'RecepcaoSelecionaDocumentoNumero');" maxlength="20">
+                                                <div class="input-group-btn">
+                                                    <button class="btn btn-default" type="button" onclick="RecepcaoSelecionaDocumentoNumero();">
+                                                        Confirmar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="pnlRecepcaoVisitanteNome">
+                                        <label class="col-md-2 control-label" for="txtRecepcaoVisitanteNome">Nome</label>
+                                        <div class="col-md-10">
+                                            <input class="form-control" id="txtRecepcaoVisitanteNome" style="text-transform:uppercase;" maxlength="60">
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+                    <!-- end widget div -->
+
+                </div>
+                <!-- end widget -->
+
+            </article>
+            <article class="col-sm-12 col-md-12 col-lg-12" id="pnlCredenciamento" style="padding-bottom:0px; padding-left:0px; padding-right:0px; display:none; margin-top:-31px;">
+                <!-- Widget ID (each widget will need unique ID)-->
+                <div class="jarviswidget jarviswidget-sortable" id="wid-id-pnlCredenciamento" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-custombutton="false" role="widget">
+
+                    <!-- widget div-->
+                    <div role="content" style="border-width: 1px 1px 1px; border-top: 1px solid #ccc!important;">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body padding-10">
+                            <div class="panel-body no-padding">
+                                <ul id="pnlTipoCredenciamento" class="nav nav-tabs bordered">
+                                    <li class="active">
+                                        <a href="#pnlRecepcaoAtividade" data-toggle="tab" onclick="TabComissaoSelecionada = false;">Credenciamento em Atividade </a>
+                                    </li>
+                                    <li>
+                                        <a href="#pnlRecepcaoComissao" data-toggle="tab" onclick="TabComissaoSelecionada = true;"> Presença Comissão </a>
+                                    </li>
+                                </ul>
+                                <div id="pnlTipoCredenciamentoContent" class="tab-content no-border">
+                                    <div class="tab-pane active" id="pnlRecepcaoAtividade" style="padding-left:0px; padding-right:0px;"></div>
+                                    <div class="tab-pane" id="pnlRecepcaoComissao" style="padding-left:0px; padding-right:0px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="col-sm-12 col-md-12 col-lg-12" id="pnlRecepcaoListaPresenca" style="padding-bottom:0px; padding-left:0px; padding-right:0px; display:none;">
+
+                <!-- Widget ID (each widget will need unique ID)-->
+                <div class="jarviswidget jarviswidget-sortable" id="wid-id-pnlMembro" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="padding-bottom:0!important">
+                    <!-- widget div-->
+                    <div role="content" style="border-width: 1px 1px 1px; border-top: 1px solid #ccc!important;">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body padding-10" style="padding-bottom:0!important">
+                            <div id="pnlRecepcaoListaPresencaContent" class="tab-content no-border">
+
+                            </div>
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+                    <!-- end widget div -->
+
+                </div>
+                <!-- end widget -->
+            </article>
+        </div>
+        <div class="row"><br /></div>
+    </div>
+</div>
+<div id="myModalConfirmacaoDados" title="Credenciamento: Confirmação de Dados" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalConfirmacaoDadosContent">
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogConfirmacaoDados();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" id="btnGravarDados">Gravar</button>
+    </div>
+</div>
+<div id="myModalEditarPresenca" title="Editar Dados de Credenciamento" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalEditarPresencaContent">
+        <form class="form-horizontal" onsubmit="return false;" style="padding-bottom:0!important">
+            <input type="hidden" id="txtEditarPresencaId">
+            <input type="hidden" id="txtEditarPresencaComissao">
+            <fieldset>
+                <div class="form-group">
+                    <label class="col-md-4 control-label"> Data</label>
+                    <div class="col-md-8">
+                        <input class="form-control" readonly="readonly" value="" id="txtEditarPresencaData">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" id="lblEditarPresencaTitulo"> </label>
+                    <div class="col-md-8">
+                        <input class="form-control" readonly="readonly" value="" id="txtEditarPresencaTitulo">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label"> Nome</label>
+                    <div class="col-md-8">
+                        <input class="form-control" readonly="readonly" value="" id="txtEditarPresencaNome" maxlength="60">
+                    </div>
+                </div>
+                <div class="form-group" id="pnlEditarPresencaNumeroAfiliacao">
+                    <label class="col-md-4 control-label"> Número de Afiliação</label>
+                    <div class="col-md-8">
+                        <input class="form-control" readonly="readonly" value="" id="txtEditarPresencaNumeroAfiliacao">
+                    </div>
+                </div>
+                <div class="form-group" id="pnlEditarPresencaVisitanteTipoDocumento">
+                    <label class="col-md-4 control-label"> Tipo de Documento</label>
+                    <div class="col-md-8">
+                        <select class="form-control" id="ddlEditarPresencaVisitanteTipoDocumento">
+                            <option value="">Selecione</option>
+                            <option value="RG">RG</option>
+                            <option value="CPF">CPF</option>
+                            <option value="RNE">RNE</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" id="pnlEditarPresencaVisitanteDocumento">
+                    <label class="col-md-4 control-label"> Documento</label>
+                    <div class="col-md-8">
+                        <input class="form-control" value="" id="txtEditarPresencaVisitanteDocumento" maxlength="20">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label"> Senha</label>
+                    <div class="col-md-8">
+                        <input class="form-control" value="" id="txtEditarPresencaSenha" maxlength="8">
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogEditarPresenca();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmDialogEditarPresenca();">Confirmar</button>
+    </div>
+</div>
+<script>
+    var RecepcaoMembroModel = null;
+    var RecepcaoSelecionarAtividadeModel = null;
+    var RecepcaoSelecionarComissaoModel = null;
+    var dialogConfirmacaoDados = null;
+    var dialogEditarPresenca = null;
+    var SomenteMembrosSelecionado = true;
+    var TabComissaoSelecionada = false;
+
+    $(document).ready(function () {
+        ConfigureDialogConfirmacaoDados();
+        ConfigureDialogEditarPresenca();
+    });
+
+    $(window).resize(function () {
+        ConfigureDialogConfirmacaoDados();
+        ConfigureDialogEditarPresenca();
+    });
+
+    function CloseDialogConfirmacaoDados() {
+        dialogConfirmacaoDados.dialog("close");
+    }
+
+    function CloseDialogEditarPresenca() {
+        dialogEditarPresenca.dialog("close");
+    }
+
+    function ConfirmDialogConfirmacaoDadosComissao() {
+        ClearNotify();
+
+        RecepcaoSelecionarComissaoModel.Senha = $("#txtSenha").val();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Recepcao/IncluirPresencaComissao',
+            data: RecepcaoSelecionarComissaoModel,
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Organismo Afiliado | Recepção', 'Dados gravados com sucesso.');
+                    dialogConfirmacaoDados.dialog("close");
+                    if (RecepcaoSelecionarAtividadeModel.Visitante == null) {
+                        RecepcaoSelecionaMembro();
+                    } else {
+                        RecepcaoSelecionaDocumentoNumero();
+                    }
+                }
+                else {
+                    ShowNotify('warning', 'Organismo Afiliado | Recepção', data.msg, 'myModalConfirmacaoDadosContent');
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmDialogConfirmacaoDadosAtividade() {
+        ClearNotify();
+
+        if ($("#ddlAtuacao option:selected").val() == "") {
+            ShowNotify('warning', 'Organismo Afiliado | Recepção', 'Selecione a Atuação', 'myModalConfirmacaoDadosContent');
+
+            return;
+        }
+
+
+        RecepcaoSelecionarAtividadeModel.CargoId = parseInt($("#ddlAtuacao option:selected").val());
+        RecepcaoSelecionarAtividadeModel.Senha = $("#txtSenha").val();
+
+        if (RecepcaoSelecionarAtividadeModel.Atividade.ColetarRgCpf) {
+            RecepcaoSelecionarAtividadeModel.Membro.CPF = $("#txtMembroCPF").val();
+            RecepcaoSelecionarAtividadeModel.Membro.RG = $("#txtMembroRG").val();
+            RecepcaoSelecionarAtividadeModel.Membro.RGOrgaoEmissor = $("#txtMembroRGOrgaoEmissor").val();
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Recepcao/IncluirPresencaAtividade',
+            data: RecepcaoSelecionarAtividadeModel,
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Organismo Afiliado | Recepção', 'Dados gravados com sucesso.');
+                    dialogConfirmacaoDados.dialog("close");
+                    if (RecepcaoSelecionarAtividadeModel.Visitante == null) {
+                        RecepcaoSelecionaMembro();
+                    } else {
+                        RecepcaoSelecionaDocumentoNumero();
+                    }
+                }
+                else {
+                    ShowNotify('warning', 'Organismo Afiliado | Recepção', data.msg, 'myModalConfirmacaoDadosContent');
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+
+    }
+
+    function RecepcaoExibirTudo() {
+        $("tr[id^='RecepcaoItemAtividade_']").show();
+
+        $("#btnExibirTudo").hide();
+    }
+
+
+    function RecepcaoCredenciar(id, data, horario, tipo, titulo, organismo, responsavel, idPresenca, coletarRgCpf) {
+        ClearNotify();
+
+        if (SomenteMembrosSelecionado === false) {
+            if ($("#txtRecepcaoVisitanteDocumentoTipo").val() == "") {
+                ShowError("É preciso selecionar o Tipo de Documento para efetuar o credenciamento.");
+                return;
+            }
+
+            if ($("#txtRecepcaoVisitanteDocumentoNumero").val() == "") {
+                ShowError("É preciso informar o Número do Documento para efetuar o credenciamento.");
+                return;
+            }
+
+            if ($("#txtRecepcaoVisitanteNome").val() == "") {
+                ShowError("É preciso informar o Nome do Visitante para efetuar o credenciamento.");
+                return;
+            }
+        }
+
+        RecepcaoSelecionarAtividadeModel = {
+            Id: idPresenca,
+            Membro: SomenteMembrosSelecionado ? RecepcaoMembroModel.ListaMembros[parseInt($("#ddlNomeMembro option:selected").val())] : null,
+            Visitante: SomenteMembrosSelecionado === false ? {
+                Nome: $("#txtRecepcaoVisitanteNome").val(),
+                DocumentoNumero: $("#txtRecepcaoVisitanteDocumentoNumero").val(),
+                DocumentoTipo: $("#txtRecepcaoVisitanteDocumentoTipo").val()
+            } : null,
+            Atividade: {
+                IdAtividade: id,
+                Nome: (organismo != "" ? organismo + "\n" : "") + data + "\n" + tipo + "\n" + (responsavel != "" ? responsavel + "\n" : "") + titulo,
+                ColetarRgCpf: coletarRgCpf
+            }
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Recepcao/SelecionarAtividade',
+            data: RecepcaoSelecionarAtividadeModel,
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+
+                $("#btnGravarDados").unbind("click");
+                $("#btnGravarDados").click(function () {
+                    ConfirmDialogConfirmacaoDadosAtividade();
+                });
+
+
+                $("#myModalConfirmacaoDadosContent").html(data);
+                dialogConfirmacaoDados.dialog("open");
+                $("body").css({ overflow: 'hidden' });
+            },
+            error: function (xhr, st, str) {
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function RecepcaoDescredenciar(CAP_ID) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente realizar o descredenciamento ?", "RecepcaoDescredenciarConfirmar(" + CAP_ID + ");")
+    }
+
+    function RecepcaoDescredenciarConfirmar(CAP_ID) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Recepcao/DescredenciarAtividade',
+            data: { CAP_ID: CAP_ID},
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Organismo Afiliado | Recepção', 'Dados gravados com sucesso.');
+                    if (RecepcaoSelecionarAtividadeModel.Visitante == null) {
+                        RecepcaoSelecionaMembro();
+                    } else {
+                        RecepcaoSelecionaDocumentoNumero();
+                    }
+                } else {
+                    ShowNotify('warning', 'Organismo Afiliado | Recepção', data.msg);
+                }
+            },
+            error: function (xhr, st, str) {
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ComissaoCredenciar(ComissaoId, FuncaoId, Comissao, Funcao, IdPresenca) {
+        ClearNotify();
+
+        if (SomenteMembrosSelecionado === false) {
+            if ($("#txtRecepcaoVisitanteDocumentoTipo").val() == "") {
+                ShowError("É preciso selecionar o Tipo de Documento para efetuar o credenciamento.");
+                return;
+            }
+
+            if ($("#txtRecepcaoVisitanteDocumentoNumero").val() == "") {
+                ShowError("É preciso informar o Número do Documento para efetuar o credenciamento.");
+                return;
+            }
+
+            if ($("#txtRecepcaoVisitanteNome").val() == "") {
+                ShowError("É preciso informar o Nome do Visitante para efetuar o credenciamento.");
+                return;
+            }
+        }
+
+        RecepcaoSelecionarComissaoModel = {
+            Id: IdPresenca,
+            Membro: SomenteMembrosSelecionado ? RecepcaoMembroModel.ListaMembros[parseInt($("#ddlNomeMembro option:selected").val())] : null,
+            Visitante: SomenteMembrosSelecionado === false ? {
+                Nome: $("#txtRecepcaoVisitanteNome").val(),
+                DocumentoNumero: $("#txtRecepcaoVisitanteDocumentoNumero").val(),
+                DocumentoTipo: $("#txtRecepcaoVisitanteDocumentoTipo").val(),
+                Senha: ''
+            } : null,
+            Comissao: {
+                Id: ComissaoId,
+                Nome: Comissao
+            },
+            ComissaoFuncao: {
+                Id: FuncaoId,
+                Nome: Funcao
+            }
+        };
+
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Recepcao/SelecionarComissao',
+            data: RecepcaoSelecionarComissaoModel,
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+
+                $("#btnGravarDados").unbind("click");
+                $("#btnGravarDados").click(function () {
+                    ConfirmDialogConfirmacaoDadosComissao();
+                });
+
+
+                $("#myModalConfirmacaoDadosContent").html(data);
+                dialogConfirmacaoDados.dialog("open");
+                $("body").css({ overflow: 'hidden' });
+            },
+            error: function (xhr, st, str) {
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+
+
+    }
+
+    function RecepcaoComissaoDescredenciar(COP_ID) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente realizar o descredenciamento ?", "RecepcaoComissaoDescredenciarConfirmar(" + COP_ID + ");")
+    }
+
+    function RecepcaoComissaoDescredenciarConfirmar(COP_ID) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Recepcao/DescredenciarComissao',
+            data: { COP_ID: COP_ID },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Organismo Afiliado | Recepção', 'Dados gravados com sucesso.');
+                    if (RecepcaoSelecionarAtividadeModel.Visitante == null) {
+                        RecepcaoSelecionaMembro();
+                    } else {
+                        RecepcaoSelecionaDocumentoNumero();
+                    }
+                } else {
+                    ShowNotify('warning', 'Organismo Afiliado | Recepção', data.msg);
+                }
+            },
+            error: function (xhr, st, str) {
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function RecepcaoHabilitaDados(pnlDados, button) {
+        RecepcaoMembroModel = null;
+
+        $('#pnlCredenciamento').hide();
+
+        $('#pnlRecepcaoMembro input').val("");
+        $('#pnlRecepcaoMembro select').empty();
+        $('#pnlRecepcaoVisitante input').val("");
+        $('#pnlRecepcaoVisitante select').empty();
+
+        $("#ddlNomeMembro").attr("readonly", "readonly");
+
+        $('#pnlRecepcaoMembro').hide();
+        $('#pnlRecepcaoVisitante').hide();
+        $('#pnlRecepcaoHistorico').hide();
+        $('#pnlRecepcaoListaPresenca').hide();
+        $('#pnlBiblioteca').hide();
+        $("#pnlResponsavelQuitacaoGLP").hide();
+        $("#pnlNomeResponsavel").hide();
+
+        $('#pnlRecepcao' + pnlDados).show();
+
+        $(".demo-btns li a").removeClass("btn-primary");
+        $(".demo-btns li a").removeClass("btn-default");
+        $(".demo-btns li a").addClass("btn-default");
+
+        $(button).addClass("btn-primary");
+
+        $("input[name='cbRecepcaoVisitanteTipoDocumento']").prop('checked', false);
+
+        switch (pnlDados) {
+            case "Membro":
+                RecepcaoBuscarMembroInitialize();
+                //$("#txtNumeroAfiliacao").focus();
+                RecepcaoBuscarMembro();
+
+                //$("a[href=#pnlRecepcaoAtividade]").parent().css("display", "");
+                //$("a[href=#pnlRecepcaoComissao]").parent().css("display", "");
+
+                //RecepcaoListaAtividades(true);
+                break;
+            case "Visitante":
+                RecepcaoBuscarVisitanteInitialize();
+
+                //$("a[href=#pnlRecepcaoAtividade]").parent().css("display", "");
+                //$("a[href=#pnlRecepcaoComissao]").parent().css("display", "none");
+
+                break;
+            case "ListaPresenca":
+                RecepcaoListaPresencaInitialize();
+
+                break;
+        }
+    }
+
+    function RecepcaoBuscarVisitanteInitialize() {
+        $("#pnlRecepcaoVisitanteNome").hide();
+        $("#txtRecepcaoVisitanteDocumentoNumero").focus();
+    }
+
+    function RecepcaoBuscarMembroInitialize() {
+        $("#ddlNomeMembro").empty();
+        $("#txtOrganismoAfiliadoRC").val("");
+        $("#txtOrganismoAfiliadoTOM").val("");
+        $("#txtRecepcaoLoteRC").val("");
+        $("#txtRecepcaoLoteTOM").val("");
+        $("#txtRecepcaoIniciacaoRC").attr("data-original-title", "");
+        $("#txtRecepcaoLoteTOM").attr("data-original-title", "");
+        $("#txtRecepcaoIniciacaoTOM").val("");
+        $("#txtQuitacaoOA").val("");
+        $("#txtQuitacaoGLP").val("");
+        $("#txtResponsavelQuitacaoGLP").val("");
+        $("#txtQuitacaoTOM").val("");
+
+        $("#txtQuitacaoOA").css("background-color", "#eee");
+        $("#txtQuitacaoGLP").css("background-color", "#eee");
+        $("#txtResponsavelQuitacaoGLP").css("background-color", "#eee");
+        $("#txtQuitacaoTOM").css("background-color", "#eee");
+
+        $('#pnlBiblioteca').hide();
+
+        ClearNotify();
+    }
+
+    function RecepcaoListaPresencaInitialize() {
+        var dataRecepcao = $("#DataAtividade").val();
+
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Recepcao/ListaPresenca',
+            data: { Data: dataRecepcao },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlRecepcaoListaPresencaContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function SelecionarResultadoBuscaConsultaMembroRecepcao(obj, Identificador, Chave, Nome, MembroTOM, MembroOGG, fSeqCadast) {
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Recepcao/BuscarMembro',
+            data: { fSeqCadast: fSeqCadast },
+            beforeSend: function () {
+                CloseDialogAbrirMembroGLP();
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    RecepcaoMembroModel = JSON.parse(data.model);
+
+                    if (RecepcaoMembroModel.ListaMembros === null) {
+                        ShowNotify('warning', 'Organismo Afiliado | Recepção', 'Não foi possível localizar nenhum membro com número de afiliação informado.');
+                        OnCompleteForm();
+                    } else {
+                        if (RecepcaoMembroModel.ListaMembros.length > 1) {
+                            $("#ddlNomeMembro").append("<option value=''>Selecione");
+                        }
+
+                        var textoExtra = '';
+                        $.each(RecepcaoMembroModel.ListaMembros, function (index) {
+                            if (this.AfiliacaoDual) {
+                                textoExtra = 'Dual - ';
+                            }
+                            if (this.MembroOGG) {
+                                textoExtra = 'OGG - ';
+                            }
+                            if (this.MembroColumba) {
+                                textoExtra = 'Columba - ';
+                            }
+                            $("#ddlNomeMembro").append("<option value='" + index + "'>" + textoExtra + this.Nome.toUpperCase());
+                        });
+
+                        $("#ddlNomeMembro").removeAttr("readonly");
+
+                        OnCompleteForm();
+                        $("#ddlNomeMembro").focus();
+
+                        RecepcaoSelecionaMembro();
+                    }
+
+                } else {
+                    OnCompleteForm();
+                    ShowError(data.msg);
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+    function RecepcaoBuscarMembro() {
+        RecepcaoBuscarMembroInitialize();
+
+        consultaMembroSelecionarFuncao = "SelecionarResultadoBuscaConsultaMembroRecepcao";
+        OpenDialogAbrirMembroGLP(true);
+    }
+
+    function RecepcaoSelecionaMembro() {
+        ClearNotify();
+
+        $("#txtOrganismoAfiliadoRC").val("");
+        $("#txtOrganismoAfiliadoTOM").val("");
+        $("#txtRecepcaoLoteRC").val("");
+        $("#txtRecepcaoLoteTOM").val("");
+        $("#txtRecepcaoIniciacaoRC").attr("data-original-title", "");
+        $("#txtRecepcaoLoteTOM").attr("data-original-title", "");
+        $("#txtRecepcaoIniciacaoRC").val("");
+        $("#txtRecepcaoIniciacaoTOM").val("");
+        $("#txtQuitacaoOA").val("");
+        $("#txtQuitacaoGLP").val("");
+        $("#txtResponsavelQuitacaoGLP").val("");
+
+        $('#pnlBiblioteca').hide();
+        $("#pnlCredenciamento").hide();
+
+        var MembroIndex = parseInt($("#ddlNomeMembro").val());
+        if (MembroIndex > -1) {
+
+            RecepcaoMembroModel.MembroSelecionado = RecepcaoMembroModel.ListaMembros[MembroIndex];
+
+            if (RecepcaoMembroModel.MembroSelecionado.QuantidadeAtrasoBiblioteca > 0) {
+                $.ajax({
+                    type: 'POST',
+                    url: rootURL + 'OrganismoAfiliado/Recepcao/BuscarMembroListaEmprestimo',
+                    data: { MembroId: RecepcaoMembroModel.MembroSelecionado.Identificador },
+                    beforeSend: function () {
+                        OnBeginForm();
+                    },
+                    success: function (data) {
+                        $("#pnlBibliotecaContent").html(data);
+                        $("#pnlBiblioteca").show();
+
+                        OnCompleteForm();
+                    },
+                    error: function (xhr, st, str) {
+                        OnCompleteForm();
+                        ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                    },
+                    complete: function () {
+
+                    }
+                });
+            }
+
+            if (RecepcaoMembroModel.MembroSelecionado.OrganismoAfiliadoNomeRC != null && RecepcaoMembroModel.MembroSelecionado.OrganismoAfiliadoNomeRC != "") {
+                $("#txtOrganismoAfiliadoRC").val(RecepcaoMembroModel.MembroSelecionado.OrganismoAfiliadoNomeRC + " - " + RecepcaoMembroModel.MembroSelecionado.OrganismoAfiliadoSiglaRC);
+            }
+
+            if (RecepcaoMembroModel.MembroSelecionado.LoteAtualGLP > 0) {
+                $("#txtRecepcaoLoteRC").val(RecepcaoMembroModel.MembroSelecionado.LoteAtualGLP + " / " + RecepcaoMembroModel.MembroSelecionado.GrauRC);
+            } else {
+                if (RecepcaoMembroModel.MembroSelecionado.GrauRC !== "") {
+                    $("#txtRecepcaoLoteRC").val(RecepcaoMembroModel.MembroSelecionado.GrauRC);
+                } else {
+                    $("#txtRecepcaoLoteRC").val("Não possui.");
+                }
+            }
+
+            if (RecepcaoMembroModel.MembroSelecionado.LoteAtualTOM > 0) {
+                $("#txtRecepcaoLoteTOM").val(RecepcaoMembroModel.MembroSelecionado.LoteAtualTOM);
+            } else {
+                $("#txtRecepcaoLoteTOM").val("Não possui.");
+            }
+
+            if (RecepcaoMembroModel.MembroSelecionado.ListaIniciacaoRC !== null && RecepcaoMembroModel.MembroSelecionado.ListaIniciacaoRC.length > 0) {
+                $("#txtRecepcaoIniciacaoRC").attr("data-original-title", RecepcaoMembroModel.MembroSelecionado.ListaIniciacaoRC[0].OrganismoNome + " (" + RecepcaoMembroModel.MembroSelecionado.ListaIniciacaoRC[0].Organismo + ")");
+                $("#txtRecepcaoIniciacaoRC").val(RecepcaoMembroModel.MembroSelecionado.ListaIniciacaoRC[0].Iniciacao + " - " + new Date(RecepcaoMembroModel.MembroSelecionado.ListaIniciacaoRC[0].Data).toLocaleDateString('pt-BR'));
+            } else {
+                $("#txtRecepcaoIniciacaoRC").attr("data-original-title", "");
+                $("#txtRecepcaoIniciacaoRC").val("Não possui.");
+            }
+
+            if (RecepcaoMembroModel.MembroSelecionado.ListaIniciacaoTOM !== null && RecepcaoMembroModel.MembroSelecionado.ListaIniciacaoTOM.length > 0) {
+                $("#txtRecepcaoIniciacaoTOM").attr("data-original-title", RecepcaoMembroModel.MembroSelecionado.ListaIniciacaoTOM[0].OrganismoNome + " (" + RecepcaoMembroModel.MembroSelecionado.ListaIniciacaoTOM[0].Organismo + ")");
+                $("#txtRecepcaoIniciacaoTOM").val(RecepcaoMembroModel.MembroSelecionado.ListaIniciacaoTOM[0].Iniciacao + " - " + new Date(RecepcaoMembroModel.MembroSelecionado.ListaIniciacaoTOM[0].Data).toLocaleDateString('pt-BR'));
+            } else {
+                $("#txtRecepcaoLoteTOM").attr("data-original-title", "");
+                $("#txtRecepcaoIniciacaoTOM").val("Não possui.");
+            }
+
+            if (RecepcaoMembroModel.MembroSelecionado.OrganismoAfiliadoNomeTOM != null && RecepcaoMembroModel.MembroSelecionado.OrganismoAfiliadoNomeTOM !== "") {
+                $("#txtOrganismoAfiliadoTOM").val(RecepcaoMembroModel.MembroSelecionado.OrganismoAfiliadoNomeTOM + " - " + RecepcaoMembroModel.MembroSelecionado.OrganismoAfiliadoSiglaTOM);
+            }
+            else {
+                $("#txtOrganismoAfiliadoTOM").val("Não possui.");
+            }
+
+            $("#txtJurisdicao").val(RecepcaoMembroModel.MembroSelecionado.JurisdicaoNome);
+
+            $("#txtQuitacaoOA").css("background-color", RecepcaoMembroModel.MembroSelecionado.CorQuitacaoOA);
+            $("#txtQuitacaoGLP").css("background-color", RecepcaoMembroModel.MembroSelecionado.CorQuitacaoGLP);
+            $("#txtResponsavelQuitacaoGLP").css("background-color", RecepcaoMembroModel.MembroSelecionado.CorQuitacaoResponsavelGLP);
+            $("#txtQuitacaoTOM").css("background-color", RecepcaoMembroModel.MembroSelecionado.CorQuitacaoTOM);
+
+            if (RecepcaoMembroModel.MembroSelecionado.DataQuitacaoOA !== null) {
+                $("#txtQuitacaoOA").val(new Date(RecepcaoMembroModel.MembroSelecionado.DataQuitacaoOA).toLocaleDateString('pt-BR').substring(3));
+            }
+            else {
+                if (RecepcaoMembroModel.MembroSelecionado.MembroOA) {
+                    $("#txtQuitacaoOA").val("Não possui.");
+                } else {
+                    $("#txtQuitacaoOA").val("Outro O.A.");
+                }
+            }
+
+            if (RecepcaoMembroModel.MembroSelecionado.DataQuitacaoGLP !== null) {
+                $("#txtQuitacaoGLP").val(new Date(RecepcaoMembroModel.MembroSelecionado.DataQuitacaoGLP).toLocaleDateString('pt-BR'));
+            }
+            else {
+                $("#txtQuitacaoGLP").val("Não possui.");
+            }
+
+            if (RecepcaoMembroModel.MembroSelecionado.MembroOGG) {
+                $("#pnlResponsavelQuitacaoGLP").show();
+                $("#pnlNomeResponsavel").show();
+
+                $("#txtNomeResponsavel").val(RecepcaoMembroModel.MembroSelecionado.ResponsavelOGGNome);
+            } else {
+                $("#pnlResponsavelQuitacaoGLP").hide();
+                $("#pnlNomeResponsavel").hide();
+            }
+
+            if (RecepcaoMembroModel.MembroSelecionado.AutorizacaoTemplo) {
+                $("#pnlAutorizacaoTemplo").show();
+                $("#lblAutorizacaoResponsavel").text("Autorizado por: " + RecepcaoMembroModel.MembroSelecionado.AutorizacaoResponsavel);
+            } else {
+                $("#pnlAutorizacaoTemplo").hide();
+            }                
+
+            if (RecepcaoMembroModel.MembroSelecionado.ResponsavelOGGDataQuitacao !== null) {
+                $("#txtResponsavelQuitacaoGLP").val(new Date(RecepcaoMembroModel.MembroSelecionado.ResponsavelOGGDataQuitacao).toLocaleDateString('pt-BR'));
+            }
+            else {
+                $("#txtResponsavelQuitacaoGLP").val("Não possui.");
+            }
+
+            if (RecepcaoMembroModel.MembroSelecionado.DataQuitacaoTOM !== null) {
+                $("#txtQuitacaoTOM").val(new Date(RecepcaoMembroModel.MembroSelecionado.DataQuitacaoTOM).toLocaleDateString('pt-BR'));
+            } else {
+                $("#txtQuitacaoTOM").val("Não possui.");
+            }
+
+            RecepcaoListaAtividades(true);
+            RecepcaoListaComissoes(true);
+        }
+    }
+
+    function RecepcaoSelecionaDocumentoTipo(TipoDocumento) {
+        $("#txtRecepcaoVisitanteDocumentoTipo").val(TipoDocumento);
+        $("#txtRecepcaoVisitanteDocumentoNumero").focus();
+    }
+
+    function RecepcaoSelecionaDocumentoNumero() {
+        ClearNotify();
+        $("#txtRecepcaoVisitanteNome").val("");
+
+        if ($("#txtRecepcaoVisitanteDocumentoNumero").val().length <= 5) {
+            ShowNotify('warning', 'Organismo Afiliado | Recepção', 'Informe ao menos 5 caracteres no Documento.');
+        } else {
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'OrganismoAfiliado/Recepcao/SelecionaVisitante',
+                data: { Documento: $("#txtRecepcaoVisitanteDocumentoNumero").val() },
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    OnCompleteForm();
+
+                    if (data.success) {
+                        if (data.exist) {
+                            $("#txtRecepcaoVisitanteNome").val(data.Nome);
+                            $("#cbRecepcaoVisitanteTipoDocumento_" + data.DocumentoTipo).prop("checked", "true");
+                            $("#txtRecepcaoVisitanteDocumentoTipo").val(data.DocumentoTipo);
+                        }
+                        $("#pnlRecepcaoVisitanteNome").show();
+                        $("#txtRecepcaoVisitanteNome").focus();
+
+                    } else {
+                        ShowWarning(data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+                    OnCompleteForm();
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+                    RecepcaoListaAtividades(false);
+                    RecepcaoListaComissoes(false);
+                }
+            });
+        }
+    }
+
+    function RecepcaoListaAtividades(SomenteMembros) {
+        SomenteMembrosSelecionado = SomenteMembros;
+
+        RecepcaoSelecionarAtividadeModel = {
+            Membro: SomenteMembrosSelecionado ? RecepcaoMembroModel.ListaMembros[parseInt($("#ddlNomeMembro option:selected").val())] : null,
+            Visitante: SomenteMembrosSelecionado === false ? {
+            Nome: $("#txtRecepcaoVisitanteNome").val(),
+            DocumentoNumero: $("#txtRecepcaoVisitanteDocumentoNumero").val(),
+            DocumentoTipo: $("#txtRecepcaoVisitanteDocumentoTipo").val()
+            } : null
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Recepcao/ListaAtividades',
+            data: RecepcaoSelecionarAtividadeModel,
+            beforeSend: function () {
+                $("#pnlRecepcaoAtividade").html("");
+            },
+            success: function (data) {
+                $("#pnlRecepcaoAtividade").html(data);
+                //$("a[href=#pnlRecepcaoAtividade]").click();
+
+                $("#pnlCredenciamento").show();
+                HabilitaTabCredenciamento();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+    function RecepcaoListaComissoes(SomenteMembros) {
+        RecepcaoSelecionarComissaoModel = {
+            Membro: SomenteMembrosSelecionado ? RecepcaoMembroModel.ListaMembros[parseInt($("#ddlNomeMembro option:selected").val())] : null,
+            Visitante: SomenteMembrosSelecionado === false ? {
+                Nome: $("#txtRecepcaoVisitanteNome").val(),
+                DocumentoNumero: $("#txtRecepcaoVisitanteDocumentoNumero").val(),
+                DocumentoTipo: $("#txtRecepcaoVisitanteDocumentoTipo").val()
+            } : null,
+            Comissao: null,
+            ComissaoFuncao: null
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Recepcao/ListaComissoes',
+            data: RecepcaoSelecionarComissaoModel,
+            beforeSend: function () {
+                $("#pnlRecepcaoComissao").html("");
+            },
+            success: function (data) {
+                $("#pnlRecepcaoComissao").html(data);
+                HabilitaTabCredenciamento();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+    function ConfigureDialogConfirmacaoDados() {
+        dialogConfirmacaoDados = $("#myModalConfirmacaoDados").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()),
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' });
+            }
+        });
+    }
+
+    function ConfigureDialogEditarPresenca() {
+        dialogEditarPresenca = $("#myModalEditarPresenca").dialog({
+            autoOpen: false,
+            width: 800,
+            height: 440,
+            resizable: false,
+            draggable: true,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' });
+            }
+        });
+    }
+
+    function ConfirmarSelecaoData() {
+        var dataRecepcao = $("#DataAtividade").val();
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Recepcao/ConfirmarSelecaoData',
+            data: { Data: dataRecepcao },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    $("#pnlRecepcaoMembro").hide();
+                    $("#pnlRecepcaoVisitante").hide();
+                    $("#pnlCredenciamento").hide();
+
+                    RecepcaoHabilitaDados("", "");
+                } else {
+                    $("#DataAtividade").val("@(Convert.ToDateTime(Session["RECEPCAO_DATA_INICIAL"]).ToString("yyyy-MM-dd"))");
+                    ShowNotify('warning', 'Organismo Afiliado | Recepção', data.msg);
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function HabilitaTabCredenciamento() {
+        $("#pnlCredenciamento").show();
+        if (TabComissaoSelecionada) {
+            $("#pnlTipoCredenciamento a")[1].click();
+        } else {
+            $("#pnlTipoCredenciamento a")[0].click();
+        }
+    }
+
+    function EditarPresenca(Id, Nome, Data, Tipo, Titulo, Comissao, NumeroAfiliacao, Senha, DocumentoTipo, Documento) {
+        ClearNotify();
+
+        $("#pnlEditarPresencaNumeroAfiliacao").hide();
+        $("#pnlEditarPresencaVisitanteTipoDocumento").hide();
+        $("#pnlEditarPresencaVisitanteDocumento").hide();
+
+        $("#txtEditarPresencaId").val(Id);
+        $("#txtEditarPresencaComissao").val(Comissao);
+        $("#txtEditarPresencaNome").val(Nome);
+        $("#txtEditarPresencaData").val(Data);
+        $("#lblEditarPresencaTitulo").html(Tipo);
+        $("#txtEditarPresencaTitulo").val(Titulo);
+        $("#txtEditarPresencaSenha").val(Senha);
+
+        $("#txtEditarPresencaNumeroAfiliacao").val("");
+        $("#ddlEditarPresencaVisitanteTipoDocumento").val("");
+        $("#txtEditarPresencaVisitanteDocumento").val("");
+
+        if (NumeroAfiliacao == "") {
+            $("#pnlEditarPresencaVisitanteTipoDocumento").show();
+            $("#pnlEditarPresencaVisitanteDocumento").show();
+            $("#ddlEditarPresencaVisitanteTipoDocumento").val(DocumentoTipo);
+            $("#txtEditarPresencaVisitanteDocumento").val(Documento);
+            $("#txtEditarPresencaNome").removeAttr("readonly");
+        } else {
+            $("#pnlEditarPresencaNumeroAfiliacao").show();
+            $("#txtEditarPresencaNumeroAfiliacao").val(NumeroAfiliacao);
+            $("#txtEditarPresencaNome").attr("readonly", "readonly");
+        }
+
+        dialogEditarPresenca.dialog("open");
+    }
+
+    function ConfirmDialogEditarPresenca() {
+        CloseDialogEditarPresenca();
+        ClearNotify();
+
+        var Id = $("#txtEditarPresencaId").val();
+        var Data = $("#txtEditarPresencaData").val();
+        var Tipo = $("#lblEditarPresencaTitulo").val();
+        var Titulo = $("#txtEditarPresencaTitulo").val();
+        var Comissao = $("#txtEditarPresencaComissao").val() == "true";
+        var Nome = $("#txtEditarPresencaNome").val();
+        var TipoDocumento = $("#ddlEditarPresencaVisitanteTipoDocumento").val();
+        var Documento = $("#txtEditarPresencaVisitanteDocumento").val();
+        var Senha = $("#txtEditarPresencaSenha").val();
+        var NumeroAfiliacao = $("#txtEditarPresencaNumeroAfiliacao").val();
+
+        if (NumeroAfiliacao == "") {
+            if (TipoDocumento == "") {
+                ShowNotify('warning', 'Organismo Afiliado | Recepção', 'Selecione o Tipo de Documento', 'myModalEditarPresenca');
+                return;
+            }
+
+            if (Documento == "") {
+                ShowNotify('warning', 'Organismo Afiliado | Recepção', 'Informe o Número do Documento', 'myModalEditarPresenca');
+                return;
+            }
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Recepcao/ConfirmaEdicaoPresenca',
+            data: {
+                Id: Id,
+                Comissao: Comissao,
+                Nome: Nome,
+                TipoDocumento: TipoDocumento,
+                Documento: Documento,
+                Senha: Senha
+            },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Organismo Afiliado | Recepção', 'Presença atualizada com sucesso.');
+
+                    if (NumeroAfiliacao == "") {
+                        console.log("#ListaPresencaItem_" + (Comissao ? "Comissao" : "Atividade") + Id + " td");
+                        $($("#ListaPresencaItem_" + (Comissao ? "Comissao" : "Atividade") + Id + " td")[2]).html(Nome);
+                        $($("#ListaPresencaItem_" + (Comissao ? "Comissao" : "Atividade") + Id + " td")[6]).html(TipoDocumento + ": " + Documento);
+                    }
+
+                    $($("#ListaPresencaItem_" + (Comissao ? "Comissao" : "Atividade") + Id + " td")[7]).html(Senha);
+                    $($("#ListaPresencaItem_" + (Comissao ? "Comissao" : "Atividade") + Id + " td")[10]).html("<a href=\"javascript:void(0);\" onclick=\"EditarPresenca(" + Id + ", '" + Nome + "', '" + Data + "', '" + Tipo + "', '" + Titulo + "', " + Comissao + ", '" + NumeroAfiliacao + "', '" + Senha + "', '" + TipoDocumento + "', '" + Documento + "');\" class=\"btn btn-default\"><i class=\"fa fa-edit\"></i> Editar</a>");
+                    $($("#ListaPresencaItem_" + (Comissao ? "Comissao" : "Atividade") + Id + " td")[11]).html("<a href=\"javascript:void(0);\" onclick=\"ApagarPresenca(" + Id + ", '" + Nome + "', '" + Data + "', '" + Tipo + "', '" + Titulo + "', " + Comissao + ");\" class=\"btn btn-danger\"><i class=\"fa fa-trash-o\"></i> Descredenciar</a>");
+                } else {
+                    ShowNotify('warning', 'Organismo Afiliado | Recepção', data.msg);
+                }
+            },
+            error: function (xhr, st, str) {
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ApagarPresenca(Id, Nome, Data, Tipo, Titulo, Comissao) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente descredenciar " + Nome + " da Data: " + Data + " na " + Tipo + ": " + Titulo + "?", "ApagarPresencaConfirmar(" + Id + ", " + Comissao + ");")
+    }
+
+    function ApagarPresencaConfirmar(Id, Comissao) {
+        ClearNotify();
+
+        if (Comissao) {
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'OrganismoAfiliado/Recepcao/DescredenciarComissao',
+                data: { COP_ID: Id },
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    if (data.success) {
+                        ShowNotify('success', 'Organismo Afiliado | Recepção', 'Descredenciamento realizado com sucesso.');
+                        $("#ListaPresencaItem_Comissao" + Id).remove();
+                    } else {
+                        ShowNotify('warning', 'Organismo Afiliado | Recepção', data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+        } else {
+                $.ajax({
+                type: 'POST',
+                url: rootURL + 'OrganismoAfiliado/Recepcao/DescredenciarAtividade',
+                data: { CAP_ID: Id },
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    if (data.success) {
+                        ShowNotify('success', 'Organismo Afiliado | Recepção', 'Descredenciamento realizado com sucesso.');
+                        $("#ListaPresencaItem_Atividade" + Id).remove();
+                    } else {
+                        ShowNotify('warning', 'Organismo Afiliado | Recepção', data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+        }
+    }
+</script>

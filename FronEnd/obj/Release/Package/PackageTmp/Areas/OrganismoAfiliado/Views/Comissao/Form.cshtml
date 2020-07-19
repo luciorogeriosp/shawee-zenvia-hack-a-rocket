@@ -1,0 +1,79 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.ComissaoModel
+<div role="content">
+
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body no-padding">
+
+        <!-- Error states for elements -->
+        <form class="smart-form" id="frmComissao" onsubmit="$('#btnConfirmar').click(); return false;">
+            @Html.HiddenFor(m => m.Id)
+            <fieldset>
+                <section>
+                    <label class="label">
+                        @Html.LabelFor(m => m.Nome)
+                        <span class="font-xs text-danger">*</span>
+                    </label>
+                    <label class="input">
+                        @Html.TextBoxFor(m => m.Nome, new { style = "text-transform:uppercase;" })
+                    </label>
+                </section>
+                <section>
+                    <label class="label">
+                        <label for="Descricao">Objetivo</label>
+                    </label>
+                    <label class="textarea">
+                        <textarea id="Objetivo" name="Objetivo" rows="20">@Model.Objetivo</textarea>
+                    </label>
+                </section>
+                <section>
+                    <label class="checkbox">
+                        <input type="checkbox" id="SomenteMembros" name="SomenteMembros" value="true" @(Html.Raw(Model.SomenteMembros ? " checked=\"checked\"" : "")) />
+                        <i></i>Somente Membros
+                    </label>
+                </section>
+            </fieldset>
+        </form>
+        <!--/ Error states for elements -->
+    </div>
+    <!-- end widget content -->
+</div>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmComissao"))
+<script>
+    $("#Id").val('@Model.Id');
+</script>
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        LoadList();
+    </script>
+}
+@if (Model.Padrao)
+{
+    <script>
+        $(document).ready(function () {
+            $('#btnConfirmar').unbind('click');
+            $('#btnConfirmar').attr('disabled', 'disabled');
+            $('#frmComissao #Nome').attr('disabled', 'disabled');
+            $('#frmComissao #Objetivo').attr('disabled', 'disabled');
+            $('#frmComissao #Objetivo').css({
+                "cursor": "not-allowed",
+                "background-color": "#eee"
+            });
+            $('#frmComissao #SomenteMembros').attr('disabled', 'disabled');
+            $("#frmComissao #SomenteMembros").parent().find("i").css({
+                "cursor": "not-allowed",
+                "background-color": "#eee"
+            });
+        });
+    </script>
+} else {
+<script>
+    $("#btnConfirmar").removeAttr("disabled");
+</script>
+}

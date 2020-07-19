@@ -1,0 +1,96 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.AutorizarTemploModel
+@{
+    Layout = null;
+
+    SAL.MVC.Models.UsuarioClientePerfilModel OrganismoAfiliado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    string mestre = string.Empty;
+    string oficial = string.Empty;
+    switch ((SAL.MVC.Util.GLP.TipoOrganismoAfiliado)OrganismoAfiliado.Cliente.OrganismoAfiliadoTipoId)
+    {
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.AtriumMartinista:
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.HeptadaMartinista:
+            mestre = "Mestre da Heptada";
+            oficial = "Mestre da Classe";
+            break;
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.PronaosRosacruz:
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.CapituloRosacruz:
+        case SAL.MVC.Util.GLP.TipoOrganismoAfiliado.LojaRosacruz:
+            mestre = "Mestre";
+            oficial = "Oficial";
+            break;
+        default:
+            mestre = "Mestre";
+            oficial = "Oficial";
+            break;
+    }
+}
+<form class="smart-form" id="frmAutorizarTemplo" name="frmAutorizarTemplo" autocomplete="off" onsubmit="return false;">
+    <fieldset style="border:0;">
+        <section>
+            <label class="label">
+                Jurisdição
+                <span class="font-xs text-danger">*</span>
+            </label>
+            <label class="select">
+                @Html.DropDownListFor(m => m.IdJurisricao, Model.JurisdicaoLista)
+                <i></i>
+            </label>
+        </section>
+        <div class="row">
+            <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <label class="label">
+                    <label for="Data">Data</label>
+                </label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.Data, new { maxlength = 60, @readonly = "readonly", @class = "form-control", style = "cursor: not-allowed; background-color: #eee !important;" })
+                </label>
+            </section>
+            <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <label class="label"><label for="MembroAfiliacaoNumero">Número de Afiliação</label> <span class="font-xs text-danger">*</span></label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.MembroAfiliacaoNumero, new { maxlength = 7, @class = "form-control", type = "number" })
+                </label>
+            </section>
+        </div>
+        <section>
+            <label class="label">
+                <label for="MembroNome">Nome Completo</label>
+                <span class="font-xs text-danger">*</span>
+            </label>
+            <label class="input">
+                @Html.TextBoxFor(m => m.MembroNome, new { maxlength = 60, @class = "form-control", style = "text-transform:uppercase;" })
+            </label>
+        </section>
+        <section>
+            <label class="label"><label for="txtAutorizacaoTemploMestre">Nome do Oficial</label> <span class="font-xs text-danger">*</span></label>
+            <label class="input">
+                @Html.TextBoxFor(m => m.MestreNome, new { maxlength = 60, @class = "form-control", style = "text-transform:uppercase" })
+            </label>
+        </section>
+        <section>
+            <label class="label"><label for="OficialNome">Emitido por</label> <span class="font-xs text-danger">*</span></label>
+            <label class="input">
+                @Html.TextBoxFor(m => m.OficialNome, new { maxlength = 60, @readonly = "readonly", @class = "form-control", style = "text-transform:uppercase;cursor: not-allowed; background-color: #eee !important;" })
+            </label>
+        </section>
+        <section>
+            <div class="pull-right">
+                <button type="button" class="btn btn-sm btn-default" onclick="LimparAutorizacaoTemplo();">Limpar Dados</button>
+                <button type="button" class="btn btn-sm btn-success" onclick="IncluirAutorizacaoTemplo(this);">Confirmar Autorização</button>
+            </div>
+        </section>
+    </fieldset>
+</form>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmAutorizarTemplo"))
+@if (string.IsNullOrEmpty(Model.MembroAfiliacaoNumero))
+{
+    <script>
+        $("#MembroAfiliacaoNumero").focus();
+    </script>
+}
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        EmitirReciboEntradaTemplo(@Model.Id);
+    </script>
+}

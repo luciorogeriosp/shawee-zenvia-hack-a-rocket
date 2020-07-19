@@ -1,0 +1,50 @@
+﻿@model Tropical.Infrastructure.Model.User
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<form class="smart-form" onsubmit="return false" id="frmProfile">
+    @if (ViewBag.MsgSuccess != null)
+    {
+        <div class="alert alert-@(Convert.ToBoolean(ViewBag.MsgSuccess) == true? "success" : "danger") fade in">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+            <h4 class="alert-heading">Dados do Usuário</h4>@(ViewBag.MsgTexto)
+        </div>
+        if (Convert.ToBoolean(ViewBag.MsgSuccess))
+        {
+            <script>
+                $("#lblTopoUsuarioNome").text('@Model.Nome');
+            </script>
+        }
+    }
+    <fieldset>
+        <section>
+            <label class="label">Nome</label>
+            <label class="input">
+                @Html.TextBoxFor(m => m.Nome, new { @class = "input-xs", maxlength = 60 })
+            </label>
+        </section>
+        <section>
+            <label class="label">E-mail</label>
+            <label class="input">
+                @Html.TextBoxFor(m => m.Email, new { @class = "input-xs", maxlength = 255 })
+            </label>
+        </section>
+        <section>
+            <label class="label">Senha</label>
+            <label class="input">
+                @Html.TextBoxFor(m => m.PasswordTemp, new { @class = "input-xs", autocomplete = "off" })
+            </label>
+        </section>
+    </fieldset>
+    <footer>
+        <button type="submit" class="btn btn-primary" onclick="GravarDadosUsuario();">
+            Gravar Dados
+        </button>
+    </footer>
+</form>
+<script>
+    $(document).ready(function () {
+        $("#PasswordTemp").val('');
+    });
+</script>

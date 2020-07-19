@@ -1,0 +1,100 @@
+﻿@model List<SAL.MVC.Areas.Tesouraria.Models.AgendamentoItemModel>
+@{
+    Layout = null;
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+
+    Tropical.Infrastructure.Model.User user = null;
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado") != null)
+    {
+        user = (Tropical.Infrastructure.Model.User)Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado");
+    }
+
+    SAL.MVC.Models.UsuarioClientePerfilModel perfilSelecionado = null;
+
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado") != null)
+    {
+        perfilSelecionado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    }
+}
+<article class="col-sm-12 col-md-12 col-lg-12">
+    <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+        <div role="content" style="border-width: 1px 1px 1px 1px; border-style: solid; border-top-color: #CCC!important;">
+            <div class="widget-body no-padding">
+                @if (Model != null && Model.Any())
+                {
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-center" width="6%">Número</th>
+                                <th class="text-center" width="6%">Código</th>
+                                <th class="text-center" width="32%">Conta</th>
+                                <th class="text-center" width="32%">Detalhamento</th>
+                                <th class="text-center" width="12%">Data.</th>
+                                <th class="text-center" width="12%">Valor</th>
+                                <th class="text-center">&nbsp;</th>
+                                <th class="text-center">&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr mov-id="@(item.MovimentoPaiId.HasValue ? item.MovimentoPaiId.Value : item.MovimentoId)">
+                                    <td class="text-center">@item.MovimentoId</td>
+                                    <td class="text-center">@item.CodCont</td>
+                                    <td class="text-left">@item.ContaNome.ToUpper()</td>
+                                    <td class="text-left">@item.Observacao.ToUpper()</td>
+                                    <td class="text-center">@item.DataPagamento.Value.ToString("dd/MM/yyyy")</td>
+                                    <td class="text-right">@item.Valor.Value.ToString("0.00")</td>
+                                    <td>
+                                        <a href="javascript:void(0);" onclick="AgendamentoEmitirRecibo(@(item.MovimentoId));" class="btn btn-@(item.Situacao == SAL.Repository.Comum.Constantes.SituacaoMovimentoLancado ? "success" : "default")" style="width:170px;"><i class="fa fa-file-text-o"></i> Emitir Recibo</a>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.Situacao == SAL.Repository.Comum.Constantes.SituacaoMovimentoLancado)
+                                        {
+                                            if (item.PodeCancelar)
+                                            {
+                                                if (perfilSelecionado.SomenteLeitura == false)
+                                                {
+                                                    <a href="javascript:void(0);" onclick="EfetivarCancelar(@(item.MovimentoId));" class="btn btn-danger" style="width:170px;"><i class="fa fa-trash-o"></i> Cancelar Lançamento</a>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (item.MovimentoPaiId.HasValue)
+                                                {
+                                                    <span class="badge bg-color-blueLight">ver código @item.MovimentoPaiId</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-color-blueLight">mês encerrado</span>
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (item.MovimentoPaiId.HasValue)
+                                            {
+                                                <span class="badge bg-color-blueLight">Cancelado ver código @item.MovimentoPaiId</span>
+                                            }
+                                            else
+                                            {
+                                                if (item.CancelamentoData.HasValue)
+                                                {
+                                                    <span class="badge bg-color-blueLight" rel="popover-hover" data-placement="left" data-content="Cancelado em: @item.CancelamentoData.Value.ToString("dd/MM/yyyy HH:mm") por: @item.CancelamentoUsuarioNome - Motivo: @item.CancelamentoMotivo">cancelado</span>
+                                                }
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <text>Não existem contas lançadas no período.</text>
+                }
+            </div>
+        </div>
+    </div>
+</article>

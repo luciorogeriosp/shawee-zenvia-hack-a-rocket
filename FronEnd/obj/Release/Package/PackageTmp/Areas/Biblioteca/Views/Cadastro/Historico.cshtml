@@ -1,0 +1,53 @@
+﻿@model List<SAL.MVC.Areas.Biblioteca.Models.EmprestimoModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<table id="datatable_tabletools_historico" class="table table-striped table-bordered table-hover" width="100%" style="display:none;">
+    <thead>
+        <tr>
+            <th>Membro</th>
+            <th class="text-center">Data Empréstimo</th>
+            <th>Comentário</th>
+            <th class="text-center">Usuário</th>
+            <th class="text-center">Data Prazo Devolução</th>
+            <th class="text-center">Data Devolução</th>
+            <th>Comentário</th>
+            <th class="text-center">Usuário</th>
+            <th class="text-center">Dias Atraso</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.MembroNome</td>
+                <td class="text-center">@item.EmprestimoData.ToString("dd/MM/yyyy")</td>
+                <td>@(Html.Raw(string.IsNullOrEmpty(item.EmprestimoComentario) == false ? item.EmprestimoComentario.Replace(Environment.NewLine, "<br>") : ""))</td>
+                <td class="text-center">@item.EmprestimoUsuario</td>
+                <td class="text-center">@item.DevolucaoDataEstimada.ToString("dd/MM/yyyy")</td>
+                <td class="text-center">@(item.DevolucaoData.HasValue ? item.DevolucaoData.Value.ToString("dd/MM/yyyy") : "")</td>
+                <td>@(Html.Raw(string.IsNullOrEmpty(item.DevolucaoComentario) == false ? item.DevolucaoComentario.Replace(Environment.NewLine, "<br>") : ""))</td>
+                <td class="text-center">@item.DevolucaoUsuario</td>
+                <td class="text-center">@(item.DevolucaoData.HasValue && item.DevolucaoData.Value > item.DevolucaoDataEstimada ? (item.DevolucaoData.Value - item.DevolucaoDataEstimada).TotalDays.ToString() : "" )</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $('#datatable_tabletools_historico').dataTable({
+        "preDrawCallback": function () {
+            // Initialize the responsive datatables helper once.
+            if (!responsiveHelper_datatable_tabletools_historico) {
+                responsiveHelper_datatable_tabletools_historico = new ResponsiveDatatablesHelper($('#datatable_tabletools_historico'), breakpointDefinition);
+            }
+        },
+        "rowCallback": function (nRow) {
+            responsiveHelper_datatable_tabletools_historico.createExpandIcon(nRow);
+        },
+        "drawCallback": function (oSettings) {
+            $("#datatable_tabletools_historico").show();
+            responsiveHelper_datatable_tabletools_historico.respond();
+        }
+    });
+</script>

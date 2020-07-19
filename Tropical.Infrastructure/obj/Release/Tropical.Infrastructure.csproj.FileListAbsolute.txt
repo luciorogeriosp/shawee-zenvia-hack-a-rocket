@@ -1,0 +1,80 @@
+D:\DotNet\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.dll.config
+D:\DotNet\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.dll
+D:\DotNet\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.pdb
+D:\DotNet\Tropical.Infrastructure\bin\Release\FrameWork.Data.WebServiceProxy.dll
+D:\DotNet\Tropical.Infrastructure\bin\Release\Microsoft.Web.Mvc.dll
+D:\DotNet\Tropical.Infrastructure\bin\Release\StructureMap.dll
+D:\DotNet\Tropical.Infrastructure\bin\Release\WebActivator.dll
+D:\DotNet\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.csprojResolveAssemblyReference.cache
+D:\DotNet\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.dll
+D:\DotNet\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.pdb
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.dll.config
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.dll
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.pdb
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.csprojResolveAssemblyReference.cache
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.dll
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.pdb
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\System.Web.Mvc.dll
+I:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\System.Web.Mvc.xml
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.dll.config
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.dll
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.pdb
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\System.Web.Mvc.dll
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\System.Web.Mvc.xml
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.dll
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.pdb
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Microsoft.ReportViewer.Common.dll
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Microsoft.ReportViewer.ProcessingObjectModel.DLL
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Microsoft.ReportViewer.WebForms.DLL
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\itextsharp.dll
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\itextsharp.xmlworker.dll
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\RazorPDF.dll
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\itextsharp.xml
+F:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.csprojResolveAssemblyReference.cache
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.csprojResolveAssemblyReference.cache
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.pdb
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.dll.config
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.pdb
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\itextsharp.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\itextsharp.xmlworker.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Microsoft.ReportViewer.Common.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Microsoft.ReportViewer.ProcessingObjectModel.DLL
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\Microsoft.ReportViewer.WebForms.DLL
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\RazorPDF.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\System.Web.Mvc.dll
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\itextsharp.xml
+G:\Projetos\Web\DotNet\Tropical.Infrastructure\bin\Release\System.Web.Mvc.xml
+E:\Projetos\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.dll.config
+E:\Projetos\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.dll
+E:\Projetos\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.pdb
+E:\Projetos\Tropical.Infrastructure\bin\Release\itextsharp.xml
+E:\Projetos\Tropical.Infrastructure\bin\Release\System.Web.Mvc.xml
+E:\Projetos\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.csprojResolveAssemblyReference.cache
+E:\Projetos\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.dll
+E:\Projetos\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.pdb
+E:\Projetos\Tropical.Infrastructure\bin\Release\System.Web.Mvc.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.dll.config
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\Tropical.Infrastructure.pdb
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\FrameWork.Data.WebServiceProxy.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\itextsharp.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\itextsharp.xmlworker.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\Microsoft.ReportViewer.Common.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\Microsoft.ReportViewer.ProcessingObjectModel.DLL
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\Microsoft.ReportViewer.WebForms.DLL
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\Microsoft.Web.Infrastructure.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\Microsoft.Web.Mvc.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\RazorPDF.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\RazorPDF.Legacy.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\StructureMap.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\System.Web.Mvc.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\System.Web.WebPages.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\WebActivator.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\itextsharp.xml
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\bin\Release\System.Web.Mvc.xml
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.csprojAssemblyReference.cache
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.csproj.CopyComplete
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.dll
+F:\Projetos\SAL.SRV.BR\Código Fonte\Tropical.Infrastructure\obj\Release\Tropical.Infrastructure.pdb

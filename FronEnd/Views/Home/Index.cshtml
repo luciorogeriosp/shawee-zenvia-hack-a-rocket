@@ -1,0 +1,26 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    var AppName = Tropical.Infrastructure.Util.ParameterCollection.GetParamValue("AppName");
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main" style="margin-left:0px;">
+    <!-- MAIN CONTENT -->
+    <div id="content" class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 hidden-xs hidden-sm text-align-center">
+                <h1 class="txt-color-red login-header-big">Bem-vinde</h1>
+                <h4 class="paragraph-header">Eu sou a @(AppName)!<br /><br />Chatbot que você procurava.</h4>
+                <p><img src="~/img/logo-400.png" width="150" /></p>
+                <h5>Potencialize seu negócio vendendo pelo Whatsapp.</h5>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="well no-padding" id="pnlFormLogin">
+                    @{
+                        Html.RenderAction("FormLogin");
+                        Html.RenderAction("FormSignIn");
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

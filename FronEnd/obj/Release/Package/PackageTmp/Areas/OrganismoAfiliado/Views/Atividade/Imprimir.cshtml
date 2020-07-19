@@ -1,0 +1,28 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.CalendarioItemModel
+<form class="smart-form" id="frmImprimir">
+    <input type="hidden" id="AtividadeImprimirId" name="AtividadeImprimirId" value="@Model.Id" />
+    <fieldset>
+        <div class="row">
+            <section>
+                <label class="label">
+                    <label for="QuantidadePaginas">Quantidade de Páginas </label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="input">
+                    <input type="text" name="QuantidadePaginas" id="QuantidadePaginas" value="1" style="float:left; width:40px;" maxlength="2" onkeypress="return isNumber(event);">
+                </label>
+            </section>
+        </div>
+        <div class="row">
+            <section>
+                <label class="label">
+                    <label for="QtdeDiginitarios">Quantidade de Diginitários </label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="input">
+                    <input type="text" name="QtdeDiginitarios" id="QtdeDiginitarios" value="0" style="float:left; width:40px;" maxlength="2" onkeypress="return isNumber(event);">
+                </label>
+            </section>
+        </div>
+    </fieldset>
+</form>

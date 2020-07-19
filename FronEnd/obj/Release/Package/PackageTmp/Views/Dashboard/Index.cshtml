@@ -1,0 +1,560 @@
+﻿@{
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark"><i class="fa-fw fa fa-bar-chart-o"></i>Dashboard</h1>
+            </div>
+        </div>
+        <div class="row">
+
+            <!-- NEW WIDGET START -->
+            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+                <!-- Widget ID (each widget will need unique ID)-->
+                <!-- end widget -->
+
+                <div class="jarviswidget" data-widget-editbutton="false" role="widget" style="">
+                    <!-- widget options:
+                    usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                    data-widget-colorbutton="false"
+                    data-widget-editbutton="false"
+                    data-widget-togglebutton="false"
+                    data-widget-deletebutton="false"
+                    data-widget-fullscreenbutton="false"
+                    data-widget-custombutton="false"
+                    data-widget-collapsed="true"
+                    data-widget-sortable="false"
+
+                    -->
+                    <header role="heading">
+                        <span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
+                        <h2>Progressão de Membros Ativos</h2>
+                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                    </header>
+
+                    <!-- widget div-->
+                    <div role="content">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body no-padding">
+
+                            <div id="pnlGraphyMembros" class="chart"></div>
+
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+                    <!-- end widget div -->
+
+                </div>
+            </article>
+            <!-- WIDGET END -->
+            <!-- NEW WIDGET START -->
+            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+                <!-- Widget ID (each widget will need unique ID)-->
+                <!-- end widget -->
+
+                <div class="jarviswidget" data-widget-editbutton="false" role="widget" style="">
+                    <!-- widget options:
+                    usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                    data-widget-colorbutton="false"
+                    data-widget-editbutton="false"
+                    data-widget-togglebutton="false"
+                    data-widget-deletebutton="false"
+                    data-widget-fullscreenbutton="false"
+                    data-widget-custombutton="false"
+                    data-widget-collapsed="true"
+                    data-widget-sortable="false"
+
+                    -->
+                    <header role="heading">
+                        <span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
+                        <h2>Proporção Entradas/Saídas</h2>
+                        <div style="float:right; margin-bottom:-25px; padding-right:4px; margin-top:-4px;">
+                            <section class="col col-5" style="padding-bottom:0">
+                                <label class="select">
+                                    <select onchange="loadGraphProporcaoEntradasSaidas($(this).val());">
+                                        @foreach (var item in ViewBag.ListaAnoMes)
+                                        {
+                                            <option value="@(item.Id)" @(dtAtual.Year.ToString() == item.Id ? " selected" : "")>@item.Id.ToString().Substring(0, 4)</option>
+                                        }
+                                    </select> <i></i>
+                                </label>
+                            </section>
+                        </div>
+                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                    </header>
+
+                    <!-- widget div-->
+                    <div role="content">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body no-padding">
+                            <div id="pnlLegendProporcaoEntradasSaidas"></div>
+                            <div id="pnlGraphyProporcaoEntradasSaidas" class="chart"></div>
+
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+                    <!-- end widget div -->
+
+                </div>
+            </article>
+            <!-- WIDGET END -->
+            <!-- NEW WIDGET START -->
+            <article class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+
+                <!-- Widget ID (each widget will need unique ID)-->
+                <!-- end widget -->
+
+                <div class="jarviswidget" data-widget-editbutton="false" role="widget" style="">
+                    <!-- widget options:
+                    usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                    data-widget-colorbutton="false"
+                    data-widget-editbutton="false"
+                    data-widget-togglebutton="false"
+                    data-widget-deletebutton="false"
+                    data-widget-fullscreenbutton="false"
+                    data-widget-custombutton="false"
+                    data-widget-collapsed="true"
+                    data-widget-sortable="false"
+
+                    -->
+                    <header role="heading">
+                        <span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
+                        <h2>Total de Presença em Atividades</h2>
+                        <div style="float:right; margin-bottom:-25px; padding-right:4px; margin-top:-4px;">
+                            <section class="col col-5" style="padding-bottom:0">
+                                <label class="select">
+                                    <select onchange="loadGraphAtividades($(this).val());">
+                                        @foreach (var item in ViewBag.ListaAnoMesAtividades)
+                                        {
+                                            <option value="@(item.Id)" @(dtAtual.Year.ToString() == item.Id ? " selected" : "")>@item.Id.ToString().Substring(0, 4)</option>
+                                        }
+                                    </select> <i></i>
+                                </label>
+                            </section>
+                        </div>
+                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                    </header>
+
+                    <!-- widget div-->
+                    <div role="content">
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body no-padding">
+                            <div id="pnlGraphyAtividades" class="chart"></div>
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+                    <!-- end widget div -->
+
+                </div>
+            </article>
+            <!-- WIDGET END -->
+            <!-- NEW WIDGET START -->
+            <article class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+
+                <!-- Widget ID (each widget will need unique ID)-->
+                <div class="jarviswidget" id="wid-id-6" data-widget-editbutton="false">
+                    <!-- widget options:
+                    usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                    data-widget-colorbutton="false"
+                    data-widget-editbutton="false"
+                    data-widget-togglebutton="false"
+                    data-widget-deletebutton="false"
+                    data-widget-fullscreenbutton="false"
+                    data-widget-custombutton="false"
+                    data-widget-collapsed="true"
+                    data-widget-sortable="false"
+
+                    -->
+                    <header>
+                        <span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
+                        <h2>Total de Presença por Tipo de Atividade</h2>
+                        <div style="float:right; margin-bottom:-25px; padding-right:4px; margin-top:-4px;">
+                            <section class="col col-5" style="padding-bottom:0">
+                                <label class="select">
+                                    <select onchange="loadGraphTipoAtividade($(this).val());">
+                                        @foreach (var item in ViewBag.ListaAnoMesAtividades)
+                                        {
+                                            <option value="@(item.Id)" @(dtAtual.Year.ToString() == item.Id ? " selected" : "")>@item.Id.ToString().Substring(0, 4)</option>
+                                        }
+                                    </select> <i></i>
+                                </label>
+                            </section>
+                        </div>
+                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+
+                    </header>
+
+                    <!-- widget div-->
+                    <div>
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body no-padding">
+
+                            <div id="pnlGraphyTipoAtividades" class="chart"></div>
+
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+                    <!-- end widget div -->
+
+                </div>
+                <!-- end widget -->
+
+            </article>
+            <!-- WIDGET END -->
+        </div>
+    </div>
+</div>
+<script src="js/plugin/flot/jquery.flot.cust.min.js"></script>
+<script src="js/plugin/flot/jquery.flot.resize.min.js"></script>
+<script src="js/plugin/flot/jquery.flot.fillbetween.min.js"></script>
+<script src="js/plugin/flot/jquery.flot.orderBar.min.js"></script>
+<script src="js/plugin/flot/jquery.flot.pie.min.js"></script>
+<script src="js/plugin/flot/jquery.flot.tooltip.min.js"></script>
+<script src="js/plugin/flot/jquery.flot.axislabels.js"></script>
+<script>
+    var anoReferencia = @(dtAtual.Year);
+
+    /* chart colors default */
+    var $chrt_border_color = "#efefef";
+    var $chrt_grid_color = "#DDD"
+    var $chrt_main = "#E24913";
+    /* red       */
+    var $chrt_second = "#6595b4";
+    /* blue      */
+    var $chrt_third = "#FF9F01";
+    /* orange    */
+    var $chrt_fourth = "#7e9d3a";
+    /* green     */
+    var $chrt_fifth = "#BD362F";
+    /* dark red  */
+    var $chrt_mono = "#000";
+
+    $(document).ready(function () {
+        loadGraphMembros();
+        loadGraphProporcaoEntradasSaidas(anoReferencia);
+        loadGraphAtividades(anoReferencia);
+        loadGraphTipoAtividade(anoReferencia);
+    });
+
+    function weekendAreas(axes) {
+        var markings = [];
+        var d = new Date(axes.xaxis.min);
+        // go to the first Saturday
+        d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 1) % 7))
+        d.setUTCSeconds(0);
+        d.setUTCMinutes(0);
+        d.setUTCHours(0);
+        var i = d.getTime();
+        do {
+            // when we don't set yaxis, the rectangle automatically
+            // extends to infinity upwards and downwards
+            markings.push({
+                xaxis: {
+                    from: i,
+                    to: i + 2 * 24 * 60 * 60 * 1000
+                }
+            });
+            i += 7 * 24 * 60 * 60 * 1000;
+        } while (i < axes.xaxis.max);
+
+        return markings;
+    }
+
+    function loadGraphMembros() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Dashboard/GraphMembros',
+            beforeSend: function () {
+                ShowProgress('pnlGraphyMembros');
+            },
+            success: function (data) {
+                //console.log(data);
+
+                var d = eval(data);//[[1196463600000, 0], [1196550000000, 0], [1196636400000, 0], [1196722800000, 77], [1196809200000, 3636], [1196895600000, 3575], [1196982000000, 2736], [1197068400000, 1086], [1197154800000, 676], [1197241200000, 1205], [1197327600000, 906], [1197414000000, 710], [1197500400000, 639], [1197586800000, 540], [1197673200000, 435], [1197759600000, 301], [1197846000000, 575], [1197932400000, 481], [1198018800000, 591], [1198105200000, 608], [1198191600000, 459], [1198278000000, 234], [1198364400000, 1352], [1198450800000, 686], [1198537200000, 279], [1198623600000, 449], [1198710000000, 468], [1198796400000, 392], [1198882800000, 282], [1198969200000, 208], [1199055600000, 229], [1199142000000, 177], [1199228400000, 374], [1199314800000, 436], [1199401200000, 404], [1199487600000, 253], [1199574000000, 218], [1199660400000, 476], [1199746800000, 462], [1199833200000, 500], [1199919600000, 700], [1200006000000, 750], [1200092400000, 600], [1200178800000, 500], [1200265200000, 900], [1200351600000, 930], [1200438000000, 1200], [1200524400000, 980], [1200610800000, 950], [1200697200000, 900], [1200783600000, 1000], [1200870000000, 1050], [1200956400000, 1150], [1201042800000, 1100], [1201129200000, 1200], [1201215600000, 1300], [1201302000000, 1700], [1201388400000, 1450], [1201474800000, 1500], [1201561200000, 546], [1201647600000, 614], [1201734000000, 954], [1201820400000, 1700], [1201906800000, 1800], [1201993200000, 1900], [1202079600000, 2000], [1202166000000, 2100], [1202252400000, 2200], [1202338800000, 2300], [1202425200000, 2400], [1202511600000, 2550], [1202598000000, 2600], [1202684400000, 2500], [1202770800000, 2700], [1202857200000, 2750], [1202943600000, 2800], [1203030000000, 3245], [1203116400000, 3345], [1203202800000, 3000], [1203289200000, 3200], [1203375600000, 3300], [1203462000000, 3400], [1203548400000, 3600], [1203634800000, 3700], [1203721200000, 3800], [1203807600000, 4000], [1203894000000, 4500]];
+
+                for (var i = 0; i < d.length; ++i)
+                    d[i][0] += 60 * 60 * 1000;
+
+                var options = {
+                    xaxis: {
+                        mode: "time",
+                        tickLength: 5
+                    },
+                    series: {
+                        lines: {
+                            show: true,
+                            lineWidth: 1,
+                            fill: true,
+                            fillColor: {
+                                colors: [{
+                                    opacity: 0.1
+                                }, {
+                                    opacity: 0.15
+                                }]
+                            }
+                        },
+                        //points: { show: true },
+                        shadowSize: 0
+                    },
+                    selection: {
+                        mode: "x"
+                    },
+                    grid: {
+                        hoverable: true,
+                        clickable: true,
+                        tickColor: $chrt_border_color,
+                        borderWidth: 0,
+                        borderColor: $chrt_border_color,
+                    },
+                    tooltip: true,
+                    tooltipOpts: {
+                        content: "Total de Membros em <b>%x</b> foi <span>%y</span>",
+                        dateFormat: "%0m-%y",
+                        defaultTheme: false
+                    },
+                    colors: [$chrt_second],
+
+                };
+
+                var plot = $.plot($("#pnlGraphyMembros"), [d], options);
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+    function loadGraphProporcaoEntradasSaidas(ano) {
+        $.ajax({
+            type: 'GET',
+            data: {ano: ano},
+            url: rootURL + 'Dashboard/GraphProporcaoEntradasSaidas',
+            beforeSend: function () {
+                $("#pnlGraphyProporcaoEntradasSaidas").html("");
+                ShowProgress('pnlGraphyProporcaoEntradasSaidas');
+            },
+            success: function (data) {
+                //console.log(data);
+
+                eval(data);
+
+                //Display graph
+                $.plot($("#pnlGraphyProporcaoEntradasSaidas"), ds,
+                    {
+                        series: {
+                            bars: {
+                                show: true
+                            }
+                        },
+
+                        bars: {
+                            align: "center",
+                            barWidth: 0.5
+                        },
+                        colors: [$chrt_second, $chrt_fourth, "#666", "#BBB"],
+                        grid: {
+                            show: true,
+                            hoverable: true,
+                            clickable: true,
+                            tickColor: $chrt_border_color,
+                            borderWidth: 0,
+                            borderColor: $chrt_border_color,
+                        },
+                        legend: {
+                            noColumns: 0,
+                            labelBoxBorderColor: "#000000",
+                            container: $("#pnlLegendProporcaoEntradasSaidas")
+                        },
+                        tooltip: true,
+                        tooltipOpts: {
+                            content: "<span>%y</span>",
+                            defaultTheme: false
+                        },xaxis: {
+                            axisLabel: "",
+                            axisLabelFontSizePixels: 12,
+                            axisLabelFontFamily: 'Verdana, Arial',
+                            axisLabelPadding: 10,
+                            ticks: ticks
+                        }
+                    }
+                );
+
+		/* end bar chart */
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+
+            }
+        });
+
+    }
+
+    function loadGraphAtividades(ano) {
+         $.ajax({
+            type: 'GET',
+            url: rootURL + 'Dashboard/GraphAtividades',
+            data: {ano: ano},
+            beforeSend: function () {
+                ShowProgress('pnlGraphyAtividades');
+            },
+            success: function (data) {
+                //console.log(data);
+
+                var d = eval(data);//[[1196463600000, 0], [1196550000000, 0], [1196636400000, 0], [1196722800000, 77], [1196809200000, 3636], [1196895600000, 3575], [1196982000000, 2736], [1197068400000, 1086], [1197154800000, 676], [1197241200000, 1205], [1197327600000, 906], [1197414000000, 710], [1197500400000, 639], [1197586800000, 540], [1197673200000, 435], [1197759600000, 301], [1197846000000, 575], [1197932400000, 481], [1198018800000, 591], [1198105200000, 608], [1198191600000, 459], [1198278000000, 234], [1198364400000, 1352], [1198450800000, 686], [1198537200000, 279], [1198623600000, 449], [1198710000000, 468], [1198796400000, 392], [1198882800000, 282], [1198969200000, 208], [1199055600000, 229], [1199142000000, 177], [1199228400000, 374], [1199314800000, 436], [1199401200000, 404], [1199487600000, 253], [1199574000000, 218], [1199660400000, 476], [1199746800000, 462], [1199833200000, 500], [1199919600000, 700], [1200006000000, 750], [1200092400000, 600], [1200178800000, 500], [1200265200000, 900], [1200351600000, 930], [1200438000000, 1200], [1200524400000, 980], [1200610800000, 950], [1200697200000, 900], [1200783600000, 1000], [1200870000000, 1050], [1200956400000, 1150], [1201042800000, 1100], [1201129200000, 1200], [1201215600000, 1300], [1201302000000, 1700], [1201388400000, 1450], [1201474800000, 1500], [1201561200000, 546], [1201647600000, 614], [1201734000000, 954], [1201820400000, 1700], [1201906800000, 1800], [1201993200000, 1900], [1202079600000, 2000], [1202166000000, 2100], [1202252400000, 2200], [1202338800000, 2300], [1202425200000, 2400], [1202511600000, 2550], [1202598000000, 2600], [1202684400000, 2500], [1202770800000, 2700], [1202857200000, 2750], [1202943600000, 2800], [1203030000000, 3245], [1203116400000, 3345], [1203202800000, 3000], [1203289200000, 3200], [1203375600000, 3300], [1203462000000, 3400], [1203548400000, 3600], [1203634800000, 3700], [1203721200000, 3800], [1203807600000, 4000], [1203894000000, 4500]];
+
+                for (var i = 0; i < d.length; ++i)
+                    d[i][0] += 60 * 60 * 1000;
+
+                var options = {
+                    xaxis: {
+                        mode: "time",
+                        tickLength: 5
+                    },
+                    series: {
+                        lines: {
+                            show: true,
+                            lineWidth: 1,
+                            fill: true,
+                            fillColor: {
+                                colors: [{
+                                    opacity: 0.1
+                                }, {
+                                    opacity: 0.15
+                                }]
+                            }
+                        },
+                        //points: { show: true },
+                        shadowSize: 0
+                    },
+                    selection: {
+                        mode: "x"
+                    },
+                    grid: {
+                        hoverable: true,
+                        clickable: true,
+                        tickColor: $chrt_border_color,
+                        borderWidth: 0,
+                        borderColor: $chrt_border_color,
+                    },
+                    tooltip: true,
+                    tooltipOpts: {
+                        content: "Total de Presença em <b>%x</b> foi <span>%y</span>",
+                        dateFormat: "%0m-%y",
+                        defaultTheme: false
+                    },
+                    colors: [$chrt_second],
+
+                };
+
+                var plot = $.plot($("#pnlGraphyAtividades"), [d], options);
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+
+            }
+        });
+
+    }
+
+    function loadGraphTipoAtividade(ano) {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Dashboard/GraphTipoAtividade',
+            data: {ano: ano},
+            beforeSend: function () {
+                ShowProgress('pnlGraphyTipoAtividades');
+            },
+            success: function (data) {
+                //console.log(data);
+                var data_pie = eval(data);
+
+	            $.plot($("#pnlGraphyTipoAtividades"), data_pie, {
+		            series : {
+			            pie : {
+				            show : true,
+				            innerRadius : 0.5,
+				            radius : 1,
+				            label : {
+					            show : false,
+					            radius : 2 / 3,
+					            formatter : function(label, series) {
+						            return '<div style="font-size:11px;text-align:center;padding:4px;color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+					            },
+					            threshold : 0.1
+				            }
+			            }
+		            },
+		            legend : {
+			            show : true,
+			            noColumns : 1, // number of colums in legend table
+			            labelFormatter : null, // fn: string -> string
+			            labelBoxBorderColor : "#000", // border color for the little label boxes
+			            container : null, // container (as jQuery object) to put legend in, null means default on top of graph
+			            position : "ne", // position of default legend container within plot
+			            margin : [5, 10], // distance from grid edge to default legend container within plot
+			            backgroundColor : "#efefef", // null means auto-detect
+			            backgroundOpacity : 1 // set to 0 to avoid background
+		            },
+		            grid : {
+			            hoverable : true,
+			            clickable : true
+		            },
+	            });
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+
+            }
+        });        
+    }
+</script>

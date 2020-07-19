@@ -1,0 +1,97 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.MembroGLPModel
+@{
+    SAL.MVC.Models.UsuarioClientePerfilModel perfilSelecionado = null;
+
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado") != null)
+    {
+        perfilSelecionado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    }
+
+    if (Model.DataVencimentoOA.HasValue)
+    {
+        DateTime? dtDataVencimentoOA = new DateTime(Model.DataVencimentoOA.Value.Year, Model.DataVencimentoOA.Value.Month, 01, 23, 59, 59);
+        dtDataVencimentoOA = dtDataVencimentoOA.Value.AddDays(-1);
+        Model.DataVencimentoOA = dtDataVencimentoOA;
+    }
+}
+<td class="text-center">
+    <div class="btn-group">
+        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            Ações <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu multi-level">
+            <li><a href="javascript:void(0);" onclick="AbrirDetalhesMembro(@Model.Id);">Detalhes</a></li>
+            @if (perfilSelecionado.SomenteLeitura == false)
+            {
+                <!--(obj, Identificador, Chave, Nome, MembroTOM, MembroOGG, fSeqCadast)-->
+                <li><a href="javascript:void(0);" onclick="SelecionarResultadoBuscaConsultaMembroVenda(this, @Model.Id, '@Model.AfiliacaoNumero', '@Server.UrlEncode(Model.Nome)', @Model.DataVencimentoTOM.HasValue.ToString().ToLower(), @Model.MembroOGG.ToString().ToLower(), @Model.fSeqCadast)">Recebedoria</a></li>
+            }
+            @*<li class="dropdown-submenu">
+            <a href="javascript:void(0);"><span class="dropdown-submenu">Recebedoria</span></a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="javascript:void(0);" onclick="AtalhoVenda('@Model.Nome', '@Model.AfiliacaoNumero', @((Model.DataVencimentoOA.HasValue).ToString().ToLower()), @((Model.DataVencimentoTOM.HasValue).ToString().ToLower()), true)">Dia</a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" onclick="AtalhoVenda('@Model.Nome', '@Model.AfiliacaoNumero', @((Model.DataVencimentoOA.HasValue).ToString().ToLower()), @((Model.DataVencimentoTOM.HasValue).ToString().ToLower()), false)">Lançamento retroativo</a>
+                </li>
+            </ul>
+        </li>*@
+            <li>
+                <a href="javascript:OpenDialogEntradaTemplo('@Model.AfiliacaoNumero', '@Model.Nome');">Autorização Templo</a>
+            </li>
+            @if (Model.Ativo.HasValue && Model.Ativo.Value)
+            {
+                <li>
+                    <a href="javascript:OpenReciboComprovanteQuitacao('@Model.AfiliacaoNumero', '@Model.Nome');">Comprovante de Quitação</a>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <a href="javascript:ClearNotify(); ShowNotify('warning', 'Recebedoria', 'É necessario realizar a recebedoria do Membro, antes de emitir um comprovante de quitação.');">Comprovante de Quitação</a>
+                </li>
+            }
+            @if (perfilSelecionado.SomenteLeitura == false)
+            {
+                <li><a href="javascript:void(0);" onclick="Apagar(@Model.Id, '@Model.Nome');">Apagar</a></li>
+            }
+        </ul>
+    </div>
+</td>
+<td>@Model.AfiliacaoNumero</td>
+<td>@Model.Nome</td>
+@if (perfilSelecionado.Cliente.QuantidadeOA > 1)
+{
+    <td class="text-center">@Model.OrganismoAfiliadoNome</td>
+}
+<td class="text-center @(Model.DataVencimentoGLP.HasValue ? (Model.DataVencimentoGLP.Value >= Model.DataAtual ? "info" : (Model.DataVencimentoGLP.Value.AddMonths(1) > Model.DataAtual ? "warning" : "danger")) : "danger")">
+    @(Model.DataVencimentoGLP.HasValue ? Model.DataVencimentoGLP.Value.ToString("dd/MM/yyyy") : "Não Possui")
+</td>
+<td class="text-center @(Model.DataVencimentoTOM.HasValue ? (Model.DataVencimentoTOM.Value >= Model.DataAtual ? "info" : (Model.DataVencimentoTOM.Value.AddMonths(1) > Model.DataAtual ? "warning" : "danger")) : "danger")">
+    @(Model.DataVencimentoTOM.HasValue ? Model.DataVencimentoTOM.Value.ToString("dd/MM/yyyy") : "Não Possui")
+</td>
+<td class="text-center @(Model.DataVencimentoOA.HasValue ? (Model.DataVencimentoOA.Value >= Model.DataAtual ? "info" : (Model.DataVencimentoOA.Value.AddMonths(1) > Model.DataAtual ? "warning" : "danger")) : "danger")">
+    @(Model.DataVencimentoOA.HasValue ? Model.DataVencimentoOA.Value.ToString("MM/yyyy") : "Não Possui")
+</td>
+<td class="text-center" id="pnlGLPRefreshSOA_@(Model.Id)">
+    @(Model.DataAtualizacaoSOA.HasValue ? Model.DataAtualizacaoSOA.Value.ToString("dd/MM/yyyy") : "Não possui")
+    <br /><div id="pnlGLPRefreshLista_@(Model.Id)">
+        @if (Model.DataAtualizacaoSOA.HasValue == false || (Model.DataAtualizacaoSOA.HasValue && Model.DataAtual.Date != Model.DataAtualizacaoSOA.Value.Date))
+        {
+            <a href="javascript:void(0);" onclick="AtualizarMembroGLP(@Model.Id, 'pnlGLPRefreshLista_@(Model.Id)', 'AtualizarListaMembro');" class="btn btn-primary"> <i class="fa fa-refresh"></i></a>
+        }
+        else
+        {
+            <a href="javascript:void(0);" onclick="AtualizarMembroGLP(@Model.Id, 'pnlGLPRefreshLista_@(Model.Id)', 'AtualizarListaMembro');" class="btn btn-default"><i class="fa fa-check"></i></a>
+        }
+    </div>
+</td>
+@if ((SAL.MVC.Util.GLP.TipoOrganismoAfiliado)perfilSelecionado.Cliente.OrganismoAfiliadoTipoId == SAL.MVC.Util.GLP.TipoOrganismoAfiliado.AtriumMartinista || (SAL.MVC.Util.GLP.TipoOrganismoAfiliado)perfilSelecionado.Cliente.OrganismoAfiliadoTipoId == SAL.MVC.Util.GLP.TipoOrganismoAfiliado.HeptadaMartinista)
+{
+    <td class="text-center">@(Model.MembroCFD.HasValue && Model.MembroCFD.Value ? Model.MembroCFD_Data.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+}
+<td class="text-center">
+    <div style="margin-left:auto; margin-right:auto; margin-top:10px; padding:5px; cursor:default; color:#ffffff; background-color:#@(Model.Ativo.HasValue && Model.Ativo.Value ? (Model.DataVencimentoOA.HasValue && Model.DataVencimentoOA.Value >= Model.DataAtual ? "739e73;" : "9b711a") : "a90329;")">@(Model.Ativo.HasValue && Model.Ativo.Value ? (Model.DataVencimentoOA.HasValue && Model.DataVencimentoOA.Value > Model.DataAtual ? "Ativo" : "Inativo") : "Desligado")</div>
+</td>
+@*<td class="text-center"><a href="javascript:void(0);" onclick="Apagar(@Model.Id, '@Model.Nome');" class="btn btn-default"><i class="fa fa-trash-o"></i> Apagar</a></td>*@

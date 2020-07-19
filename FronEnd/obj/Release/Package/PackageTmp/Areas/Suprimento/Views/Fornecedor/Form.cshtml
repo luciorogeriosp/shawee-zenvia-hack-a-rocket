@@ -1,0 +1,95 @@
+﻿@model SAL.MVC.Areas.Suprimento.Models.FornecedorModel
+<div role="content">
+
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body no-padding">
+
+        <!-- Error states for elements -->
+        <form class="smart-form" id="frmFornecedor">
+            @Html.HiddenFor(m => m.Id)
+            <fieldset>
+                <div class="row">
+                    <section class="col col-4">
+                        <label class="label">
+                            @Html.LabelFor(m => m.Nome)
+                            <span class="font-xs text-danger">*</span>
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.Nome)
+                        </label>
+                    </section>
+                    <section class="col col-4">
+                        <label class="label">
+                            @Html.LabelFor(m => m.CPFCNPJ)
+                            <span class="font-xs text-danger">*</span>
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.CPFCNPJ)
+                        </label>
+                    </section>
+                    <section class="col col-4">
+                        <label class="label">
+                            @Html.LabelFor(m => m.Email)
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.Email)
+                        </label>
+                    </section>
+                </div>
+                <div class="row">
+                    <section class="col col-4">
+                        <label class="label">
+                            @Html.LabelFor(m => m.Telefones)
+                        </label>
+                        <label class="input">
+                            @Html.TextAreaFor(m => m.Telefones, new { rows = "5", style = "width:100%;" })
+                        </label>
+                    </section>
+                    <section class="col col-4">
+                        <label class="label">
+                            @Html.LabelFor(m => m.DadosBancarios)
+                        </label>
+                        <label class="input">
+                            @Html.TextAreaFor(m => m.DadosBancarios, new { rows = "5", style = "width:100%;" })
+                        </label>
+                    </section>
+                    <section class="col col-4">
+                        <label class="label">
+                            @Html.LabelFor(m => m.Endereco)
+                        </label>
+                        <label class="input">
+                            @Html.TextAreaFor(m => m.Endereco, new { rows = "5", style = "width:100%;" })
+                        </label>
+                    </section>
+                </div>
+                <section>
+                    <label class="label">
+                        @Html.LabelFor(m => m.Ativo)
+                    </label>
+                    <label class="pure-checkbox">
+                        @Html.CheckBoxFor(m => m.Ativo)
+                    </label>
+                </section>
+            </fieldset>
+        </form>
+        <!--/ Error states for elements -->
+    </div>
+    <!-- end widget content -->
+</div>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmFornecedor"))
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        $("#btnConfirmar").hide();
+    </script>
+} else {
+    <script>
+        $("#btnConfirmar").removeAttr("disabled");
+    </script>
+}

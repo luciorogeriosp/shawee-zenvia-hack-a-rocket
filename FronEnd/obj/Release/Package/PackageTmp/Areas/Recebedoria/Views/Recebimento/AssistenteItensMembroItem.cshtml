@@ -1,0 +1,24 @@
+﻿@model SAL.MVC.Areas.Recebedoria.Models.ContribuicaoItemModel
+<tr>
+    <td class="text-center hidden-sm hidden-xs">@Model.Tipo</td>
+    <td class="text-left">@Model.ProdutoCodigo<input type="hidden" value="@Model.Id" /> - @Model.Descricao</td>
+    <td class="text-right">
+        <input type="text" size="3" autocomplete="off" style="width:110px;" min="1" maxlength="3" onkeypress="return isNumber(event);" onkeyup="UpdateItem(this, @Model.Id);" onblur="UpdateItemGravar(this, @Model.Id);" class="form-control text-right quantity" value="@Model.Quantidade" />
+    </td>
+    <td class="text-right">
+        @if (Model.ValorOriginal == 0)
+        {
+            <input type="text" size="5" autocomplete="off" style="width:110px;" min="1" maxlength="7" onkeypress="return isDecimal(event);" onkeyup="UpdateItem(this, @Model.Id);" onblur="UpdateItemGravar(this, @Model.Id);" class="form-control text-right price" value="@String.Format("{0:0.00}", Convert.ToDecimal(Model.ValorTexto))" />
+        }
+        else
+        {
+            @String.Format("{0:0.00}", Convert.ToDecimal(Model.Valor))
+        }
+    </td>
+    <td class="text-right">@(String.Format("{0:0.00}", Convert.ToDecimal(Model.ValorTexto) * Model.Quantidade))</td>
+    <td class="text-center" style="width:93px;">
+        <div class="widget-body">
+            <a href="javascript:void(0);" onclick="RemoverItem(this, @Model.Id)" class="btn btn-labeled btn-warning"> <i class="fa fa-trash-o"></i></a>
+        </div>
+    </td>
+</tr>

@@ -1,0 +1,231 @@
+﻿@model SAL.MVC.Areas.Suprimento.Models.SuprimentoGLPViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-list-alt"></i>
+                    Suprimentos | GLP
+                </h1>
+            </div>
+        </div>
+        <div>
+            <article class="col-sm-12 col-md-12 col-lg-12">
+                <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+                    <div role="content" style="border-width: 1px 1px 1px 1px; border-style: solid; border-top-color: #CCC!important;">
+                        <section class="widget-body no-padding">
+                            <form class="smart-form" novalidate="novalidate" onsubmit="return false">
+                                <header>
+                                    Defina o filtro
+                                </header>
+                                <fieldset>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label for="cboSecao">Seção</label>
+                                            <label class="select">
+                                                <select class="form-control" id="cboSecao" name="cboSecao" onchange="SelecionaCategoria(this.options[this.selectedIndex].value);">
+                                                    <option value="-1">Selecione</option>
+                                                    @foreach (var item in Model.SecaoLista)
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                </select>
+                                                <i></i>
+                                            </label>
+                                        </section>
+                                        <section class="col col-6">
+                                            <label for="cboCategoria">Categoria</label>
+                                            <label class="select">
+                                                <select class="form-control" id="cboCategoria" name="cboCategoria">
+                                                    <option value="-1">Selecione</option>
+                                                </select>
+                                                <i></i>
+                                            </label>
+                                        </section>
+                                    </div>
+                                    <section>
+                                        <label for="txtNomeProduto">Nome do Produto</label>
+                                        <label class="input">
+                                            <input type="text" name="txtNomeProduto" id="txtNomeProduto" onkeypress="OnEnter(event, 'Buscar')">
+                                        </label>
+                                    </section>
+                                </fieldset>
+                                <footer>
+                                    <button type="button" class="btn btn-success" onclick="Buscar();">
+                                        Buscar
+                                    </button>
+                                </footer>
+                            </form>
+                        </section>
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div>
+            <article class="col-sm-12 col-md-12 col-lg-12" id="pnlListagem"></article>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        Buscar();
+    });
+
+    function SelecionaCategoria(Id) {
+        ClearNotify();
+
+        $("#cboCategoria").empty();
+        $("#cboCategoria").append("<option value='-1'>Selecione");
+        $("#cboCategoria").val("");
+
+        if (Id != "-1") {
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'Suprimento/GLP/ListaCategorias',
+                data: { SecaoId: Id },
+                beforeSend: function () {
+
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $.each(data.lista, function () {
+                            $("#cboCategoria").append("<option value='" + this.Id + "'>" + this.Text);
+                        });
+
+                        $("#cboCategoria").focus();
+                    } else {
+                        ShowNotify('danger', 'Suprimentos - GLP', data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+                    ShowNotify('danger', 'Suprimentos - GLP', MsgNaoFoiPossivelCompletarOperacao);
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+                    HideProgress();
+                }
+            });
+        }
+    }
+
+    function Buscar() {
+        ClearNotify();
+
+        var Secao = $("#cboSecao").val();
+        var Categoria = $("#cboCategoria").val();
+        var NomeProduto = $("#txtNomeProduto").val();
+
+        $.ajax({
+            type: 'POST',
+            data: {
+                Secao: Secao,
+                Categoria: Categoria,
+                NomeProduto: NomeProduto
+            },
+            url: rootURL + 'Suprimento/GLP/Lista',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#pnlListagem").html(data);
+
+            },
+            error: function (xhr, st, str) {
+                ShowNotify('danger', 'Suprimentos - GLP', str);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function AdicionarVariacao(Id) {
+        ClearNotify();
+
+        ProdutoVariacao = $("#ProdutoVariacao_" + Id).val();
+
+        if (ProdutoVariacao.length == 0) {
+            ShowNotify('warning', 'Suprimentos - GLP', 'Defina o nome da variação.');
+            return false;
+        }
+
+        $.ajax({
+            type: 'POST',
+            data: {
+                Id: Id,
+                Variacao: ProdutoVariacao
+            },
+            url: rootURL + 'Suprimento/GLP/AdicionarVariacao',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#lineProdutoGLP_" + Id).html(data);
+
+            },
+            error: function (xhr, st, str) {
+                ShowNotify('danger', 'Suprimentos - GLP', str);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ApagarVariacao(Id, ProdutoId) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            data: {
+                Id: Id,
+                ProdutoId: ProdutoId
+            },
+            url: rootURL + 'Suprimento/GLP/ApagarVariacao',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#lineProdutoGLP_" + Id).html(data);
+
+            },
+            error: function (xhr, st, str) {
+                ShowNotify('danger', 'Suprimentos - GLP', str);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function AlterarVariacao(Id, ProdutoId, ProdutoVariacao) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            data: {
+                Id: Id,
+                ProdutoId: ProdutoId,
+                Variacao: ProdutoVariacao
+            },
+            url: rootURL + 'Suprimento/GLP/AlterarVariacao',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#lineProdutoGLP_" + Id).html(data);
+
+            },
+            error: function (xhr, st, str) {
+                ShowNotify('danger', 'Suprimentos - GLP', str);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+</script>

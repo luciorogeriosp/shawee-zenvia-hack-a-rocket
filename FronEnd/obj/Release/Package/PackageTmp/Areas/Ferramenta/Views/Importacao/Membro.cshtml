@@ -1,0 +1,166 @@
+﻿@model SAL.MVC.Areas.Ferramenta.Models.ImportacaoMembroFiltroModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-gear"></i>
+                    Ferramentas | Exportação de Dados - Membros
+                </h1>
+            </div>
+        </div>
+        <article class="col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+                <div role="content" style="border-width: 1px 1px 1px 1px; border-style: solid; border-top-color: #CCC!important;">
+                    <section class="widget-body no-padding">
+                        <form class="smart-form" novalidate="novalidate" enctype="multipart/form-data" onsubmit="return false" action="@Url.Action("MembroUpload", "Importacao", new { Area = "Ferramenta" })" method="post" id="frmImportar" name="frmImportar" target="iFrameReciboAutorizacaoTemplo">
+                            <header>
+                                Selecione o arquivo que deseja importar<span class="pull-right"><a href="~/Importacao/ImportacaoMembros.xls" target="_blank"><i class="fa fa-download"></i> Baixar Exemplo</a></span>
+                            </header>
+                            <fieldset>
+                                <section>
+                                    <label for="Arquivo">Arquivo Excel (xls, xlsx)</label>
+                                    <div class="input input-file">
+                                        <span class="button"><input type="file" id="Arquivo" name="Arquivo" onchange="this.parentNode.nextSibling.value = this.value.substr(this.value.lastIndexOf('\\') + 1)">Procurar Arquivo</span><input type="text" placeholder="" disabled="disabled" class="form-control">
+                                    </div>
+                                </section>
+                            </fieldset>
+                            <footer>
+                                <button type="button" class="btn btn-success" onclick="Importar();">
+                                    Importar
+                                </button>
+                            </footer>
+                        </form>
+                    </section>
+                </div>
+            </div>
+            <div id="pnlProgressMaster" style="display:none;">
+                <div class="progress">
+                    <div class="progress-bar bg-color-blue" aria-valuetransitiongoal="0" aria-valuenow="0" style="width: 0%;" id="pnlProgressProcess">0%</div>
+                </div>
+            </div>
+            <div id="pnlTableContent">
+
+            </div>
+            <br /><br /><br />
+        </article>
+
+
+    </div>
+</div>
+
+<script>
+    var listaImportacao = null;
+    var contadorImportacao = 0;
+    var totalImportacao = 0;
+    var timerId = 0;
+
+    function Importar() {
+        ClearNotify();
+        $("#pnlProgressMaster").hide();
+        $("#pnlTableContent").hide();
+        $("#pnlTableContent").html("");
+
+        OnBeginForm();
+
+        document.frmImportar.submit();
+    }
+
+    function UpdateTableContent(html) {
+        $("#pnlTableContent").html(html);
+    }
+
+    function Iniciar(lista) {
+        OnCompleteForm();
+
+        $("#pnlProgressMaster").show();
+        $("#pnlTableContent").show();
+        UpdateProgressBar("pnlProgressProcess", 0);
+
+        listaImportacao = lista;
+        totalImportacao = lista.length;
+        contadorImportacao = 0;
+        timerId = 0;
+
+        timerId = setTimeout(function () {
+            Processar();
+        }, 300);
+    }
+
+    function Processar() {
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Ferramenta/Importacao/MembroUploadItem',
+            data: { Id: listaImportacao[contadorImportacao] },
+            beforeSend: function () {
+                clearInterval(timerId);
+            },
+            success: function (data) {
+                if (data.success) {
+                    $("#pnlImportacaoLinha_" + listaImportacao[contadorImportacao] + " td[coltype=situacao]").addClass("success");
+                    $("#pnlImportacaoLinha_" + listaImportacao[contadorImportacao] + " td[coltype=situacao]").html("Concluído");
+                } else {
+                    $("#pnlImportacaoLinha_" + listaImportacao[contadorImportacao] + " td[coltype=situacao]").html("Concluído com Erro<br />" + data.msg);
+                    $("#pnlImportacaoLinha_" + listaImportacao[contadorImportacao] + " td[coltype=situacao]").addClass("warning");
+                }
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                var percent = 0;
+
+                if (contadorImportacao > 0) {
+                    percent = contadorImportacao * 100 / totalImportacao;
+                }
+
+                percent = parseFloat(percent).toFixed(2)
+
+                UpdateProgressBar("pnlProgressProcess", percent);
+
+                if (contadorImportacao == totalImportacao - 1) {
+                    Finalizar();
+                } else {
+                    $('html, body').animate({
+                        scrollTop: $("#pnlImportacaoLinha_" + listaImportacao[contadorImportacao]).offset().top
+                    });
+
+                    timerId = setTimeout(function () {
+                        Processar();
+                    }, 1000);
+                }
+
+                contadorImportacao++;
+            }
+        });        
+    }
+
+    function Finalizar() {
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Ferramenta/Importacao/MembroUploadFinalizar',
+            data: { Id: listaImportacao[contadorImportacao] },
+            async: false,
+            cache: false,
+            beforeSend: function () {
+
+            },
+            success: function (data) {
+                $("#pnlProgressMaster").hide();
+                UpdateProgressBar("pnlProgressProcess", 100);
+                ShowNotify('success', 'Importação de Dados - Membros', 'Importação finalizada. Veja mais informações no log abaixo.');
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+
+            }
+        });   
+    }
+</script>

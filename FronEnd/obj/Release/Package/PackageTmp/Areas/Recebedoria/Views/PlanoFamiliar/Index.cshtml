@@ -1,0 +1,187 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-money fa-fw"></i>
+                    Recebedoria | Plano Familiar
+                </h1>
+            </div>
+        </div>
+        <div class="well">
+            <div class="panel-body" style="padding-bottom:10px;">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="input-group">
+                            <select class="form-control" id="ddlNomeMembro" readonly="readonly"></select> <i></i>
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-default" tabindex="-1" onclick="OpenDialogAbrirMembroGLP_PlanoFamiliar()"><i class="fa fa-user"></i> Buscar Membro</button>
+                                <button type="button" class="btn btn-default" tabindex="-1" onclick="LimpaBusca()"><i class="fa fa-eraser"></i> Limpar Busca</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tree smart-form" id="pnlGrupos">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var MembroId = 0;
+    var NomeBusca = "";
+    var NumeroAfiliacaoBusca = 0;
+
+    $(document).ready(function () {
+        loadGrupos();
+    });
+
+    function OpenDialogAbrirMembroGLP_PlanoFamiliar() {
+        consultaMembroSelecionarFuncao = "SelecionarResultadoBuscaConsultaMembro_PlanoFamiliar";
+        OpenDialogAbrirMembroGLP(true);
+    }
+
+    function SelecionarResultadoBuscaConsultaMembro_PlanoFamiliar(obj, Identificador, Chave, Nome, MembroTOM, MembroOGG, fSeqCadast) {
+        ClearNotify();
+        MembroId = Identificador;
+        NomeBusca = decodeURIComponent(Nome).replace(/\+/g, ' ');
+        NumeroAfiliacaoBusca = Chave;
+        loadGrupos();
+    }
+
+    function LimpaBusca() {
+        MembroId = 0;
+        NomeBusca = "";
+        NumeroAfiliacaoBusca = 0;
+        loadGrupos();
+    }
+
+    function loadGrupos() {
+        $("#ddlNomeMembro").empty();
+
+        if (MembroId != 0) {
+            $("#ddlNomeMembro").append("<option value='" + MembroId + "'>" + NomeBusca);
+        }       
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Recebedoria/PlanoFamiliar/Grupos',
+            data: { MembroId: MembroId, Nome: NomeBusca, NumeroAfiliacao: NumeroAfiliacaoBusca},
+            beforeSend: function () {
+                CloseDialogAbrirMembroGLP();
+                ShowProgress('pnlGrupos');
+            },
+            success: function (data) {
+                $("#pnlGrupos").html(data);
+            },
+            error: function (xhr, st, str) {
+                ShowNotify('danger', 'Recebedoria | Plano Familiar', MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                $("#btnCancelarDoacaoSim").removeAttr("disabled");
+                HideProgress();
+            }
+        });
+    }
+
+    function AdicionarMembroPlanoFamiliar(PlanoFamiliarId, MembroId, MembroDescricao) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Recebedoria/PlanoFamiliar/Incluir',
+            data: { PlanoFamiliarId: PlanoFamiliarId, MembroId: MembroId },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Recebedoria | Plano Familiar', "Membro: " + MembroDescricao + " adicionado ao Plano Familiar: " + PlanoFamiliarId + " com sucesso.");
+                }
+                else {
+                    ShowNotify('danger', 'Recebedoria | Plano Familiar', data.msg);
+                }
+
+                LimpaBusca()
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function AdicionarMembroPlanoFamiliarNovo(MembroId, MembroDescricao) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Recebedoria/PlanoFamiliar/IncluirNovo',
+            data: { MembroId: MembroId },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Recebedoria | Plano Familiar', "Membro: " + MembroDescricao + " adicionado a um Novo Plano Familiar com sucesso.");
+                }
+                else {
+                    ShowNotify('danger', 'Recebedoria | Plano Familiar', data.msg);
+                }
+
+                LimpaBusca()
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ExcluirMembroPlanoFamiliar(PlanoFamiliarId, MembroId, MembroDescricao) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente incluir o Membro: " + MembroDescricao + " no Plano Familiar: " + PlanoFamiliarId + "?", "ExcluirMembroPlanoFamiliarConfirmar(" + PlanoFamiliarId + ", " + MembroId + ", '" + MembroDescricao + "');")
+    }
+
+    function ExcluirMembroPlanoFamiliarConfirmar(PlanoFamiliarId, MembroId, MembroDescricao) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Recebedoria/PlanoFamiliar/Excluir',
+            data: { PlanoFamiliarId: PlanoFamiliarId, MembroId: MembroId },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Recebedoria | Plano Familiar', "Membro: " + MembroDescricao + " removido do Plano Familiar: " + PlanoFamiliarId + " com sucesso.");
+                }
+                else {
+                    ShowNotify('danger', 'Recebedoria | Plano Familiar', data.msg);
+                }
+
+                LimpaBusca()
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+</script>

@@ -1,0 +1,356 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-desktop"></i>
+                    Configuração | Usuário
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:10px;">
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" onclick="AbrirModalUsuario();">
+                        Incluir Usuario
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="jarviswidget jarviswidget-color-white" id="wid-id-0" data-widget-editbutton="true">
+                    <header>
+                        <span class="widget-icon"> <i class="fa fa-table"></i> </span>
+                        <h2>Lista de Usuários </h2>
+
+                    </header>
+
+                    <!-- widget div-->
+                    <div>
+
+                        <!-- widget edit box -->
+                        <div class="jarviswidget-editbox">
+                            <!-- This area used as dropdown edit box -->
+
+                        </div>
+                        <!-- end widget edit box -->
+                        <!-- widget content -->
+                        <div class="widget-body no-padding" id="UsuarioLista">
+                            
+                        </div>
+                        <!-- end widget content -->
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModalUsuario" title="Formulário de Usuário" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalUsuarioContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogUsuario();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmDialogUsuario();">Confirmar</button>
+    </div>
+</div>
+<script>
+    var dialogUsuario;
+
+    function CloseDialogUsuario() {
+        dialogUsuario.dialog("close");
+    }
+
+    function LoadList() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/Usuarios/Lista',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#UsuarioLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmDialogUsuario() {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Configuracao/Usuarios/Form',
+            data: $.param($("#frmUsuario").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalUsuarioContent").html("");
+                $("#myModalUsuarioContent").html(data);
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfigureDialogUsuario() {
+        dialogUsuario = $("#myModalUsuario").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()),
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' })
+            }
+        });
+    }    
+
+    function AbrirModalUsuario() {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/Usuarios/Form',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalUsuarioContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogUsuario.dialog("open");
+                dialogUsuario.dialog("moveToTop");
+
+                $("#myModalUsuarioContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+    
+    function Editar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/Usuarios/Form',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalUsuarioContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogUsuario.dialog("open");
+                dialogUsuario.dialog("moveToTop");
+
+                $("#myModalUsuarioContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Apagar(Id, Nome) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente excluir o Usuario " + Nome + "?", "ApagarConfirmar(" + Id + ", '" + Nome + "');")
+    }
+
+    function ApagarConfirmar(Id, Nome) {
+        ClearNotify();        
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Configuracao/Usuarios/Excluir',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    $("#line_" + Id).remove();
+                    ShowNotify('success', 'Configuração | Usuário', data.msg);
+                }
+                else {
+                    ShowNotify('danger', 'Configuração | Usuário', data.msg);
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function SelecionaTipoPerfil() {
+        var TipoPerfilIdSelect = $("#TipoPerfilIdSelect").val();
+
+        $("#RegiaoIdSelect").empty();
+        $("#RegiaoIdSelect").append("<option value=''>Selecione");
+
+        $("#OrganismoIdSelect").empty();
+        $("#OrganismoIdSelect").append("<option value=''>Selecione");
+
+        $("#PerfilIdSelect").empty();
+        $("#PerfilIdSelect").append("<option value=''>Selecione");
+
+        $("#pnlPerfilRegiao").hide();
+        $("#pnlPerfilOrganismo").hide();
+        $("#pnlPerfilPerfil").hide();
+
+        if (TipoPerfilIdSelect != "" && TipoPerfilIdSelect != "3" && TipoPerfilIdSelect != "8") {
+            $.ajax({
+                type: 'GET',
+                url: rootURL + 'Configuracao/Usuarios/SelecionaTipoPerfil',
+                data: { TipoPerfilId: TipoPerfilIdSelect },
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    if (data.success) {
+                        if (data.ListaRegiao != null && data.ListaRegiao.length > 0) {
+                            $.each(data.ListaRegiao, function () {
+                                $("#RegiaoIdSelect").append("<option value='" + this.Id + "'>" + this.Text);
+                            });
+
+                            if ($("#RegiaoIdSelect option").length == 2) {
+                                $("#RegiaoIdSelect")[0].selectedIndex = 1;
+                                $("#RegiaoIdSelect").trigger("change");
+                            }
+
+                            $("#pnlPerfilRegiao").show();
+                        }
+                        if (data.ListaOrganismo != null && data.ListaOrganismo.length > 0) {
+                            $.each(data.ListaOrganismo, function () {
+                                $("#OrganismoIdSelect").append("<option value='" + this.Id + "'>" + this.Text);
+                            });
+
+                            if ($("#OrganismoIdSelect option").length == 2) {
+                                $("#OrganismoIdSelect")[0].selectedIndex = 1;
+                                $("#OrganismoIdSelect").trigger("change");
+                            }                            
+
+                            $("#pnlPerfilOrganismo").show();
+                        }
+                        if (data.ListaPerfil != null && data.ListaPerfil.length > 0) {
+                            $.each(data.ListaPerfil, function () {
+                                $("#PerfilIdSelect").append("<option value='" + this.Id + "'>" + this.Text);
+                            });
+
+                            if ($("#PerfilIdSelect option").length == 2) {
+                                $("#PerfilIdSelect")[0].selectedIndex = 1;
+                                $("#PerfilIdSelect").trigger("change");
+                            }
+
+                            $("#pnlPerfilPerfil").show();
+                        }
+                    }
+                    else {
+                        ShowNotify('danger', 'Configuração | Usuário', data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+                    OnCompleteForm();
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+
+            $("#pnlPerfilSegmento").show();
+        } else {
+            $("#pnlPerfilSegmento").hide();
+        }        
+    }
+
+    function SelecionaRegiao() {
+        var TipoPerfilIdSelect = $("#TipoPerfilIdSelect").val();
+        var RegiaoIdSelect = $("#RegiaoIdSelect").val();
+
+        $("#OrganismoIdSelect").empty();
+        $("#OrganismoIdSelect").append("<option value=''>Selecione");
+
+        if (RegiaoIdSelect != "" && (TipoPerfilIdSelect == "9" || TipoPerfilIdSelect == "5" || TipoPerfilIdSelect == "10")) { // || TipoPerfilIdSelect == "11" || TipoPerfilIdSelect == "12" || TipoPerfilIdSelect == "13" || TipoPerfilIdSelect == "14" || TipoPerfilIdSelect == "15"
+            $.ajax({
+                type: 'GET',
+                url: rootURL + 'Configuracao/Usuarios/SelecionaRegiao',
+                data: { RegiaoId: RegiaoIdSelect },
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    if (data.success) {
+                        if (data.ListaOrganismo != null) {
+                            $.each(data.ListaOrganismo, function () {
+                                $("#OrganismoIdSelect").append("<option value='" + this.Id + "'>" + this.Text);
+                            });
+                        }
+                    }
+                    else {
+                        ShowNotify('danger', 'Configuração | Usuário', data.msg);
+                    }
+                },
+                error: function (xhr, st, str) {
+                    OnCompleteForm();
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+
+            $("#pnlPerfilOrganismo").show();
+        } else {
+            $("#pnlPerfilOrganismo").hide();
+        }
+    }
+
+    $(window).resize(function () {
+        ConfigureDialogUsuario();
+    });
+
+    $(document).ready(function () {
+        ConfigureDialogUsuario();
+        LoadList();
+    });
+</script>

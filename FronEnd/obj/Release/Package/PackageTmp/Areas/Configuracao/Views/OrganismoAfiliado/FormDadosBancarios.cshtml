@@ -1,0 +1,91 @@
+﻿@model SAL.MVC.Areas.Configuracao.Models.OrganismoAfiliadoDadosEmpresaViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<!-- Error states for elements -->
+<form class="smart-form" id="frmDadosBancarios">
+    <fieldset>
+        <div class="row">
+            <section class="col col-3">
+                <label class="label">
+                    <label for="DadosBancariosBancoNumero">Código do Banco</label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.DadosBancariosBancoNumero)
+                </label>
+            </section>
+            <section class="col col-3">
+                <label class="label">
+                    <label for="DadosBancariosBancoNome">Nome do Banco</label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.DadosBancariosBancoNome, new { style = "text-transform: uppercase" })
+                </label>
+            </section>
+        </div>
+    </fieldset>
+    <fieldset>
+        <div class="row">
+            <section class="col col-3">
+                <label class="label">
+                    <label for="DadosBancariosAgencia">Agência</label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.DadosBancariosAgencia)
+                </label>
+            </section>
+            <section class="col col-3">
+                <label class="label">
+                    <label for="DadosBancariosConta">Conta</label>
+                    <span class="font-xs text-danger">*</span>
+                </label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.DadosBancariosConta)
+                </label>
+            </section>
+            <section class="col col-6">
+                <label class="label" for="DadosBancariosContato">Contato</label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.DadosBancariosContato, new { style = "text-transform: uppercase" })
+                </label>
+            </section>          
+        </div>        
+    </fieldset>    
+    <footer>
+        <button type="submit" class="btn btn-primary">
+            Gravar Dados Bancários
+        </button>
+    </footer>
+</form>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmDadosBancarios"))
+<script>
+    $("#frmDadosBancarios").submit(function (e) {
+        var postData = $(this).serializeArray();
+
+        $("#frmDadosBancarios button").prop("disabled", true);
+
+        $.ajax(
+        {
+            url: rootURL + 'Configuracao/OrganismoAfiliado/FormDadosBancarios',
+            type: "POST",
+            data: postData,
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data, textStatus, jqXHR) {
+                $("#pnlDadosBancarios").html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                OnCompleteForm();
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+        e.preventDefault(); //STOP default action
+    });
+</script>

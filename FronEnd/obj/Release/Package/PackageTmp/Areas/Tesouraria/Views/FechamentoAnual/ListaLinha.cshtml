@@ -1,0 +1,13 @@
+﻿@model SAL.MVC.Areas.Tesouraria.Models.FechamentoAnualModel
+@{
+    Layout = null;
+}
+<td class="text-right">@Model.Ano</td>
+<td class="text-right">@(Model.SaldoInicial.HasValue ? string.Format("{0:N}", Model.SaldoInicial) : "-")</td>
+<td class="text-right">@(Model.SaldoFinal.HasValue ? string.Format("{0:N}", Model.SaldoFinal) : "-")</td>
+<td class="text-right">@(Model.MembrosAnoAnterior.HasValue ? Model.MembrosAnoAnterior.Value.ToString() : "-")</td>
+<td class="text-right">@(Model.MembrosAtivos.HasValue ? Model.MembrosAtivos.Value.ToString() : "-")</td>
+<td class="text-center">@(Model.StatusId == "A" ? "Em Aberto" : Model.StatusId == "V" ? "Em Verificação" : "Fechado")</td>
+<td>
+    <a href="javascript:void(0);" onclick="Detalhes(@Model.Id);" class="btn btn-success"><i class="fa fa-folder-open-o"></i> Detalhes</a>
+</td>

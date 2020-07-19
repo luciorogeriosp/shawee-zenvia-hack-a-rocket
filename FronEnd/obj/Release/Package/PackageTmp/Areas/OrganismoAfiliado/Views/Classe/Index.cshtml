@@ -1,0 +1,559 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-university"></i>
+                    Organismo Afiliado | Classe
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:10px;">
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" onclick="AbrirModalClasse();">
+                        Incluir Classe
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="widget-body" id="ClasseLista">
+
+        </div>
+    </div>
+</div>
+<div id="myModalClasse" title="Formulário de Classe" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalClasseContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogClasse();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+    </div>
+</div>
+<div id="myModalAtividadeManuscrito" title="Lista de Atividades" class="no-padding" style="display:none;">
+    <div class="modal-body">
+        <fieldset>
+            <form class="smart-form" id="frmAtividadeManuscrito" autocomplete="off" onsubmit="return false;">
+
+            </form>
+        </fieldset>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogAtividadeManuscrito();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmarAtividadeManuscrito();">Confirmar</button>
+    </div>
+</div>
+<script>
+    var dialogClasse;
+    var dialogAtividadeManuscrito;
+    var ObjetoSelecionado;
+    var ConfirmarAtividadeManuscritoMembroId = 0;
+
+    function CloseDialogClasse() {
+        dialogClasse.dialog("close");
+    }
+
+    function CloseDialogAtividadeManuscrito() {
+        dialogAtividadeManuscrito.dialog("close");
+    }
+
+    function LoadList() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Classe/Lista',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#ClasseLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmDialogClasse() {
+        ClearNotify();
+        $("#btnConfirmar").attr("disabled", "disabled");
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Classe/Form',
+            data: $.param($("#frmClasse").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalClasseContent").html("");
+                $("#myModalClasseContent").html(data);
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmMembrosListaConfirmar() {
+        ClearNotify();
+        $("#btnMembrosListaConfirmar").attr("disabled", "disabled");        
+
+        var ClasseId = $("#IdClasse").val();
+        var MembroId = $("#MembroIdSelect").val();
+
+        if (ClasseId == "")
+            ClasseId = 0;
+
+        if (MembroId == "")
+            MembroId = 0;
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Classe/AdicionarMembro',
+            data: { ClasseId: ClasseId, MembroId: MembroId },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Organismo Afiliado - Classe - Membros', data.msg, 'ClasseMembros');
+                    LoadMembrosLista();
+                } else {
+                    ShowNotify('danger', 'Organismo Afiliado - Classe - Membros', data.msg, 'ClasseMembros');
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowNotify('danger', 'Organismo Afiliado - Classe - Membros', MsgNaoFoiPossivelCompletarOperacao, 'ClasseMembros');
+            },
+            complete: function () {
+                OnCompleteForm();
+
+                $("#btnMembrosListaConfirmar").removeAttr("disabled");
+            }
+        });
+    }
+
+    function ConfigureDialogClasse() {
+        dialogClasse = $("#myModalClasse").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()),
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' });
+            }
+        });
+    }
+
+    function ConfigureDialogAtividadeManuscrito() {
+        dialogAtividadeManuscrito = $("#myModalAtividadeManuscrito").dialog({
+            autoOpen: false,
+            width: (thisDevice == "mobile") ? parseInt($(window).width()) : parseInt($("#content").css("width")) / 2,
+            resizable: false,
+            modal: true,
+            closeOnEscape: true,
+            position: { my: "center top", at: "center top", of: $("#content") }
+        });
+    }
+
+
+
+    function AbrirModalClasse() {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Classe/Form',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalClasseContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogClasse.dialog("open");
+                dialogClasse.dialog("moveToTop");
+
+                $("#myModalClasseContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Editar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Classe/Form',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalClasseContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogClasse.dialog("open");
+                dialogClasse.dialog("moveToTop");
+
+                $("#myModalClasseContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Apagar(Id, Nome) {
+        ClearNotify();
+        OpenDialogExcluir("Somente é permitido apagar uma classe depois que as atividades vinculadas a mesma forem transferidas para outra classe ou apagadas, e todos os membros vinculados devem ser retirados da classe. Deseja realmente excluir a Classe " + Nome + "?", "ApagarConfirmar(" + Id + ");")
+    }
+
+    function ApagarConfirmar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Classe/Excluir',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Organismo Afiliado | Classe', data.msg);
+                    $("#line_" + Id).remove();
+                }
+                else {
+                    ShowNotify('danger', 'Organismo Afiliado | Classe', data.msg);
+                }
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ApagarMembro(Id, Nome) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente remover o membro: '" + Nome + "' dessa classe?", "ApagarMembroConfirmar(" + Id + ");")
+    }
+
+    function ApagarMembroConfirmar(Id) {
+        ClearNotify();
+
+        var ClasseId = $("#IdClasse").val();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Classe/ExcluirMembro',
+            data: { MembroId: Id, ClasseId: ClasseId },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Organismo Afiliado | Classe', data.msg);
+                    $("#line_" + Id).remove();
+                }
+                else {
+                    ShowNotify('danger', 'Organismo Afiliado | Classe', data.msg);
+                }
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function LoadMembrosLista() {
+        //ClearNotify();
+
+        var ClasseId = $("#IdClasse").val();
+
+        $("#ClasseMembros").html("");
+        ShowProgress('ClasseMembros');
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Classe/MembrosLista',
+            data: { Id: ClasseId },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#ClasseMembros").html(data);                
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+
+                $("#ClasseMembros").css("display", "");                
+            }
+        });
+    }
+
+    function LoadMembrosAtualizarSOA() {
+        ClearNotify();
+
+        var ClasseId = $("#IdClasse").val();
+
+        $("#ClasseMembros").html("");
+        ShowProgress('ClasseMembros');
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Classe/MembrosListaSOA',
+            data: { Id: ClasseId },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#ClasseMembros").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+   
+    function LoadAtividadesLista() {
+        ClearNotify();
+
+        var ClasseId = $("#IdClasse").val();
+
+        $("#ClasseAtividades").html("");
+        ShowProgress('ClasseAtividades');
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'OrganismoAfiliado/Classe/AtividadesLista',
+            data: { Id: ClasseId },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#ClasseAtividades").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+
+                $("#ClasseAtividades").css("display", "");                
+            }
+        });
+    }
+
+    function AtualizaPresencaClasse(IdMembro, IdManuscrito, NomeMembro, NomeAtividade, Objeto) {
+        ClearNotify();
+
+        var ClasseId = $("#IdClasse").val();
+
+        var Selecionado = Objeto.is(':checked');
+        ObjetoSelecionado = Objeto;
+
+        if (!Selecionado) {
+            ClearNotify();
+            OpenDialogExcluir("Deseja realmente remover a presença do membro: '" + NomeMembro + "' da classe: '" + NomeAtividade + "'?", "ApagarPresencaMembroConfirmar(" + IdMembro + ", " + IdManuscrito + ");");
+        } else {
+            $.ajax({
+                type: 'POST',
+                url: rootURL + 'OrganismoAfiliado/Classe/IncluirPresencaMembro',
+                data: { MembroId: IdMembro, ClasseId: ClasseId, ManuscritoId: IdManuscrito},
+                beforeSend: function () {
+                    //OnBeginForm();
+                },
+                success: function (data) {
+                    if (data.success) {
+                        //ShowNotify('success', 'Organismo Afiliado | Classe', data.msg, 'ClasseAtividades');
+                    }
+                    else {
+                        //ShowNotify('warning', 'Organismo Afiliado | Classe', data.msg, 'ClasseAtividades');
+
+                        ObjetoSelecionado.removeAttr("checked");
+
+                        if (data.lista != undefined) {
+
+                            ConfirmarAtividadeManuscritoMembroId = IdMembro;
+
+                            $.ajax({
+                                type: 'GET',
+                                url: rootURL + 'OrganismoAfiliado/Classe/MostraAtividadesClasse',
+                                data: { ClasseId: ClasseId, ManuscritoId: IdManuscrito, MembroId: IdMembro },
+                                beforeSend: function () {
+                                    //OnBeginForm();
+                                },
+                                success: function (data) {
+                                    $("#frmAtividadeManuscrito").html(data);
+
+                                    dialogAtividadeManuscrito.dialog("open");
+                                    dialogAtividadeManuscrito.dialog("moveToTop");
+                                },
+                                error: function (xhr, st, str) {
+                                    OnCompleteForm();
+                                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                                },
+                                complete: function () {
+                                    OnCompleteForm();
+
+                                    AtualizaTotalFaltas(ObjetoSelecionado);
+                                }
+                            });
+                        }
+                    }
+                },
+                error: function (xhr, st, str) {
+                    OnCompleteForm();
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+                    OnCompleteForm();
+
+                    AtualizaTotalFaltas(ObjetoSelecionado);
+                }
+            });
+        }
+
+        // ESSA FUNÇÃO DEVE CHAMAR A ATUALIZAÇÃO. CASO SEJA PARA TIRAR PRESENÇA OK
+        // SE FOR PARA DAR PRESENÇA E TIVER MAIS DE UMA ATIVIDADE PARA ESSA CLASSE. SERÁ PRECISO ESCOLHER A ATIVIDADE.
+    }
+
+    function AtualizaTotalFaltas() {
+        var QuantidadeFaltas = $(ObjetoSelecionado.parent().parent().parent()).find("input[type=checkbox]:not(:checked)").length;
+        $(ObjetoSelecionado.parent().parent().parent()).find("td:last").text(QuantidadeFaltas);
+    }
+
+    function ConfirmarAtividadeManuscrito() {
+        ClearNotify();
+
+        var ClasseId = $("#IdClasse").val();
+
+        var ListaAtividadeId = [];
+        $("#frmAtividadeManuscrito input[type=checkbox]:checked").each(function (index) {
+            ListaAtividadeId.push($(this).val());
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Classe/IncluirPresencaMembroLista',
+            data: { MembroId: ConfirmarAtividadeManuscritoMembroId, AtividadeLista: ListaAtividadeId },
+            beforeSend: function () {
+                //OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ObjetoSelecionado.prop("checked", "checked");
+                    //ShowNotify('success', 'Organismo Afiliado | Classe', data.msg, 'ClasseAtividades');
+                    CloseDialogAtividadeManuscrito();
+
+                    AtualizaTotalFaltas(ObjetoSelecionado);
+                }
+                else {
+                    ShowNotify('warning', 'Organismo Afiliado | Classe - Presença', data.msg, 'frmAtividadeManuscrito');
+                }
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+
+                AtualizaTotalFaltas(ObjetoSelecionado);
+            }
+        });
+
+    }
+
+    function ApagarPresencaMembroConfirmar(IdMembro, IdManuscrito) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'OrganismoAfiliado/Classe/ExcluirPresencaMembro',
+            data: { MembroId: IdMembro, ManuscritoId: IdManuscrito },
+            beforeSend: function () {
+                //OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    //ShowNotify('success', 'Organismo Afiliado | Classe', data.msg);
+                }
+                else {
+                    ShowNotify('danger', 'Organismo Afiliado | Classe', data.msg);
+                }
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+
+                AtualizaTotalFaltas();
+            }
+        });
+    }
+
+    $(window).resize(function () {
+        ConfigureDialogClasse();
+        ConfigureDialogAtividadeManuscrito();
+    });
+
+    $(document).ready(function () {
+        ConfigureDialogClasse();
+        ConfigureDialogAtividadeManuscrito();
+        LoadList();
+    });
+</script>

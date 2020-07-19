@@ -1,0 +1,171 @@
+﻿@model SAL.MVC.Areas.Suprimento.Models.ProdutoModel
+<div role="content">
+
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body no-padding">
+
+        <!-- Error states for elements -->
+        <form class="smart-form" id="frmEstoque">
+            @Html.HiddenFor(m => m.Id)
+            <fieldset>
+
+                <div class="row">
+                    <section class="col col-9">
+                        <label class="label">
+                            @Html.LabelFor(m => m.Nome)
+                            <span class="font-xs text-danger">*</span>
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.Nome, new { disabled = "disabled" })
+                        </label>
+                    </section>
+                    <section class="col col-3">
+                        <label class="label">
+                            @Html.LabelFor(m => m.Codigo)
+                            <span class="font-xs text-danger">*</span>
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.Codigo, new { disabled = "disabled" })
+                        </label>
+                    </section>
+                </div>
+                <div class="row">
+                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-3">
+                        <label class="label">
+                            @Html.LabelFor(m => m.ValorCusto)
+                            <span class="font-xs text-danger">*</span>
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.ValorCusto, new { onkeypress = "return isDecimal(event);", onkeyup = "return retiraPontos(event);", disabled = "disabled", id = "ValorCustoDisabled" })
+                        </label>
+                    </section>
+                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-3">
+                        <label class="label">
+                            @Html.LabelFor(m => m.ValorVenda)
+                            <span class="font-xs text-danger">*</span>
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.ValorVenda, new { onkeypress = "return isDecimal(event);", onkeyup = "return retiraPontos(event);", disabled = "disabled", id = "ValorVendaDisabled" })
+                        </label>
+                    </section>
+                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-3">
+                        <label class="label">
+                            @Html.LabelFor(m => m.QuantidadeEstoqueExibicao)
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.QuantidadeEstoqueExibicao, new { type = "number", disabled = "disabled" })
+                        </label>
+                    </section>
+                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-3">
+                        <label class="label">
+                            @Html.LabelFor(m => m.QuantidadeMinima)
+                        </label>
+                        <label class="input">
+                            @Html.TextBoxFor(m => m.QuantidadeMinima, new { type = "number", disabled = "disabled" })
+                        </label>
+                    </section>
+                </div>
+                <ul id="myTab1" class="nav nav-tabs bordered">
+                    <li class="active">
+                        <a href="#pnlEstoqueAdicionar" data-toggle="tab">Entrada</a>
+                    </li>
+                    <li class="">
+                        <a href="#pnlEstoqueRemover" data-toggle="tab">Saída</a>
+                    </li>
+                </ul>
+                <div class="tab-content padding-10">
+                    <div class="tab-pane fade active in" id="pnlEstoqueAdicionar">
+                        <div class="row">
+                            <section class="col col-3">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.ValorCusto)
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.ValorCusto, new { onkeypress = "return isDecimal(event);", onkeyup = "return retiraPontos(event);" })
+                                </label>
+                            </section>
+                            <section class="col col-3">
+                                <label class="label">
+                                    @Html.LabelFor(m => m.ValorVenda)
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.ValorVenda, new { onkeypress = "return isDecimal(event);", onkeyup = "return retiraPontos(event);" })
+                                </label>
+                            </section>
+                            <section class="col col-3">
+                                <label class="label">
+                                    <label for="QuantidadeEstoque">Quantidade</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.QuantidadeEstoque, new { type = "number" })
+                                </label>
+                            </section>
+                            <section class="col col-3">
+                                <label class="label">
+                                    &nbsp;
+                                </label>
+                                <button type="button" class="btn btn-success" onclick="ConfirmDialogEstoque();" style="height:33px; width:100%">Adicionar</button>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="pnlEstoqueRemover">
+                        <div class="row">
+                            <section class="col col-3">
+                                <label class="label">
+                                    <label for="QuantidadeEstoqueRemover">Quantidade</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.QuantidadeEstoqueRemover, new { type = "number" })
+                                </label>
+                            </section>
+                            <section class="col col-3">
+                                <label class="label">
+                                    &nbsp;
+                                </label>
+                                <button type="button" class="btn btn-warning" onclick="ConfirmDialogEstoqueRemover();" style="height:33px; width:100%">Remover</button>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+        <!--/ Error states for elements -->
+    </div>
+    <!-- end widget content -->
+</div>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmEstoque"))
+@if (Model.ReturnAttribute.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        $("#line_@(Model.Id)").children()[4].innerText = '@Model.QuantidadeEstoqueExibicao';
+        $("#line_@(Model.Id)").children()[5].innerText = '@Model.ValorVenda.ToString("0.00")';
+    </script>
+}
+@if (Model.SuprimentoGLP != null)
+{
+    <script>
+        $("#frmEstoque input").attr("disabled", "disabled");
+        $("#frmEstoque #QuantidadeEstoque").removeAttr("disabled");
+        $("#frmEstoque #QuantidadeEstoqueRemover").removeAttr("disabled");
+        $("#frmEstoque #Id").removeAttr("disabled");
+    </script>
+}
+@if (Model.Ativo == false)
+{
+    <script>
+        $("#frmEstoque input").attr("disabled", "disabled");
+        $("#frmEstoque button").attr("disabled", "disabled");
+
+        ShowNotify('warning', 'Estoque', 'Não é possível atualizar estoque de produtos inativos.', 'frmEstoque');
+    </script>
+}

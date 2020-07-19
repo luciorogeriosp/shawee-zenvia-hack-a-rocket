@@ -1,0 +1,203 @@
+﻿@model SAL.MVC.Areas.OrganismoAfiliado.Models.ConsultaMembroModel
+@{
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+    bool IntegracaoSOA = true;
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("IntegracaoSOA") != null)
+    {
+        IntegracaoSOA = ((bool)Tropical.Infrastructure.Util.SessionData.SessionReader("IntegracaoSOA"));
+    }
+}
+<fieldset>
+    <form class="smart-form" id="frmConsultaMembro" autocomplete="off" onsubmit="return false;">
+        @if ((!IntegracaoSOA) && (Model.ReturnAttribute == null || (Model.ReturnAttribute != null && string.IsNullOrEmpty(Model.ReturnAttribute.Mensagem))))
+        {
+            <div class="alert alert-warning fade in">
+                <a class="close" data-dismiss="alert" href="#">×</a>
+                <h4 class="alert-heading">Resultado da busca</h4>Integração SOA fora do ar.
+            </div>
+        }
+        @Html.HiddenFor(m => m.Selecionar)
+        <div class="row">
+            <section class="col col-6">
+                <label class="label">@Html.LabelFor(m => m.TipoOrganismoAfiliado)</label>
+                <label class="select">
+                    <select class="form-control" id="TipoOrganismoAfiliado" name="TipoOrganismoAfiliado">
+                        <option value="1" @(Model.TipoOrganismoAfiliado == 1 ? " selected" : "")>R+C ou TOM</option>
+                        <option value="2" @(Model.TipoOrganismoAfiliado == 2 ? " selected" : "")>OGG</option>
+                    </select>
+                    <i></i>
+                    @Html.Raw(Model.ReturnAttribute.GetError("TipoMembro"))
+                </label>
+            </section>
+            <section class="col col-6">
+                <label class="label">@Html.LabelFor(m => m.NumeroAfiliacao)</label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.NumeroAfiliacao, new { @class = "form-control", MaxLength = "10", type = "number", @onkeypress = "OnEnter(event, 'ConfirmaAbrirMembroGLP')" })
+                    @Html.Raw(Model.ReturnAttribute.GetError("NumeroAfiliacao"))
+                </label>
+            </section>
+            <section class="col col-6" style="display:none;">
+                <label class="label">@Html.LabelFor(m => m.Nome)</label>
+                <label class="input">
+                    @Html.TextBoxFor(m => m.Nome, new { @class = "form-control", MaxLength = "30", style = "text-transform: uppercase", @onkeypress = "OnEnter(event, 'ConfirmaAbrirMembroGLP')" })
+                    @Html.Raw(Model.ReturnAttribute.GetError("Nome"))
+                    <label class="note"><strong>Obs:</strong> Pesquisas apenas por primeiro nome demoram entre 50 e 60 segundos.</label>
+                </label>
+            </section>
+        </div>
+    </form>
+    <div class="row" id="pnlResultadoBuscaConsultaMembro" style="margin-left: 0; margin-right: 0;">
+        @if (Model.ListaResultadoBusca == null && string.IsNullOrEmpty(Model.HtmlResultadoConsulta) == false)
+        {
+            @Html.Raw(Model.HtmlResultadoConsulta)
+        }
+        @if (Model.ListaResultadoBusca != null && Model.ListaResultadoBusca.Any())
+        {
+            if (Model.ListaResultadoBusca.Count == 1 && Model.Selecionar)
+            {
+                <div class="progress">
+                    <div class="progress progress-striped">
+                        <div class="progress-bar bg-color-blue active" role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <fieldset>
+                    <legend>Resultado da Busca</legend>
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-center">&nbsp;</th>
+                                <th class="text-center">Afiliação</th>
+                                <th class="text-center">Nome</th>
+                                <th class="text-center hidden-sm hidden-xs">GLP ativo até</th>
+                                <th class="text-center hidden-sm hidden-xs">TOM ativo até</th>
+                                <th class="text-center hidden-sm hidden-xs">O.A. ativo até</th>
+                                <th class="text-center hidden-sm hidden-xs">Afiliação GLP</th>
+                                <th class="text-center hidden-sm hidden-xs">Afiliação TOM</th>
+                                <th class="text-center hidden-sm hidden-xs">Afiliação O.A.</th>
+                                <th class="text-center hidden-sm hidden-xs">Lote Atual</th>
+                                <th class="text-center hidden-sm hidden-xs">Grau</th>
+                                <th class="text-center hidden-sm hidden-xs">Data SOA</th>
+                                <th class="text-center hidden-sm hidden-xs">Atraso Biblioteca</th>
+                                @if (Model.Selecionar)
+                                {
+                                    <th class="text-center">&nbsp;</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var jurisdicaoNome in Model.ListaResultadoBusca.GroupBy(g => g.JurisdicaoNome).Select(s => s.Key).ToList())
+                            {
+                                <tr>
+                                    <td colspan="@(Model.Selecionar ? "14" : "13")" class="bg-color-blue txt-color-white">@jurisdicaoNome</td>
+                                </tr>
+                                foreach (var itemBusca in Model.ListaResultadoBusca.Where(w => w.JurisdicaoNome == jurisdicaoNome))
+                                {
+                                    /*
+                                    if (itemBusca.DataQuitacaoOA.HasValue)
+                                    {
+                                        DateTime? dtDataVencimentoOA = new DateTime(itemBusca.DataQuitacaoOA.Value.Year, itemBusca.DataQuitacaoOA.Value.Month, 01, 23, 59, 59);
+                                        dtDataVencimentoOA = dtDataVencimentoOA.Value.AddDays(-1);
+                                        itemBusca.DataQuitacaoOA = dtDataVencimentoOA;
+                                    }
+                                    */
+                                    <tr id="pnlResultadoBuscaConsultaMembro_@(itemBusca.Identificador)">
+                                        <td class="text-center"><a href="javascript:void(0)" onclick="AbrirResultadoBuscaConsultaMembro(@itemBusca.Identificador, @(Model.TipoOrganismoAfiliado), '@itemBusca.fSeqCadast', @(Model.Selecionar.ToString().ToLower()))"><icon class="fa fa-plus" id="iconResultadoBuscaConsultaMembro_@(itemBusca.Identificador)"></icon></a></td>
+                                        <td class="text-center">@itemBusca.Chave</td>
+                                        <td class="text-left">@itemBusca.Nome@Html.Raw(itemBusca.AutorizacaoTemplo ? " <i class='fa fa-check text-success' rel='tooltip' data-placement='bottom' data-original-title='Entrada ao Templo Autorizada por: " + itemBusca.AutorizacaoResponsavel + "'></i>" : "")</td>
+                                        <td class="text-center hidden-sm hidden-xs @(itemBusca.DataQuitacaoGLP.HasValue ? itemBusca.DataQuitacaoGLP.Value > dtAtual ? "info" : (itemBusca.DataQuitacaoGLP.Value.AddMonths(1) > dtAtual ? "warning" : "danger") : "danger")">@(itemBusca.DataQuitacaoGLP.HasValue ? itemBusca.DataQuitacaoGLP.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+                                        <td class="text-center hidden-sm hidden-xs @(itemBusca.DataQuitacaoTOM.HasValue ? itemBusca.DataQuitacaoTOM.Value > dtAtual ? "info" : (itemBusca.DataQuitacaoTOM.Value.AddMonths(1) > dtAtual ? "warning" : "danger") : "danger")">@(itemBusca.DataQuitacaoTOM.HasValue ? itemBusca.DataQuitacaoTOM.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+                                        <td class="text-center hidden-sm hidden-xs @(itemBusca.DataQuitacaoOA.HasValue ? itemBusca.DataQuitacaoOA.Value > dtAtual ? "info" : (itemBusca.DataQuitacaoOA.Value.AddMonths(1) > dtAtual ? "warning" : "danger") : "danger")">@(itemBusca.DataQuitacaoOA.HasValue ? itemBusca.DataQuitacaoOA.Value.ToString("MM/yyyy") : "Não possui")</td>
+                                        <td class="text-center hidden-sm hidden-xs">@(itemBusca.DataAfiliacaoGLP.HasValue ? itemBusca.DataAfiliacaoGLP.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+                                        <td class="text-center hidden-sm hidden-xs">@(itemBusca.DataAfiliacaoTOM.HasValue ? itemBusca.DataAfiliacaoTOM.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+                                        <td class="text-center hidden-sm hidden-xs">@(itemBusca.DataAdmissaoOA.HasValue ? itemBusca.DataAdmissaoOA.Value.ToString("dd/MM/yyyy") : "Não possui")</td>
+                                        <td class="text-center hidden-sm hidden-xs">@(itemBusca.LoteAtualGLP)</td>
+                                        <td class="text-center hidden-sm hidden-xs">@(itemBusca.GrauRC)</td>
+                                        <td class="text-center hidden-sm hidden-xs">
+                                            @(itemBusca.DataAtualizacaoSOA.HasValue ? itemBusca.DataAtualizacaoSOA.Value.ToString("dd/MM/yyyy") : "Não possui")
+                                            @if (itemBusca.Identificador != itemBusca.fSeqCadast)
+                                            {
+                                                <br /><div id="pnlGLPRefresh_@(itemBusca.Identificador)">
+                                                    @if (itemBusca.DataAtualizacaoSOA.HasValue == false || (itemBusca.DataAtualizacaoSOA.HasValue && dtAtual.Date != itemBusca.DataAtualizacaoSOA.Value.Date))
+                                                    {
+                                                        <a href="javascript:void(0);" onclick="AtualizarMembroGLP(@itemBusca.Identificador, 'pnlGLPRefresh_@(itemBusca.Identificador)', 'ConfirmaAbrirMembroGLP');" class="btn btn-primary"> <i class="fa fa-refresh"></i></a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href="javascript:void(0);" class="btn btn-default"><i class="fa fa-check"></i></a>
+                                                    }
+                                                </div>
+                                            }
+                                        </td>
+                                        <td class="text-center hidden-sm hidden-xs @(itemBusca.QuantidadeAtrasoBiblioteca > 0 ? " danger" : "")">@(itemBusca.QuantidadeAtrasoBiblioteca > 0 ? itemBusca.QuantidadeAtrasoBiblioteca.ToString() : "OK")</td>
+                                        @if (Model.Selecionar)
+                                        {
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-primary" onclick="SelecionarResultadoBuscaConsultaMembro(this, @itemBusca.Identificador, '@itemBusca.Chave', '@itemBusca.Nome', @itemBusca.MembroTOM.ToString().ToLower(), @itemBusca.MembroOGG.ToString().ToLower(), @itemBusca.fSeqCadast);"><i class="glyphicon glyphicon-chevron-left"></i><span class="hidden-sm hidden-xs"> Selecionar</span></button>
+                                            </td>
+                                        }
+                                    </tr>
+                                    <tr id="pnlResultadoBuscaConsultaMembro_VisaoGeral_@(itemBusca.Identificador)" @(Html.Raw(Model.ListaResultadoBusca.Count > 1 ? " style='display:none;'" : ""))>
+                                        <td>&nbsp;</td>
+                                        <td colspan="@(Model.Selecionar ? "14" : "13")" style="padding-bottom:15px; padding-top:15px">
+                                            <div>
+                                                @{
+                                                    Html.RenderAction("ConsultaMembroVisaoGeralAPI", new { TipoId = Model.TipoOrganismoAfiliado, membro = itemBusca });
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="@(Model.Selecionar ? "14" : "13")">Exibindo @Model.ListaResultadoBusca.Count registro(s)</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </fieldset>
+            }
+        }
+    </div>
+</fieldset>
+@Html.Raw(SAL.MVC.Helpers.Notify.JsNotify(Model.ReturnAttribute, "frmConsultaMembro"))
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $("body").css({ overflow: 'hidden' });
+        }, 300);
+    });
+
+    $("i[rel=tooltip]").tooltip();
+
+    $("div[aria-describedby='myModalAbrirMembroGLP']").find(".ui-dialog-title").html("Consultar SOA GLP <i class='fa fa-signal @(IntegracaoSOA ? "txt-color-green" : "txt-color-red")'></i><img src='img/logo-sol.png' height='40' style='margin-left:20px;'>");
+    $("#frmConsultaMembro #NumeroAfiliacao")[0].focus();
+    //$("#myModalAbrirMembroGLP button.btn-warning, #myModalAbrirMembroGLP button.btn-success").removeAttr("disabled");
+</script>
+@if (Model.ListaResultadoBusca != null && Model.ListaResultadoBusca.Any())
+{
+    <script>
+        $('#myModalAbrirMembroGLP').animate({
+            scrollTop: $("#pnlResultadoBuscaConsultaMembro").offset().top - $('#myModalAbrirMembroGLP').offset().top + $('#myModalAbrirMembroGLP').scrollTop()
+        }, 500);
+    </script>
+    if (Model.ListaResultadoBusca.Count == 1 && Model.Selecionar == false)
+    {
+        <script>
+            AbrirResultadoBuscaConsultaMembro(@Model.ListaResultadoBusca[0].Identificador, @(Model.TipoOrganismoAfiliado), '@Model.ListaResultadoBusca[0].fSeqCadast', @(Model.Selecionar.ToString().ToLower()));
+        </script>
+    }
+    else if (Model.ListaResultadoBusca.Count == 1 && Model.Selecionar == true)
+    {
+        <script>
+            ShowProgress('myModalMembroGLPContent');
+            setTimeout(function () {
+                CloseDialogAbrirMembroGLP();
+                SelecionarResultadoBuscaConsultaMembro(null, @Model.ListaResultadoBusca[0].Identificador, @Model.ListaResultadoBusca[0].Chave, '@Server.UrlEncode(Model.ListaResultadoBusca[0].Nome)', @Model.ListaResultadoBusca[0].MembroTOM.ToString().ToLower(), @Model.ListaResultadoBusca[0].MembroOGG.ToString().ToLower(), @Model.ListaResultadoBusca[0].fSeqCadast);
+            }, 1000);
+        </script>
+    }
+}

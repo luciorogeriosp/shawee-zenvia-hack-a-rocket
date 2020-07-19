@@ -1,0 +1,84 @@
+﻿@model FrontEnd.Util.API.Model.StoreModel
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<form class="smart-form" onsubmit="return false" id="frmProfile">
+    @if (ViewBag.MsgSuccess != null)
+    {
+        <div class="alert alert-@(Convert.ToBoolean(ViewBag.MsgSuccess) == true? "success" : "danger") fade in">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+            <h4 class="alert-heading">Dados do Usuário</h4>@(ViewBag.MsgTexto)
+        </div>
+        if (Convert.ToBoolean(ViewBag.MsgSuccess))
+        {
+            <script>
+                $("#lblTopoUsuarioNome").text('@Model.Name');
+            </script>
+        }
+    }
+<fieldset>
+    <section>
+        <label class="label">Nome ou Razão Social</label>
+        <label class="input">
+            @Html.TextBoxFor(m => m.Name, new { @class = "input-xs", maxlength = 60 })
+        </label>
+    </section>
+    <section>
+        <label class="label">CPF ou CNPJ</label>
+        <label class="input">
+            @Html.TextBoxFor(m => m.Name, new { @class = "input-xs", maxlength = 60 })
+        </label>
+    </section>
+    <section>
+        <label class="label">Código de Ativação</label>
+        <label class="input">
+            @Html.TextBoxFor(m => m.Code, new { @class = "input-xs", maxlength = 255 })
+        </label>
+    </section>
+    <section>
+        <label class="label">Whatsapp ou Telefone Comercial</label>
+        <label class="input">
+            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "input-xs", maxlength = 255 })
+        </label>
+    </section>
+    <div class="row">
+        <section class="col col-9">
+            <label class="label">Endereço</label>
+            <label class="input">
+                @Html.TextBoxFor(m => m.Address, new { @class = "input-xs", maxlength = 255 })
+            </label>
+        </section>
+        <section class="col col-3">
+            <label class="label">Número</label>
+            <label class="input">
+                @Html.TextBoxFor(m => m.AddressNumber, new { @class = "input-xs", maxlength = 255 })
+            </label>
+        </section>
+    </div>
+    <div class="row">
+        <section class="col col-6">
+            <label class="label">Cidade</label>
+            <label class="input">
+                @Html.TextBoxFor(m => m.City, new { @class = "input-xs", maxlength = 255 })
+            </label>
+        </section>
+        <section class="col col-6">
+            <label class="label">Estado</label>
+            <label class="input">
+                @Html.TextBoxFor(m => m.State, new { @class = "input-xs", maxlength = 255 })
+            </label>
+        </section>
+    </div>
+</fieldset>
+    <footer>
+        <button type="submit" class="btn btn-primary" onclick="GravarDadosUsuario();">
+            Gravar Dados
+        </button>
+    </footer>
+</form>
+<script>
+    $(document).ready(function () {
+        $("#PasswordTemp").val('');
+    });
+</script>

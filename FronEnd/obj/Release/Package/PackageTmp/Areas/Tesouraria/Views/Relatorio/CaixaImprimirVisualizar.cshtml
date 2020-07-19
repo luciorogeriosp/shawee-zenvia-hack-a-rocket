@@ -1,0 +1,260 @@
+﻿@model SAL.MVC.Models.RelatorioModel<List<SAL.MVC.Areas.Tesouraria.Models.RelatorioCaixaModel>>
+@{
+    DateTime DataInicial = Model.Dados.Min(m => m.DataToCompare);
+    DateTime DataFinal = Model.Dados.Max(m => m.DataToCompare);
+}
+<html>
+<body>
+    <meta name="viewport" content="width=device-width">
+
+    <!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script>
+        if (!window.jQuery) {
+            document.write('<script src="@Url.Content("~/js/libs/jquery-2.0.2.min.js")" ><\/script>');
+        }
+    </script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script>
+        if (!window.jQuery.ui) {
+            document.write('<script src="@Url.Content("~/js/libs/jquery-ui-1.10.3.min.js")" ><\/script>');
+        }
+    </script>
+
+    <link rel="stylesheet" href="@Url.Content("~/js/jsPDF-AutoTable-master/pure-min.css")">
+    <link rel="stylesheet" href="@Url.Content("~/js/jsPDF-AutoTable-master/grids-responsive-min.css")">
+
+
+    <script src="@Url.Content("~/js/jsPDF-AutoTable-master/jspdf.min.js")"></script>
+    <script>if (window.define) delete window.define.amd;</script>
+    <script src="@Url.Content("~/js/jsPDF-AutoTable-master/jspdf.plugin.autotable.src.js")"></script>
+    <div id="pnlTitle" style="display:none;">@Model.ReportTitle</div>
+    <div id="pnlSubTitle" style="display:none;">@Model.ReportSubitle</div>
+    @foreach (var dados in Model.Dados)
+    {
+        <table id="pnlDadosItens_@(dados.DataToCompare.ToString("yyyymmdd"))" class="table table-striped" style="display:none;">
+            <thead>
+                <tr>
+                    @if (DataInicial != DataFinal)
+                    {
+                        <th>Data</th>
+                    }
+                    <th>Histórico</th>
+                    <th>Entradas</th>
+                    <th>Saídas</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in dados.Lista)
+                {
+                    <tr>
+                        @*<td>@item.Id</td>*@
+                        @if (DataInicial != DataFinal)
+                        {
+                            <td>@item.Data.ToString("dd/MM/yyyy")</td>
+                        }
+                        <td>@item.ContaCodigo - @item.ContaNome</td>
+                        <td>R$ @string.Format("{0:N}", item.ValorEntrada)</td>
+                        <td>R$ @string.Format("{0:N}", item.ValorSaida)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <table id="pnlDadosTotal_@(dados.DataToCompare.ToString("yyyymmdd"))" class="table table-striped" style="display:none;">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Totais do Dia (R$): </td>
+                    <td>@(string.Format("{0:N}", dados.ValorTotalDiaEntrada)) </td>
+                    <td>@(string.Format("{0:N}", dados.ValorTotalDiaSaida)) </td>
+                </tr>
+                <tr>
+                    <td>Saldo Anterior (R$): </td>
+                    <td>@(string.Format("{0:N}", dados.SaldoAnterior)) </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Saldo Atual (R$): </td>
+                    <td></td>
+                    <td>@(string.Format("{0:N}", dados.SaldoAtual)) </td>
+                </tr>
+                <tr>
+                    <td>(R$): </td>
+                    <td>@(string.Format("{0:N}", (dados.ValorTotalDiaEntrada + dados.SaldoAnterior))) </td>
+                    <td>@(string.Format("{0:N}", (dados.SaldoAtual + dados.ValorTotalDiaSaida))) </td>
+                </tr>
+            </tbody>
+        </table>
+    }
+    <script type="text/javascript">
+        $(function () {
+
+            var doc = new jsPDF('P', 'pt', 'a4', true);
+            var HeaderOK = false;
+
+            doc.setProperties({
+                title: '@Model.ReportTitle',
+                subject: '@Model.ReportSubitle'
+            });
+
+            var header = function (data) {
+
+                if (!HeaderOK) {
+
+                    doc.setFontSize(20);
+                    doc.setTextColor(40);
+                    doc.setFontStyle('normal');
+                    doc.text($("#pnlTitle").html(), 40, 45);
+                    doc.setFontSize(12);
+                    doc.text($("#pnlSubTitle").html(), 40, 65);
+
+                    HeaderOK = true;
+                }
+            };
+
+            var totalPagesExp = "{total_pages_count_string}";
+            var footer = function (data) {
+                var str = "Página " + doc.internal.getCurrentPageInfo().pageNumber;
+                // Total page number plugin only available in jspdf v1.0+
+                if (typeof doc.putTotalPages === 'function') {
+                    str = str + " de " + totalPagesExp;
+                }
+
+                doc.setFontStyle('normal');
+                doc.setFontSize(10);
+                doc.setFillColor(255, 255, 255);
+                doc.rect(50, doc.internal.pageSize.height - 35, 200, 20, 'F');
+
+                doc.text(str, 50, doc.internal.pageSize.height - 30);
+            };
+
+            var options = {
+            };
+
+            var dataTipoSuprimento = '';
+            var contadorSpan = 0;
+
+            var dataTipoSuprimento = '';
+            var contadorSpan = 0;
+            var res;
+            var resItens;
+            var contadorRecebedoria = 0;
+
+    @for (int i = 0; i < Model.Dados.Count; i++)
+    {
+        var dados = Model.Dados[i];
+        <text>
+            contadorRecebedoria = 0;
+        resItens = doc.autoTableHtmlToJson(document.getElementById("pnlDadosItens_@(dados.DataToCompare.ToString("yyyymmdd"))"));
+        doc.autoTable(resItens.columns, resItens.data, {
+            startY: (contadorRecebedoria == 0) ? 80 : doc.autoTableEndPosY() + 20,
+                margin: { left: 40, bottom: 60 },
+                pageBreak: '@(i  > 0 ? "always" : "auto")',
+                tableWidth: 'auto',
+                styles: {
+                font: 'Arial',
+                    fillStyle: 'DF',
+                    lineColor: [44, 62, 80],
+                    lineWidth: 1,
+                    overflow: 'linebreak'
+                },
+                headerStyles: { fontSize: 13, fontStyle: 'bold', halign: 'center', valign: 'middle' },
+                beforePageContent: header,
+                afterPageContent: footer,
+                columnStyles: {
+                @if(DataInicial != DataFinal)
+{
+    <text>
+                    0: {
+                        halign: 'center',
+                        columnWidth: 100
+                    },
+                    1: {
+                        halign: 'left'
+                    },
+                    2: {
+                        halign: 'right',
+                        columnWidth: 100
+                    },
+                    3: {
+                        halign: 'right',
+                        columnWidth: 100
+                    }
+                    </text>
+} else
+{
+    <text>
+                    0: {
+                        halign: 'left'
+                    },
+                    1: {
+                        halign: 'right',
+                        columnWidth: 100
+                    },
+                    2: {
+                        halign: 'right',
+                        columnWidth: 100
+                    }
+            </text>
+}
+
+            },
+        });
+
+    contadorRecebedoria++;
+
+    resTotal = doc.autoTableHtmlToJson(document.getElementById("pnlDadosTotal_@(dados.DataToCompare.ToString("yyyymmdd"))"));
+    doc.autoTable(resTotal.columns, resTotal.data, {
+        startY: doc.autoTableEndPosY() + 30,
+            pageBreak: 'auto',
+            tableWidth: 400,
+            drawHeaderRow: function(row, data)
+                {
+            return false;
+        },
+            margin: { left: 206},
+            styles: {
+            font: 'Arial',
+                fillStyle: 'DF',
+                lineColor: [44, 62, 80],
+                lineWidth: 1,
+                overflow: 'linebreak'
+            },
+            columnStyles: {
+            0: {
+                halign: 'right',
+                    fontStyle: 'bold',
+                    fontSize: 12
+                    },
+                1: {
+                halign: 'right',
+                    columnWidth: 100,
+                    fontSize: 12
+                },
+                2: {
+                halign: 'right',
+                    columnWidth: 100,
+                    fontSize: 12
+                }
+        },
+            });
+</text>
+    }
+
+        // Total page number plugin only available in jspdf v1.0+
+        if (typeof doc.putTotalPages === 'function') {
+            doc.putTotalPages(totalPagesExp);
+        }
+
+        parent.document.getElementById("iframeImprimir").src = doc.output('datauristring');
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+﻿@model List<SAL.MVC.Areas.OrganismoAfiliado.Models.ListaPresencaModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+@if (Model != null && Model.Any())
+{
+    <table id="datatable_ListaPresenca" class="table table-striped table-bordered table-hover" width="100%">
+        <caption>
+            <form class="navbar-form navbar-left" role="search" style="margin-top:0px;">
+                <div class="form-group">
+                    <label class="col-6 control-label">Presenças do Dia: @(Convert.ToDateTime(Session["RECEPCAO_DATA_INICIAL"]).ToString("dd/MM/yyyy"))</label>
+                </div>
+            </form>
+        </caption>
+        <thead>
+            <tr>
+                <th class="text-center" style="display:none;">Tipo</th>
+                <th class="text-center" style="display:none;">Título</th>
+                <th class="text-center">Data</th>
+                <th class="text-center">Nome</th>
+                <th class="text-center">Cargo</th>
+                <th class="text-center">Chave</th>
+                <th class="text-center">O.A.</th>
+                <th class="text-center">Visitante</th>
+                <th class="text-center">Documento</th>
+                <th class="text-center">Senha</th>
+                <th class="text-center">Tipo</th>
+                <th class="text-center">Usuário</th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderBy(o => o.Data).ThenBy(t => t.OficialPrioridade).ThenBy(t=> t.Ordem).ThenByDescending(td=> td.DataHora))
+            {
+            <tr id="ListaPresencaItem_@(item.Comissao ? "Comissao" : "Atividade")@item.Id">
+                <td style="display:none;">@item.Tipo</td>
+                <td style="display:none;">@item.NomeAtividade.ToUpper()</td>
+                <td>@item.DataHora</td>
+                <td>@item.Nome.ToUpper()</td>
+                <td>@item.Cargo.ToUpper()</td>
+                <td align="center">@(string.IsNullOrEmpty(item.Chave) == false ? item.Chave : " - ")</td>
+                <td align="center">@(string.IsNullOrEmpty(item.NomeOrganismoAfiliado) == false ? item.NomeOrganismoAfiliado : " - ")</td>
+                <td align="center">@(item.Visitante ? "Sim" : "Não")</td>
+                <td align="center">@(string.IsNullOrEmpty(item.Documento) == false && item.Documento.IndexOf("{") < 0 ? (string.IsNullOrEmpty(item.DocumentoTipo) == false ? item.DocumentoTipo + ": " : "") + item.Documento : " - ")</td>
+                <td align="center">@item.Senha</td>
+                <td align="center">@(item.Comissao ? "Comissão" : "Atividade")</td>
+                <td>@item.NomeUsuario</td>
+                <td class="text-center" data-hide="print"><a href="javascript:void(0);" onclick="EditarPresenca(@item.Id, '@item.Nome.Replace("'", "\\'").ToUpper()', '@item.Data.ToString("dd/MM/yyyy")', '@(item.Comissao ? "Comissão" : "Atividade")', '@item.NomeAtividade.ToUpper()', @item.Comissao.ToString().ToLower(), '@item.Chave', '@item.Senha', '@item.DocumentoTipo', '@item.Documento');" class="btn btn-default"><i class="fa fa-edit"></i> Editar</a></td>
+                <td class="text-center" data-hide="print"><a href="javascript:void(0);" onclick="ApagarPresenca(@item.Id, '@item.Nome.Replace("'", "\\'").ToUpper()', '@item.Data.ToString("dd/MM/yyyy")', '@(item.Comissao ? "Comissão" : "Atividade")', '@item.NomeAtividade.ToUpper()', @item.Comissao.ToString().ToLower());" class="btn btn-danger"><i class="fa fa-trash-o"></i> Descredenciar</a></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    <script>
+        var groupColumn = [0, 1];
+        $('#datatable_ListaPresenca').dataTable({
+            "columnDefs": [
+                { "visible": false, "targets": groupColumn }
+            ],
+            "order": [[0, "asc"]],
+            "preDrawCallback": function () {
+                // Initialize the responsive datatables helper once.
+                if (!responsiveHelper_datatable_tabletools) {
+                    responsiveHelper_datatable_tabletools = new ResponsiveDatatablesHelper($('#datatable_ListaPresenca'), breakpointDefinition);
+                }
+            },
+            "rowCallback": function (nRow) {
+                try {
+                    responsiveHelper_datatable_tabletools.createExpandIcon(nRow);
+                } catch (e) {
+
+                }
+            },
+            "drawCallback": function (oSettings) {
+                $("#datatable_ListaPresenca").show();
+                responsiveHelper_datatable_tabletools.respond();
+
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+                var sub = null;
+                api.column(0, { page: 'current' }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group"><td colspan="12" class="bg-color-blue txt-color-white"><strong>' + group + '</strong></td></tr>'
+                        );
+
+                        last = group;
+                    }
+                });
+                api.column(1, { page: 'current' }).data().each(function (group, i) {
+                    if (sub !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group"><td colspan="12" class="bg-color-blueDark txt-color-white"><strong>' + group + '</strong></td></tr>'
+                        );
+
+                        sub = group;
+                    }
+                });
+            }
+        });
+
+        $("#pnlCredenciamento").hide();
+    </script>
+}
+else
+{
+    <text> Não existem atividades a serem exibidas.</text>
+}

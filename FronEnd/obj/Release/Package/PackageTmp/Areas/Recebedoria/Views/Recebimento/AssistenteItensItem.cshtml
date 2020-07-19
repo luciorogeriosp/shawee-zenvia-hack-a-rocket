@@ -1,0 +1,73 @@
+﻿@model SAL.MVC.Areas.Recebedoria.Models.VendaItemModel
+@{
+    int Filtro = 0;
+    int PerfilId = 0;
+    SAL.MVC.Models.UsuarioClientePerfilModel perfilSelecionado = null;
+
+    Tropical.Infrastructure.Model.User user = new Tropical.Infrastructure.Model.User();
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado") != null)
+    {
+        user = (Tropical.Infrastructure.Model.User)Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado");
+        Filtro = user.Filtro;
+
+        perfilSelecionado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+
+        PerfilId = perfilSelecionado.PerfilId;
+    }
+
+    string strDisplay = "";
+}
+@if (Model != null)
+{
+    if (Filtro != 0)
+    {
+        switch (Filtro)
+        {
+            case 1:
+                strDisplay = (Model.Suprimento ? " style='display:none;'" : "");
+                break;
+            case 2:
+                strDisplay = (Model.Suprimento == false ? " style='display:none;'" : "");
+                break;
+        }
+    }
+    <tr suprimento="@Model.Suprimento.ToString().ToLower()">
+        <td class="text-center hidden-sm hidden-xs">@Model.ProdutoId<input type="hidden" value="@Model.Id" /></td>
+        <td class="text-center hidden-sm hidden-xs">@Model.Tipo</td>
+        <td class="text-left">
+            @Model.Descricao@if (Model.SuprimentoGLP != null)
+            {
+                <a href="javascript:OpenImagemDialog('@Model.Descricao', '@(Model.SuprimentoGLP.ImagemGrande)')"><i class="fa fa-file-image-o"></i></a>
+            }
+        </td>
+        @if (Model.ControlarEstoque && Model.QuantidadeEstoque <= 0)
+        {
+            <td colspan="3" class="text-center"><span class="label label-warning">Sem Estoque</span></td>
+        }
+        else
+        {
+            <td>
+                <div>
+                    <input type="number" size="3" autocomplete="off" min="1" maxlength="3" id="qtde_@Model.Id" onkeypress="OnEnter(event, 'AdicionarItem($(\'#qtde_@Model.Id\'), @Model.Id)'); return isNumber(event);" class="form-control text-right quantity" />
+                </div>
+            </td>
+            <td class="text-right">
+                <div>
+                    @if (Model.Valor == 0 || (Model.TipoId == 17 || Model.TipoId == 18 || Model.TipoId == 19 || Model.TipoId == 20))
+                    {
+                        <input type="text" size="5" autocomplete="off" min="1" maxlength="7" id="valor_@Model.Id" onkeypress="OnEnter(event, 'AdicionarItem($(\'#valor_@Model.Id\'), @Model.Id)'); return isDecimal(event);" onkeyup="return retiraPontos(event);" class="form-control text-right price" value="@((Model.TipoId == 17 || Model.TipoId == 18 || Model.TipoId == 19 || Model.TipoId == 20) && Model.Valor > 0 ? Model.Valor.ToString() : "")" />
+                    }
+                    else
+                    {
+                        @Model.Valor
+                    }
+                </div>
+            </td>
+            <td>
+                <div class="widget-body">
+                    <a href="javascript:void(0);" onclick="AdicionarItem(this, @Model.Id)" class="btn btn-labeled btn-primary"> <i class="fa fa-shopping-cart"></i></a>
+                </div>
+            </td>
+        }
+    </tr>
+}

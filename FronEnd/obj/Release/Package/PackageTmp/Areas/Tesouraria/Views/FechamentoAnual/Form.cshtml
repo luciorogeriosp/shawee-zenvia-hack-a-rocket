@@ -1,0 +1,920 @@
+﻿@model SAL.MVC.Areas.Tesouraria.Models.FechamentoAnualModel
+@{
+    Layout = null;
+    decimal subTotalRecebimentos = 0;
+    decimal subTotalEntradas = 0;
+    decimal somaEntradas = 0;
+
+    decimal subTotalDespesas = 0;
+    decimal subTotalSaidas = 0;
+    decimal somaSaidas = 0;
+}
+<div role="content">
+
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body no-padding">
+        <h3>Ano de Referência: @Model.Ano</h3>
+        <!-- Error states for elements -->
+        <form class="smart-form" id="frmFechamento">
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.StatusId)
+            <ul id="myTab1" class="nav nav-tabs bordered">
+                <li class="active">
+                    <a href="#pnlDeclaracao1" data-toggle="tab">DECLARAÇÃO I</a>
+                </li>
+                <li class="">
+                    <a href="#pnlDeclaracao2" data-toggle="tab">DECLARAÇÃO II</a>
+                </li>
+                <li class="">
+                    <a href="#pnlDeclaracao3" data-toggle="tab">DECLARAÇÃO III</a>
+                </li>
+                <li class="">
+                    <a href="#pnlDeclaracao4" data-toggle="tab">DECLARAÇÃO IV</a>
+                </li>
+                <li class="">
+                    <a href="#pnlDeclaracao5" data-toggle="tab">DECLARAÇÃO V</a>
+                </li>
+                <li class="">
+                    <a href="#pnlParecer" data-toggle="tab">PARECER DA COMISSÃO DE VERIFICAÇÃO DE CONTAS</a>
+                </li>
+            </ul>
+            <div id="myTabContent1" class="tab-content padding-10">
+                <div class="tab-pane fade active in" id="pnlDeclaracao1">
+                    <div class="panel-group smart-accordion-default" id="pnlDeclaracao1Configuracao">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#pnlDeclaracao1Configuracao" href="#pnlDeclaracao1ConfiguracaoEntradas" class=""> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-green"></i> ENTRADAS </a></h4>
+                            </div>
+                            <div id="pnlDeclaracao1ConfiguracaoEntradas" class="panel-collapse collapse in" style="">
+                                <div class="panel-body padding-10">
+                                    @foreach (var item in Model.Recebimento)
+                                    {
+                                        subTotalRecebimentos += item.Valor;
+                                        somaEntradas += item.Valor;
+                                        <section>
+                                            <label class="label">@item.Nome</label>
+                                            <label class="input">
+                                                <input type="text" value="@(item.Valor > 0 ? string.Format("{0:N}", item.Valor) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                            </label>
+                                        </section>
+                                    }
+                                    <section>
+                                        <label class="label">SUB-TOTAL</label>
+                                        <label class="input">
+                                            <input type="text" value="@(subTotalRecebimentos > 0 ? string.Format("{0:N}", subTotalRecebimentos) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                    @foreach (var item in Model.SubTotalEntradas)
+                                    {
+                                        subTotalEntradas += item.Valor;
+                                        somaEntradas += item.Valor;
+                                        <section>
+                                            <label class="label">@item.Nome</label>
+                                            <label class="input">
+                                                <input type="text" value="@(item.Valor > 0 ? string.Format("{0:N}", item.Valor) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                            </label>
+                                        </section>
+                                    }
+                                    <section>
+                                        <label class="label">SOMA DAS ENTRADAS</label>
+                                        <label class="input">
+                                            <input type="hidden" id="SomaEntradas" name="SomaEntradas" value="@(somaEntradas.ToString().Replace(",", "."))" />
+                                            <input type="text" value="@(somaEntradas > 0 ? string.Format("{0:N}", somaEntradas) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">SALDO DO ANO ANTERIOR</label>
+                                        <label class="input">
+                                            <input type="text" id="SaldoAnoAnterior" name="SaldoAnoAnterior" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.SaldoAnoAnterior.HasValue ? Model.SaldoAnoAnterior.Value.ToString("0.00") : "0,00")" @Html.Raw(Model.ExisteAnoAnterior ? " readonly=\"\" style=\"cursor: not-allowed; background-color: #eee !important;\"" : "") onblur="CalculaSaldoProximoAno();" />
+                                        </label>
+                                        <div class="note note-error">(Caixa, Bancos e Fundos)</div>
+                                    </section>
+                                    @{
+                                        decimal totalEntradas = somaEntradas + (Model.SaldoAnoAnterior.HasValue ? Model.SaldoAnoAnterior.Value : 0);
+                                    }
+                                    <section>
+                                        <label class="label">TOTAL DAS ENTRADAS</label>
+                                        <label class="input">
+                                            <input type="text" name="TotalEntradas" id="TotalEntradas" value="@(totalEntradas > 0 ? string.Format("{0:N}", totalEntradas) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#pnlDeclaracao1Configuracao" href="#pnlDeclaracao1ConfiguracaoSaidas" class="collapsed"> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-green"></i> SAÍDAS </a></h4>
+                            </div>
+                            <div id="pnlDeclaracao1ConfiguracaoSaidas" class="panel-collapse collapse" style="height: 0px;">
+                                <div class="panel-body padding-10">
+                                    @foreach (var item in Model.Despesas)
+                                    {
+                                        subTotalDespesas += item.Valor;
+                                        somaSaidas += item.Valor;
+                                        <section>
+                                            <label class="label">@item.Nome</label>
+                                            <label class="input">
+                                                <input type="text" value="@(item.Valor > 0 ? string.Format("{0:N}", item.Valor) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                            </label>
+                                        </section>
+                                    }
+                                    <section>
+                                        <label class="label">SUB-TOTAL</label>
+                                        <label class="input">
+                                            <input type="text" value="@(subTotalDespesas > 0 ? string.Format("{0:N}", subTotalDespesas) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                    @foreach (var item in Model.SubTotalSaidas)
+                                    {
+                                        subTotalSaidas += item.Valor;
+                                        somaSaidas += item.Valor;
+                                        <section>
+                                            <label class="label">@item.Nome</label>
+                                            <label class="input">
+                                                <input type="text" value="@(item.Valor > 0 ? string.Format("{0:N}", item.Valor) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                            </label>
+                                        </section>
+                                    }
+                                    @{
+                                        decimal totalSaidas = somaSaidas;
+                                    }
+                                    <section>
+                                        <label class="label">TOTAL DAS SAÍDAS</label>
+                                        <label class="input">
+                                            <input type="text" id="TotalSaidas" name="TotalSaidas" value="@(totalSaidas > 0 ? string.Format("{0:N}", totalSaidas) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                        @{
+                            decimal saldoProximoAno = totalEntradas - totalSaidas;
+                        }
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#pnlDeclaracao1Configuracao" href="#pnlDeclaracao1ConfiguracaoSaldo" class="collapsed"> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-green"></i> SALDO PARA O ANO PRÓXIMO </a></h4>
+                            </div>
+                            <div id="pnlDeclaracao1ConfiguracaoSaldo" class="panel-collapse collapse" style="height: 0px;">
+                                <div class="panel-body padding-10">
+                                    <section>
+                                        <label class="label">Caixa, Bancos e Fundos</label>
+                                        <label class="input">
+                                            <input type="text" id="SaldoProximoAno" name="SaldoProximoAno" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(string.Format("{0:N}", saldoProximoAno))" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pnlDeclaracao2">
+                    <div class="panel-group smart-accordion-default" id="pnlDeclaracao2Configuracao">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#pnlDeclaracao2Configuracao" href="#pnlDeclaracao2Saldos" class=""> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-green"></i> SALDOS ANO ANTERIOR </a></h4>
+                            </div>
+                            <div id="pnlDeclaracao2Saldos" class="panel-collapse collapse in" style="">
+                                <div class="panel-body padding-10">
+                                    <section>
+                                        <label class="label">Caixa</label>
+                                        <label class="input">
+                                            @if (Model.ExisteAnoAnterior)
+                                            {
+                                                <input type="hidden" id="AnoAnteriorSaldoCaixa" name="AnoAnteriorSaldoCaixa" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.AnoAnteriorSaldoCaixa.HasValue ? Model.AnoAnteriorSaldoCaixa.Value.ToString() : "0")" />
+                                                <input type="text" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.AnoAnteriorSaldoCaixa.HasValue ?  (Model.ExisteAnoAnterior ? string.Format("{0:N}", Model.AnoAnteriorSaldoCaixa.Value) : Model.AnoAnteriorSaldoCaixa.Value.ToString("0.00")) : "0,00")" @Html.Raw(Model.ExisteAnoAnterior ? " readonly=\"\" style=\"cursor: not-allowed; background-color: #eee !important;\"" : "") onblur="CalculaSaldos();" />
+                                            }
+                                            else
+                                            {
+                                                <input type="text" id="AnoAnteriorSaldoCaixa" name="AnoAnteriorSaldoCaixa" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.AnoAnteriorSaldoCaixa.HasValue ?  (Model.ExisteAnoAnterior ? string.Format("{0:N}", Model.AnoAnteriorSaldoCaixa.Value) : Model.AnoAnteriorSaldoCaixa.Value.ToString("0.00")) : "0,00")" @Html.Raw(Model.ExisteAnoAnterior ? " readonly=\"\" style=\"cursor: not-allowed; background-color: #eee !important;\"" : "") onblur="CalculaSaldos();" />
+                                            }
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Conta Corrente</label>
+                                        <label class="input">
+                                            @if (Model.ExisteAnoAnterior)
+                                            {
+                                                <input type="hidden" id="AnoAnteriorSaldoContaCorrente" name="AnoAnteriorSaldoContaCorrente" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.AnoAnteriorSaldoContaCorrente.HasValue ? Model.AnoAnteriorSaldoContaCorrente.Value.ToString() : "0")" />
+                                                <input type="text" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.AnoAnteriorSaldoContaCorrente.HasValue ? (Model.ExisteAnoAnterior ? string.Format("{0:N}", Model.AnoAnteriorSaldoContaCorrente.Value) : Model.AnoAnteriorSaldoContaCorrente.Value.ToString("0.00")) : "0,00")" @Html.Raw(Model.ExisteAnoAnterior ? " readonly=\"\" style=\"cursor: not-allowed; background-color: #eee !important;\"" : "") onblur="CalculaSaldos();" />
+                                            }
+                                            else
+                                            {
+                                                <input type="text" id="AnoAnteriorSaldoContaCorrente" name="AnoAnteriorSaldoContaCorrente" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.AnoAnteriorSaldoContaCorrente.HasValue ? (Model.ExisteAnoAnterior ? string.Format("{0:N}", Model.AnoAnteriorSaldoContaCorrente.Value) : Model.AnoAnteriorSaldoContaCorrente.Value.ToString("0.00")) : "0,00")" @Html.Raw(Model.ExisteAnoAnterior ? " readonly=\"\" style=\"cursor: not-allowed; background-color: #eee !important;\"" : "") onblur="CalculaSaldos();" />
+                                            }
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Poupança</label>
+                                        <label class="input">
+                                            @if (Model.ExisteAnoAnterior)
+                                            {
+                                                <input type="hidden" id="AnoAnteriorSaldoPoupanca" name="AnoAnteriorSaldoPoupanca" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.AnoAnteriorSaldoPoupanca.HasValue ? Model.AnoAnteriorSaldoPoupanca.Value.ToString() : "0")" />
+                                                <input type="text" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.AnoAnteriorSaldoPoupanca.HasValue ? Model.AnoAnteriorSaldoPoupanca.Value.ToString("0.00") : "0,00")" @Html.Raw(Model.ExisteAnoAnterior ? " readonly=\"\" style=\"cursor: not-allowed; background-color: #eee !important;\"" : "") onblur="CalculaSaldos();" />
+                                            }
+                                            else
+                                            {
+                                                <input type="text" id="AnoAnteriorSaldoPoupanca" name="AnoAnteriorSaldoPoupanca" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.AnoAnteriorSaldoPoupanca.HasValue ? Model.AnoAnteriorSaldoPoupanca.Value.ToString("0.00") : "0,00")" @Html.Raw(Model.ExisteAnoAnterior ? " readonly=\"\" style=\"cursor: not-allowed; background-color: #eee !important;\"" : "") onblur="CalculaSaldos();" />
+                                            }
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Aplicação</label>
+                                        <label class="input">
+                                            @if (Model.ExisteAnoAnterior)
+                                            {
+                                                <input type="hidden" id="AnoAnteriorSaldoAplicacao" name="AnoAnteriorSaldoAplicacao" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.AnoAnteriorSaldoAplicacao.HasValue ? Model.AnoAnteriorSaldoAplicacao.Value.ToString() : "0")" />
+                                                <input type="text" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.AnoAnteriorSaldoAplicacao.HasValue ? (Model.ExisteAnoAnterior ? string.Format("{0:N}", Model.AnoAnteriorSaldoAplicacao.Value) : Model.AnoAnteriorSaldoAplicacao.Value.ToString("0.00")) : "0,00")" @Html.Raw(Model.ExisteAnoAnterior ? " readonly=\"\" style=\"cursor: not-allowed; background-color: #eee !important;\"" : "") onblur="CalculaSaldos();" />
+                                            }
+                                            else
+                                            {
+                                                <input type="text" id="AnoAnteriorSaldoAplicacao" name="AnoAnteriorSaldoAplicacao" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.AnoAnteriorSaldoAplicacao.HasValue ? (Model.ExisteAnoAnterior ? string.Format("{0:N}", Model.AnoAnteriorSaldoAplicacao.Value) : Model.AnoAnteriorSaldoAplicacao.Value.ToString("0.00")) : "0,00")" @Html.Raw(Model.ExisteAnoAnterior ? " readonly=\"\" style=\"cursor: not-allowed; background-color: #eee !important;\"" : "") onblur="CalculaSaldos();" />
+                                            }
+                                        </label>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#pnlDeclaracao2Configuracao" href="#pnlDeclaracao2Garantias" class="collapsed"> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-green"></i> GARANTIAS </a></h4>
+                            </div>
+                            <div id="pnlDeclaracao2Garantias" class="panel-collapse collapse" style="">
+                                <div class="panel-body padding-10">
+                                    <section>
+                                        <label class="label">Caixa Atual</label>
+                                        <label class="input">
+                                            <input type="hidden" id="SaldoCaixa" name="SaldoCaixa" value="@(Model.SaldoCaixa.HasValue ? Model.SaldoCaixa.Value : 0)">
+                                            <input type="text" id="SaldoCaixaCalculado" name="SaldoCaixaCalculado" value="@(Model.SaldoCaixa.HasValue ? Model.SaldoCaixa.Value.ToString("0.00") : "0")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Conta Corrente</label>
+                                        <label class="input">
+                                            <input type="hidden" id="SaldoContaCorrente" name="SaldoContaCorrente" value="@(Model.SaldoContaCorrente.HasValue ? Model.SaldoContaCorrente.Value : 0)">
+                                            <input type="text" id="SaldoContaCorrenteCalculado" name="SaldoContaCorrenteCalculado" value="@(Model.SaldoContaCorrenteCalculado.HasValue ? Model.SaldoContaCorrenteCalculado.Value.ToString("0.00") : "0")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Poupança</label>
+                                        <label class="input">
+                                            <input type="hidden" id="SaldoContaPoupanca" name="SaldoContaPoupanca" value="@(Model.SaldoContaPoupanca.HasValue ? Model.SaldoContaPoupanca.Value : 0)">
+                                            <input type="text" id="SaldoContaPoupancaCalculado" name="SaldoContaPoupancaCalculado" value="@(Model.SaldoContaPoupancaCalculado.HasValue ? Model.SaldoContaPoupancaCalculado.Value.ToString("0.00") : "0")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Aplicação</label>
+                                        <label class="input">
+                                            <input type="hidden" id="SaldoAplicacao" name="SaldoAplicacao" value="@(Model.SaldoAplicacao.HasValue ? Model.SaldoAplicacao.Value : 0)" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                            <input type="text" id="SaldoAplicacaoCalculado" name="SaldoAplicacaoCalculado" value="@(Model.SaldoAplicacaoCalculado.HasValue ? Model.SaldoAplicacaoCalculado.Value.ToString("0.00") : "0")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Móveis & Utensílios <span class="note note-error">(Para alterar a informação abaixo acesse o menu 'Organismo Afiliado/Inventário/Bens')</span></label>
+                                        <label class="input">
+                                            <input type="hidden" id="ValorInventario" name="ValorInventario" value="@(Model.ValorInventario.HasValue ? Model.ValorInventario.Value : 0)" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                            <input type="text" id="ValorInventarioCalculado" name="ValorInventarioCalculado" value="@(Model.ValorInventario.HasValue ? string.Format("{0:N}", Model.ValorInventario.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#pnlDeclaracao2Configuracao" href="#pnlDeclaracao2Obrigacoes" class="collapsed"> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-green"></i> OBRIGAÇÕES </a></h4>
+                            </div>
+                            <div id="pnlDeclaracao2Obrigacoes" class="panel-collapse collapse" style="height: 0px;">
+                                <div class="panel-body padding-10">
+                                    <section>
+                                        <label class="label">Contas a Pagar (Emprestimo GLP)</label>
+                                        <label class="input">
+                                            <input type="text" id="ValorContasPagar" name="ValorContasPagar" value="@(Model.ValorContasPagar.HasValue ? Model.ValorContasPagar.Value.ToString("0.00") : "0,00")" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event)" onblur="CalculaPatrimonioLiquido();">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">GLP - Suprimentos</label>
+                                        <label class="input">
+                                            <input type="text" id="ValorSuprimentos" name="ValorSuprimentos" value="@(Model.ValorSuprimentos.HasValue ? Model.ValorSuprimentos.Value.ToString("0.00") : "0,00")" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event)" onblur="CalculaPatrimonioLiquido();">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Taxa da Carta Constitutiva</label>
+                                        <label class="input">
+                                            <input type="text" id="ValorCartaConstitutiva" name="ValorCartaConstitutiva" value="@(Model.ValorCartaConstitutiva.HasValue ? Model.ValorCartaConstitutiva.Value.ToString("0.00") : "0,00")" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event)" onblur="CalculaPatrimonioLiquido();">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Mensalidades e outros valores</label>
+                                        <label class="input">
+                                            <input type="text" id="ValorMensalidadesOutros" name="ValorMensalidadesOutros" value="@(Model.ValorMensalidadesOutros.HasValue ? Model.ValorMensalidadesOutros.Value.ToString("0.00") : "0,00")" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event)" onblur="CalculaPatrimonioLiquido();">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Caução aluguel</label>
+                                        <label class="input">
+                                            <input type="text" id="ValorCaucaoAluguel" name="ValorCaucaoAluguel" value="@(Model.ValorCaucaoAluguel.HasValue ? Model.ValorCaucaoAluguel.Value.ToString("0.00") : "0,00")" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event)" onblur="CalculaPatrimonioLiquido();">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Nome do Banco Depositário</label>
+                                        <label class="input">
+                                            <input type="text" id="NomeBancos" name="NomeBancos" value="@(Model.NomeBancos)" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#pnlDeclaracao2Configuracao" href="#pnlDeclaracao2PatrimonioLiquido" class="collapsed"> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-green"></i> PATRIMÔNIO LÍQUIDO </a></h4>
+                            </div>
+                            <div id="pnlDeclaracao2PatrimonioLiquido" class="panel-collapse collapse" style="height: 0px;">
+                                <div class="panel-body padding-10">
+                                    <section>
+                                        <label class="label">Valor</label>
+                                        <label class="input">
+                                            <input type="text" id="ValorPatrimonioLiquido" name="ValorPatrimonioLiquido" value="@(Model.ValorPatrimonioLiquido.HasValue ? string.Format("{0:N}", Model.ValorPatrimonioLiquido.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="pnlDeclaracao3" class="tab-pane fade">
+                    <div class="panel-group smart-accordion-default" id="pnlDeclaracao3Configuracao">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#pnlDeclaracao3Configuracao" href="#pnlDeclaracao3ConfiguracaoAplicacao1" class=""> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-green"></i> POUPANÇA </a></h4>
+                            </div>
+                            <div id="pnlDeclaracao3ConfiguracaoAplicacao1" class="panel-collapse collapse in" style="">
+                                <div class="panel-body padding-10">
+                                    <section>
+                                        <label class="label">Tipo Aplicação Banco</label>
+                                        <label class="input">
+                                            <input type="text" id="PoupancaTipo" name="PoupancaTipo" value="@(Model.PoupancaTipo)" style="text-transform:uppercase;">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">a) Saldo anterior</label>
+                                        <label class="input">
+                                            @if (Model.ExisteAnoAnterior)
+                                            {
+                                                <input type="hidden" id="AnoAnteriorSaldoPoupancaDeclaracao3" name="AnoAnteriorSaldoPoupancaDeclaracao3" value="@(Model.AnoAnteriorSaldoPoupanca.HasValue ? Model.AnoAnteriorSaldoPoupanca.Value.ToString() : "0")">
+                                                <input type="text" value="@(Model.AnoAnteriorSaldoPoupanca.HasValue ? string.Format("{0:N}", Model.AnoAnteriorSaldoPoupanca.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;" />
+                                            }
+                                            else
+                                            {
+                                                <input type="text" id="AnoAnteriorSaldoPoupancaDeclaracao3" name="AnoAnteriorSaldoPoupancaDeclaracao3" value="@(Model.AnoAnteriorSaldoPoupanca.HasValue ? string.Format("{0:N}", Model.AnoAnteriorSaldoPoupanca.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;" />
+                                            }
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">b) Depósitos</label>
+                                        <label class="input">
+                                            <input type="text" id="PoupancaDeposito" name="PoupancaDeposito" value="@(Model.PoupancaDeposito.HasValue ? string.Format("{0:N}", Model.PoupancaDeposito.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">c) Juros e Correções Monetárias-IR</label>
+                                        <label class="input">
+                                            <input type="hidden" id="PoupancaRendimento" name="PoupancaRendimento" value="@(Model.PoupancaRetirada.HasValue ? Model.PoupancaRetirada.Value : 0)" />
+                                            <input type="text" id="" name="PoupancaRendimento" value="@(Model.PoupancaRendimento.HasValue ? string.Format("{0:N}", Model.PoupancaRendimento.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">d) Retiradas</label>
+                                        <label class="input">
+                                            <input type="hidden" id="PoupancaRetirada" name="PoupancaRetirada" value="@(Model.PoupancaRetirada.HasValue ? Model.PoupancaRetirada.Value : 0)" />
+                                            <input type="text" value="@(Model.PoupancaRetirada.HasValue ? string.Format("{0:N}", Model.PoupancaRetirada.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Saldo Atual</label>
+                                        <label class="input">
+                                            <input type="hidden" id="PoupancaSaldo" name="PoupancaSaldo" value="@(Model.PoupancaSaldo.HasValue ? Model.PoupancaSaldo.Value : 0)" />
+                                            <input type="text" value="@(Model.PoupancaSaldo.HasValue ? string.Format("{0:N}", Model.PoupancaSaldo.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#pnlDeclaracao3Configuracao" href="#pnlDeclaracao3ConfiguracaoAplicacao2" class="collapsed"> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-green"></i> APLICAÇÃO </a></h4>
+                            </div>
+                            <div id="pnlDeclaracao3ConfiguracaoAplicacao2" class="panel-collapse collapse" style="height: 0px;">
+                                <div class="panel-body padding-10">
+                                    <section>
+                                        <label class="label">Tipo Aplicação Banco</label>
+                                        <label class="input">
+                                            <input type="text" id="AplicacaoTipo" name="AplicacaoTipo" value="@(Model.AplicacaoTipo)" style="text-transform:uppercase;">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">a) Saldo anterior</label>
+                                        <label class="input">
+                                            @if (Model.ExisteAnoAnterior)
+                                            {
+                                                <input type="hidden" id="AnoAnteriorSaldoAplicacaoDeclaracao3" name="AnoAnteriorSaldoAplicacaoDeclaracao3" value="@(Model.AnoAnteriorSaldoAplicacao.HasValue ? Model.AnoAnteriorSaldoAplicacao.Value.ToString() : "0")">
+                                                <input type="text" value="@(Model.AnoAnteriorSaldoAplicacao.HasValue ? string.Format("{0:N}", Model.AnoAnteriorSaldoAplicacao.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                            }
+                                            else
+                                            {
+                                                <input type="text" id="AnoAnteriorSaldoAplicacaoDeclaracao3" name="AnoAnteriorSaldoAplicacaoDeclaracao3" value="@(Model.AnoAnteriorSaldoAplicacao.HasValue ? string.Format("{0:N}", Model.AnoAnteriorSaldoAplicacao.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                            }
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">b) Depósitos</label>
+                                        <label class="input">
+                                            <input type="hidden" id="AplicacaoDeposito" name="AplicacaoDeposito" value="@(Model.AplicacaoDeposito.HasValue ? Model.AplicacaoDeposito.Value : 0)" />
+                                            <input type="text" value="@(Model.AplicacaoDeposito.HasValue ? string.Format("{0:N}", Model.AplicacaoDeposito.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">c) Juros e Correções Monetárias-IR</label>
+                                        <label class="input">
+                                            <input type="hidden" id="AplicacaoRendimento" name="AplicacaoRendimento" value="@(Model.AplicacaoRendimento.HasValue ? Model.AplicacaoRendimento.Value : 0)" />
+                                            <input type="text" value="@(Model.AplicacaoRendimento.HasValue ? string.Format("{0:N}", Model.AplicacaoRendimento.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">d) Retiradas</label>
+                                        <label class="input">
+                                            <input type="hidden" id="AplicacaoRetirada" name="AplicacaoRetirada" value="@(Model.AplicacaoRetirada.HasValue ? Model.AplicacaoRetirada.Value : 0)" />
+                                            <input type="text" value="@(Model.AplicacaoRetirada.HasValue ? string.Format("{0:N}", Model.AplicacaoRetirada.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Saldo Atual</label>
+                                        <label class="input">
+                                            <input type="hidden" id="AplicacaoSaldo" name="AplicacaoSaldo" value="@(Model.AplicacaoSaldo.HasValue ? Model.AplicacaoSaldo.Value : 0)" />
+                                            <input type="text" value="@(Model.AplicacaoSaldo.HasValue ? string.Format("{0:N}", Model.AplicacaoSaldo.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#pnlDeclaracao3Configuracao" href="#pnlDeclaracao3ConfiguracaoAplicacao3" class="collapsed"> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-green"></i> TOTAL DE INVESTIMENTOS </a></h4>
+                            </div>
+                            <div id="pnlDeclaracao3ConfiguracaoAplicacao3" class="panel-collapse collapse" style="height: 0px;">
+                                <div class="panel-body padding-10">
+                                    <section>
+                                        <label class="label">Valor</label>
+                                        <label class="input">
+                                            <input type="text" id="TotalInvestimentos" name="TotalInvestimentos" value="@(Model.TotalInvestimentos.HasValue ? string.Format("{0:N}", Model.TotalInvestimentos.Value) : "0,00")" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                                        </label>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="pnlDeclaracao4" class="tab-pane fade">
+                    <div class="panel-group smart-accordion-default" id="pnlDeclaracao4Configuracao">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#pnlDeclaracao4Configuracao" href="#pnlDeclaracao4ConfiguracaoOA" class=""> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-green"></i> ORGANISMO AFILIADO <span class="note note-error">(Para alterar a informação abaixo acesse o menu 'Configuraçao/Organismo Afiliado/Imóvel')</span></a></h4>
+                            </div>
+                            <div id="pnlDeclaracao4ConfiguracaoOA" class="panel-collapse collapse in" style="">
+                                <div class="panel-body padding-10">
+                                    <section>
+                                        <label class="label">Nome</label>
+                                        <label class="input">
+                                            <input type="text" id="OrganismoAfiliadoNome" name="OrganismoAfiliadoNome" value="@(Model.OrganismoAfiliadoNome)" disabled="disabled">
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">Número</label>
+                                        <label class="input">
+                                            <input type="text" id="OrganismoAfiliadoNumero" name="OrganismoAfiliadoNumero" value="@(Model.OrganismoAfiliadoNumero)" disabled="disabled">
+                                        </label>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#pnlDeclaracao4Configuracao" href="#pnlDeclaracao4ConfiguracaoImovel" class="collapsed"> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-green"></i> DADOS DO IMÓVEL <span class="note note-error">(Para alterar a informação abaixo acesse o menu 'Configuraçao/Organismo Afiliado/Imóvel')</span></a></h4>
+                            </div>
+                            <div id="pnlDeclaracao4ConfiguracaoImovel" class="panel-collapse collapse" style="">
+                                <div class="panel-body padding-10">
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="label">Localização do Imóvel</label>
+                                            <label class="input">
+                                                <input type="text" id="OrganismoAfiliadoLocalizacao" name="OrganismoAfiliadoLocalizacao" value="@(Model.OrganismoAfiliadoLocalizacao)" disabled="disabled">
+                                            </label>
+                                        </section>
+                                        <section class="col col-3">
+                                            <label class="label">Cidade</label>
+                                            <label class="input">
+                                                <input type="text" id="OrganismoAfiliadoCidade" name="OrganismoAfiliadoCidade" value="@(Model.OrganismoAfiliadoCidade)" disabled="disabled">
+                                            </label>
+                                        </section>
+                                        <section class="col col-3">
+                                            <label class="label">Estado</label>
+                                            <label class="input">
+                                                <input type="text" id="OrganismoAfiliadoEstado" name="OrganismoAfiliadoEstado" value="@(Model.OrganismoAfiliadoEstado)" disabled="disabled">
+                                            </label>
+                                        </section>
+                                    </div>
+                                    <section>
+                                        <label class="label">Natureza do Documento de Propriedade</label>
+                                        <label class="input">
+                                            <input type="text" id="NaturezaDocumento" name="NaturezaDocumento" value="@(Model.NaturezaDocumento)" disabled="disabled">
+                                        </label>
+                                    </section>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="label center">Situação da Escritura</label>
+                                            <div class="inline-group">
+                                                <label class="radio radio-inline">
+                                                    <input type="hidden" name="FlagEscrituraGLP" id="FlagEscrituraGLP" value="@Model.FlagEscrituraGLP" />
+                                                    <input type="radio" class="radiobox" name="SituacaoEscritura" id="SituacaoEscritura_1" value="1" @(Html.Raw(Model.FlagEscrituraGLP ? " checked=\"checked\"" : "")) disabled="disabled">
+                                                    <span>Em nome da Grande Loja</span>
+                                                </label>
+                                                <label class="radio radio-inline">
+                                                    <input type="hidden" name="FlagEscrituraOA" id="FlagEscrituraOA" value="@Model.FlagEscrituraOA" />
+                                                    <input type="radio" class="radiobox" name="SituacaoEscritura" id="SituacaoEscritura_2" value="2" @(Html.Raw(Model.FlagEscrituraOA ? " checked=\"checked\"" : "")) disabled="disabled">
+                                                    <span>Em nome do Organismo Afiliado</span>
+                                                </label>
+                                                <label class="radio radio-inline">
+                                                    <input type="hidden" name="FlagAlugado" id="FlagAlugado" value="@Model.FlagAlugado" />
+                                                    <input type="radio" class="radiobox" name="SituacaoEscritura" id="SituacaoEscritura_3" value="3" @(Html.Raw(Model.FlagAlugado ? " checked=\"checked\"" : "")) disabled="disabled">
+                                                    <span>Imóvel Alugado</span>
+                                                </label>
+                                            </div>
+                                        </section>
+                                        <section class="col col-2">
+                                            <label class="label">
+                                                <label for="label">Valor aluguel - mês</label>
+                                            </label>
+                                            <label class="input">
+                                                <input type="text" id="ValorAluguelMensal" name="ValorAluguelMensal" value="@(Model.ValorAluguelMensal.HasValue ? Model.ValorAluguelMensal.Value.ToString("0.00") : "0,00")" disabled="disabled">
+                                            </label>
+                                        </section>
+                                        <section class="col col-4">
+                                            <label class="label">
+                                                <label for="label">Nome Proprietário Anterior</label>
+                                            </label>
+                                            <label class="input">
+                                                <input type="text" id="NomeProprietarioAnterior" name="NomeProprietarioAnterior" value="@(Model.NomeProprietarioAnterior)" disabled="disabled">
+                                            </label>
+                                        </section>
+                                    </div>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="label">
+                                                <label for="label">Data do Documento</label>
+                                            </label>
+                                            <label class="input">
+                                                <input type="date" id="DocumentacaoImovelData" name="DocumentacaoImovelData" value="@(Model.DocumentacaoImovelData)" disabled="disabled">
+                                            </label>
+                                        </section>
+                                        <section class="col col-6">
+                                            <label class="label">
+                                                <label for="label">Registro do Imóvel nº</label>
+                                            </label>
+                                            <label class="input">
+                                                <input type="text" id="DocumentacaoImovelRegistro" name="DocumentacaoImovelRegistro" value="@(Model.DocumentacaoImovelRegistro)" disabled="disabled">
+                                            </label>
+                                        </section>
+                                    </div>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="label">
+                                                <label for="label">Tabelião</label>
+                                            </label>
+                                            <label class="input">
+                                                <input type="text" id="DocumentacaoImovelTabeliao" name="DocumentacaoImovelTabeliao" value="@(Model.DocumentacaoImovelTabeliao)" disabled="disabled">
+                                            </label>
+                                        </section>
+                                        <section class="col col-3">
+                                            <label class="label">
+                                                <label for="label">Livro</label>
+                                            </label>
+                                            <label class="input">
+                                                <input type="text" id="DocumentacaoImovelLivro" name="DocumentacaoImovelLivro" value="@(Model.DocumentacaoImovelLivro)" disabled="disabled">
+                                            </label>
+                                        </section>
+                                        <section class="col col-3">
+                                            <label class="label">
+                                                <label for="label">Fls</label>
+                                            </label>
+                                            <label class="input">
+                                                <input type="text" id="DocumentacaoImovelFolhas" name="DocumentacaoImovelFolhas" value="@(Model.DocumentacaoImovelFolhas)" disabled="disabled">
+                                            </label>
+                                        </section>
+                                    </div>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="label">
+                                                <label for="label">Área do Terreno m²</label>
+                                            </label>
+                                            <label class="input">
+                                                <input type="text" id="AreaTerreno" name="AreaTerreno" value="@(Model.AreaTerreno)" disabled="disabled">
+                                            </label>
+                                        </section>
+                                        <section class="col col-6">
+                                            <label class="label">
+                                                <label for="label">Área Construída m²</label>
+                                            </label>
+                                            <label class="input">
+                                                <input type="text" id="AreaConstruida" name="AreaConstruida" value="@(Model.AreaConstruida)" disabled="disabled">
+                                            </label>
+                                        </section>
+                                    </div>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="label center">Construção em Andamento</label>
+                                            <div class="inline-group">
+                                                <label class="radio radio-inline">
+                                                    @Html.RadioButtonFor(m => m.FlagConstrucaoEmAndamento, "true", new { @class = "radiobox", disabled = "disabled" })
+                                                    <span>Sim</span>
+                                                </label>
+                                                <label class="radio radio-inline">
+                                                    @Html.RadioButtonFor(m => m.FlagConstrucaoEmAndamento, "false", new { @class = "radiobox", disabled = "disabled" })
+                                                    <span>Não</span>
+                                                </label>
+                                            </div>
+                                        </section>
+                                        <section class="col col-6">
+                                            <label class="label center">Habite-se</label>
+                                            <div class="inline-group">
+                                                <label class="radio radio-inline">
+                                                    @Html.RadioButtonFor(m => m.FlagHabiteSe, "true", new { @disabled = "disabled", @class = "radiobox" })
+                                                    <span>Sim</span>
+                                                </label>
+                                                <label class="radio radio-inline">
+                                                    @Html.RadioButtonFor(m => m.FlagHabiteSe, "false", new { @disabled = "disabled", @class = "radiobox" })
+                                                    <span>Não</span>
+                                                </label>
+                                            </div>
+                                        </section>
+                                    </div>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="label">
+                                                <label for="label">Valor de Aquisição</label>
+                                            </label>
+                                            <label class="input">
+                                                <input type="text" id="ValorImovelAquisicao" name="ValorImovelAquisicao" value="@(Model.ValorImovelAquisicao.HasValue ? Model.ValorImovelAquisicao.Value.ToString("0.00") : "0,00")" disabled="disabled" />
+                                            </label>
+                                        </section>
+                                        <section class="col col-6">
+                                            <label class="label">
+                                                <label for="label">Valor Atual</label>
+                                            </label>
+                                            <label class="input">
+                                                <input type="text" id="ValorImovelAtual" name="ValorImovelAtual" value="@(Model.ValorImovelAtual.HasValue ? Model.ValorImovelAtual.Value.ToString("0.00") : "0,00")" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" disabled="disabled" />
+                                            </label>
+                                        </section>
+                                    </div>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="label center">Imposição de Construção</label>
+                                            <div class="inline-group">
+                                                <label class="radio radio-inline">
+                                                    @Html.RadioButtonFor(m => m.FlagImposicaoConstrucao, "true", new { @class = "radiobox", disabled = "disabled" })
+                                                    <span>Sim</span>
+                                                </label>
+                                                <label class="radio radio-inline">
+                                                    @Html.RadioButtonFor(m => m.FlagImposicaoConstrucao, "false", new { @class = "radiobox", disabled = "disabled" })
+                                                    <span>Não</span>
+                                                </label>
+                                            </div>
+                                        </section>
+                                        <section class="col col-6">
+                                            <label class="label">Prazo</label>
+                                            <label class="input">
+                                                <input type="text" id="ImposicaoConstrucaoPrazo" name="ImposicaoConstrucaoPrazo" value="@(Model.ImposicaoConstrucaoPrazo)" disabled="disabled">
+                                            </label>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title"><a data-toggle="collapse" data-parent="#pnlDeclaracao4Configuracao" href="#pnlDeclaracao4ConfiguracaoImpostos" class="collapsed"> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-green"></i> IMPOSTOS <span class="note note-error">(Para alterar a informação abaixo acesse o menu 'Configuraçao/Organismo Afiliado/Imóvel')</span></a></h4>
+                            </div>
+                            <div id="pnlDeclaracao4ConfiguracaoImpostos" class="panel-collapse collapse" style="">
+                                <div class="panel-body padding-10">
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="label center">IPTU - quitado</label>
+                                            <div class="inline-group">
+                                                <label class="radio radio-inline">
+                                                    @Html.RadioButtonFor(m => m.FlagIptuQuitado, "true", new { @class = "radiobox", disabled = "disabled" })
+                                                    <span>Sim</span>
+                                                </label>
+                                                <label class="radio radio-inline">
+                                                    @Html.RadioButtonFor(m => m.FlagIptuQuitado, "false", new { @class = "radiobox", disabled = "disabled" })
+                                                    <span>Não</span>
+                                                </label>
+                                            </div>
+                                        </section>
+                                        <section class="col col-6">
+                                            <label class="label center">Isento</label>
+                                            <div class="inline-group">
+                                                <label class="radio radio-inline">
+                                                    @Html.RadioButtonFor(m => m.FlagIptuIsento, "true", new { @class = "radiobox", disabled = "disabled" })
+                                                    <span>Sim</span>
+                                                </label>
+                                                <label class="radio radio-inline">
+                                                    @Html.RadioButtonFor(m => m.FlagIptuIsento, "false", new { @class = "radiobox", disabled = "disabled" })
+                                                    <span>Não</span>
+                                                </label>
+                                            </div>
+                                            <div class="note note-error">(Anexar cópias dos talões)</div>
+                                        </section>
+                                    </div>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="label center">INSS da Construção - quitado</label>
+                                            <div class="inline-group">
+                                                <label class="radio radio-inline">
+                                                    @Html.RadioButtonFor(m => m.FlagInssConstrucaoQuitado, "true", new { @class = "radiobox", disabled = "disabled" })
+                                                    <span>Sim</span>
+                                                </label>
+                                                <label class="radio radio-inline">
+                                                    @Html.RadioButtonFor(m => m.FlagInssConstrucaoQuitado, "false", new { @class = "radiobox", disabled = "disabled" })
+                                                    <span>Não</span>
+                                                </label>
+                                            </div>
+                                            <div class="note note-error">(Anexar cópias dos comprovantes)</div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="pnlDeclaracao5" class="tab-pane fade">
+                    <section>
+                        <label class="label">Total de Membros Ano Anterior</label>
+                        <label class="input">
+                            <input id="MembrosAnoAnterior" name="MembrosAnoAnterior" type="text" value="@(Model.MembrosAnoAnterior.HasValue? Model.MembrosAnoAnterior.Value.ToString() : "")" @Html.Raw(Model.ExisteAnoAnterior ? " readonly=\"\" style=\"cursor: not-allowed; background-color: #eee !important;\"" : "")>
+                        </label>
+                        <div class="note note-error">(menos Columbas)</div>
+                    </section>
+                    <section>
+                        <label class="label">Total de Membros ativos</label>
+                        <label class="input">
+                            <input id="MembrosAtivos" name="MembrosAtivos" type="text" value="@(Model.MembrosAtivos)" readonly="" style="cursor: not-allowed; background-color: #eee !important;">
+                        </label>
+                        <div class="note note-error">(menos Columbas)</div>
+                    </section>
+                    <section>
+                        <label class="label">Mensalidades do Organismo Afiliado</label>
+                        <label class="input">
+                            <input type="text" id="ValorMensalidade" name="ValorMensalidade" onkeypress="return isDecimal(event);" onkeyup="return retiraPontos(event);" value="@(Model.ValorMensalidade.HasValue ? Model.ValorMensalidade.Value.ToString("0.00") : "0,00")" @(Model.StatusId != "A" ? Html.Raw(" readonly=\"\" style=\"cursor: not-allowed; background-color: #eee !important;\"").ToString() : "" )>
+                        </label>
+                    </section>
+                    <section>
+                        <label class="label">Dia e hora das Convocações Ritualísticas<span class="note note-error">(Para alterar a informação abaixo acesse o menu 'Configurações/Organismo Afiliado/Horários')</span></label>
+                        @if (Model.ListaHorario != null && Model.ListaHorario.Any())
+                        {
+                            <dl class="dl-horizontal">
+                                @foreach (var semana in Model.ListaHorario.Select(s => s.Id).Distinct())
+                                {
+                                    <dt>@semana:</dt>
+                                    foreach (var item in Model.ListaHorario.Where(w => w.Id == semana))
+                                    {
+                                        <dd>@item.Text</dd>
+                                    }
+                                }
+                            </dl>
+                        }
+                        else
+                        {
+                            <div class="note note-error">(preencha as informações de horários no menu: Configurações / Organismo Afiliado / Horários)</div>
+                        }
+                    </section>
+                    @if (Model.ListaAgendaAnual != null && Model.ListaAgendaAnual.Any())
+                    {
+                        for (int i = 0; i < Model.ListaAgendaAnual.Count; i++)
+                        {
+                            <div class="row" style="margin-left:-10px; margin-right:-10px;@(i % 2 == 0 ? "background-color:#f9f9f9;" : "")">
+                                <section class="col col-3">
+                                    <label class="label">
+                                        @Model.ListaAgendaAnual[i].Atividade
+                                        @(Model.ListaAgendaAnual[i].Fundacao == false ? " - " + @SAL.MVC.Helpers.Constantes.DescricaoMes(Model.ListaAgendaAnual[i].Mes) : "")
+                                    </label>
+                                </section>
+                                <section class="col col-7">
+                                    <label class="label">Data da realização</label>
+                                    <label class="input">
+                                        @Html.HiddenFor(o => o.ListaAgendaAnual[i].Id)
+                                        @Html.HiddenFor(o => o.ListaAgendaAnual[i].Atividade)
+                                        @Html.HiddenFor(o => o.ListaAgendaAnual[i].Mes)
+                                        @Html.HiddenFor(o => o.ListaAgendaAnual[i].Fundacao)
+                                        <input type="date" id="ListaAgendaAnual_[@i]__Data" name="ListaAgendaAnual[@i].Data" value="@(Model.ListaAgendaAnual[i].Data.HasValue ? Model.ListaAgendaAnual[i].Data.Value.ToString("yyyy-MM-dd") : "")">
+                                    </label>
+                                </section>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="note note-error">(solicite ao administrador do SAL que alimente o calendário anual)</div>
+                    }
+                    @if (Model.OficiaisAdministrativos != null)
+                    {
+                        for (int i = 0; i < Model.OficiaisAdministrativos.Count; i++)
+                        {
+                            <section>
+                                <label class="label">@Model.OficiaisAdministrativos[i].Cargo</label>
+                                <label class="input">
+                                    <input type="hidden" name="OficiaisAdministrativos[@i].Cargo" id="OficiaisAdministrativos[@i].Cargo" value="@Model.OficiaisAdministrativos[i].Cargo">
+                                    <input type="hidden" name="OficiaisAdministrativos[@i].CargoId" id="OficiaisAdministrativos[@i].CargoId" value="@Model.OficiaisAdministrativos[i].CargoId">
+                                    <input type="hidden" name="OficiaisAdministrativos[@i].Ordem" id="OficiaisAdministrativos[@i].Ordem" value="@Model.OficiaisAdministrativos[i].Ordem">
+                                    <input type="text" name="OficiaisAdministrativos[@i].Nome" id="OficiaisAdministrativos[@i].Nome" value="@Model.OficiaisAdministrativos[i].Nome" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                                </label>
+                            </section>
+                        }
+                    }
+                </div>
+                <div id="pnlParecer" class="tab-pane fade">
+                    @if (Model.OficiaisAdministrativosVerificacaoContas != null)
+                    {
+                        for (int i = 0; i < Model.OficiaisAdministrativosVerificacaoContas.Count; i++)
+                        {
+                            <section>
+                                <label class="input">
+                                    <input type="text" name="OficiaisAdministrativosVerificacaoContas[@i]" id="OficiaisAdministrativosVerificacaoContas[@i]" value="@Model.OficiaisAdministrativosVerificacaoContas[i]" @(Model.StatusId != "A" ? Html.Raw(" disabled=\"disabled\"").ToString() : "")>
+                                </label>
+                            </section>
+                        }
+                    }
+                </div>
+            </div>
+        </form>
+        <!--/ Error states for elements -->
+
+    </div>
+    <!-- end widget content -->
+</div>
+<script>
+    $("#btnGravar").hide();
+    $("#btnGravar").removeAttr("disabled");
+
+    $("#btnReabrir").hide();
+    $("#btnReabrir").removeAttr("disabled");
+
+    $("#btnConferencia").hide();
+    $("#btnConferencia").removeAttr("disabled");
+
+    $("#btnFechar").hide();
+    $("#btnFechar").removeAttr("disabled");
+
+    $("#lblWarning").hide();
+</script>
+@switch (Model.StatusId)
+{
+    case "A":
+        <script>
+            $("#btnGravar").show();
+            $("#btnConferencia").show();
+        </script>
+        break;
+    case "V":
+        <script>
+            $("#frmFechamento input").attr("disabled", "disabled");
+            $("#btnReabrir").show();
+            $("#btnFechar").show();
+        </script>
+        break;
+    case "F":
+        <script>
+            $("#frmFechamento input").attr("disabled", "disabled");
+        </script>
+        break;
+    default:
+        break;
+}
+@if (Model.Return.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Sucesso)
+{
+    <script>
+        ShowNotify('success', 'Fechamento', '@Model.Return.Mensagem', 'frmFechamento');
+    </script>
+}
+@if (Model.Return.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Alerta || Model.Return.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Erro)
+{
+    {
+        <script>
+            ShowNotify('@(Model.Return.Status == SAL.MVC.Helpers.Constantes.StatusRetorno.Alerta ? "warning" : "danger")', 'Fechamento', '@Model.Return.Mensagem', 'frmFechamento');
+        </script>
+    }
+}
+

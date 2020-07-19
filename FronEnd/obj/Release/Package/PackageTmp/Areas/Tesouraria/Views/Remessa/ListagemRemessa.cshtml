@@ -1,0 +1,36 @@
+﻿@model List<SAL.MVC.Areas.Tesouraria.Models.RemessaModel>
+@if (Model == null || Model.Any() == false)
+{
+    <script>
+        ShowNotify('danger', 'Tesouraria - Remessas', 'Não existem dados a serem exibidos.', 'pnlRemessaContent');
+    </script>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th class="text-center" width="10%">Número</th>
+                <th class="text-center" width="10%">Situação</th>
+                <th class="text-center" width="10%">Qtde</th>
+                <th class="text-center" width="10%">Valor</th>
+                @*<th class="text-center" width="15%">Venda</th>*@
+                <th class="text-center" width="20%">Geração</th>
+                <th class="text-center" width="20%">Pagto</th>
+                <th class="text-center" width="20%">Envio</th>
+                <th class="text-center">&nbsp;</th>
+                <th class="text-center">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="pnlRemessaCompras_@(item.Id)">
+                    @{
+                        Html.RenderPartial("BotoesAcao", item);
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}

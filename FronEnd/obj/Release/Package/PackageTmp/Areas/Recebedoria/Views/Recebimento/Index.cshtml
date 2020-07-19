@@ -1,0 +1,453 @@
+﻿@{
+    ViewBag.Title = "SAL - Recebedoria";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int PerfilId = 0;
+    bool HabilitaOrdemVenda = false;
+
+    Tropical.Infrastructure.Model.User user = null;
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado") != null)
+    {
+        user = (Tropical.Infrastructure.Model.User)Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado");
+    }
+
+    SAL.MVC.Models.UsuarioClientePerfilModel perfilSelecionado = null;
+
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado") != null)
+    {
+        perfilSelecionado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+
+        PerfilId = perfilSelecionado.PerfilId;
+
+        HabilitaOrdemVenda = perfilSelecionado.Cliente.HabilitarOrdemVenda;
+    }
+}
+
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-money fa-fw "></i>
+                    @if (PerfilId == 15)
+                    {
+                        <text>
+                            Ordem de Venda
+                        </text>
+                    }
+                    else
+                    {
+                        if (Request["ret"] != null)
+                        {
+                            <text>
+                                Recebedoria | Lançamento Retroativo
+                            </text>
+                        }
+                        else
+                        {
+                            <text>
+                                Recebedoria | Dia
+                            </text>
+                        }
+                    }
+                </h1>
+            </div>
+            <div class="form-group">
+                <div class="col-md-12">
+                    <div class="well">
+                        <div class="panel-body" style="padding-bottom:10px;">
+                            @if (Request["ret"] != null)
+                            {
+                                <form class="form-horizontal" onsubmit="return false;">
+                                    <fieldset>
+                                        <div class="form-group" style="margin-left: 0; margin-right: 0;">
+                                            <div class="col col-3">
+                                                <div class="input-group input-group-md">
+                                                    <div class="icon-addon addon-md">
+                                                        <input id="DataVenda" name="DataVenda" type="date" placeholder="Data da Venda" class="form-control" value="@(Session["DataVenda"] != null ? Convert.ToDateTime(Session["DataVenda"]).ToString("yyyy-MM-dd") : "" )" onkeypress="OnEnter(event, 'ConfirmarDataAtalho')">
+                                                        <label for="DataVenda" class="glyphicon glyphicon-calendar" rel="tooltip" title="" data-original-title="data"></label>
+                                                    </div>
+                                                    <span class="input-group-btn">
+                                                        <button id="btnConfirmarData" class="btn btn-default btn-success" type="button" onclick="ConfirmarData($('#DataVenda').val());">Confirmar</button>
+                                                        @*<button class="btn btn-default btn-danger" type="button" onclick="LimparVenda();">Limpar Venda</button>*@
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            }
+                            <ul class="demo-btns pull-left" id="pnlSelecaoComprador" style="@(Session["DataVenda"] == null ? "display:none;" : "")">
+                                <li>
+                                    <a href="javascript:void(0);" class="btn btn-primary" onclick="OpenDialogAbrirMembroGLPVenda()"><i class="fa fa-user"></i> Membro AMORC</a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" class="btn btn-default" onclick="OpenDialogVisitante()"> Visitante</a>
+                                </li>
+                            </ul>
+                            <div class="pull-right btn-group">
+                                @if (PerfilId != 15)
+                                {
+                                    <button class="btn btn-success" style="margin-right:5px;" onclick="AbrirDoacao();">
+                                        Doação
+                                    </button>
+                                }
+                                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                    <span class="hidden-tablet">Lançamentos </span><span class="fa fa-angle-double-down"></span>
+                                </button>
+                                <ul class="dropdown-menu" id="pnlUltimasRecebedoria">
+                                    @{
+                                        if (PerfilId == 15)
+                                        {
+                                            Html.RenderAction("UltimasOrdensVenda");
+                                        }
+                                        else
+                                        {
+                                            Html.RenderAction("UltimosRecebimentos");
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="panel-body" id="pnlVendaComprador" style="padding-top:0px;padding-bottom:0px;">
+                        </div>
+                        <div class="panel-body" id="pnlVendaItens" style="padding-top:0px;">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModalVisitante" title="Recebedoria - Visitante" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalVisitante_Content">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogVisitante();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="SelecionarVisitante(this);">Confirmar</button>
+    </div>
+</div>
+<div id="myModalDoacao" title="Recebedoria - Doação" class="no-padding" style="display:none;">
+    <div class="modal-body">
+        <ul id="myTab1" class="nav nav-tabs bordered">
+            <li class="active">
+                <a href="#pnlDoacaoNova" data-toggle="tab">Nova Doação</a>
+            </li>
+            <li class="">
+                <a href="#pnlDoacaoRealizada" onclick="ListaDoacoes();" data-toggle="tab">Doações Realizadas</a>
+            </li>
+        </ul>
+        <div id="myTabContent1" class="tab-content padding-10">
+            <div class="tab-pane fade active in" id="pnlDoacaoNova">
+                <form class="smart-form" id="frmDoacao" autocomplete="off" onsubmit="return false;">
+                    <fieldset style="border:0;">
+                        <div class="row">
+                            <section class="col col-6">
+                                <label class="label">
+                                    <label for="txtDoacaoData">Data Doação</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    <input type="date" class="form-control" id="txtDoacaoData" name="txtDoacaoData">
+                                </label>
+                            </section>
+                            <section class="col col-6">
+                                <label class="label">
+                                    <label for="txtDoacaoNomeRazaoSocial">Nome Completo / Razão Social</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    <input maxlength="30" class="form-control" id="txtDoacaoNomeRazaoSocial" name="txtDoacaoNomeRazaoSocial" style="text-transform:uppercase;">
+                                </label>
+                            </section>
+                        </div>
+                        <div class="row">
+                            <section class="col col-4">
+                                <label class="label">
+                                    <label for="txtDoacaoValor">Valor da Doação</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <label class="input">
+                                    <input type="text" id="txtDoacaoValor" name="txtDoacaoValor" onkeypress="OnEnter(event, 'IncluirDoacao'); return isDecimal(event);">
+                                </label>
+                            </section>
+                            <section class="col col-4">
+                                <label class="label"><label for="txtDoacaoCPFCNPJ">CPF / CNPJ</label></label>
+                                <label class="input">
+                                    <input maxlength="30" class="form-control" id="txtDoacaoCPFCNPJ" name="txtDoacaoCPFCNPJ" onkeypress="OnEnter(event, 'IncluirDoacao')" type="text" value="">
+                                </label>
+                            </section>
+                            <section class="col col-4">
+                                <label class="label"><label for="txtDoacaoGLP">GLP</label></label>
+                                <label class="input">
+                                    <input maxlength="30" class="form-control" id="txtDoacaoGLP" name="txtDoacaoGLP" onkeypress="OnEnter(event, 'IncluirDoacao')" type="number" value="">
+                                </label>
+                            </section>
+                        </div>
+                        <div class="row">
+                            <section class="col col-6">
+                                <label class="label">
+                                    <label>Fonte de Recebimento</label>
+                                    <span class="font-xs text-danger">*</span>
+                                </label>
+                                <div class="inline-group">
+                                    <label class="radio">
+                                        <input type="radio" name="DoacaoFonte" id="DoacaoFonteContaCorrente" value="C">
+                                        <i></i>Conta Corrente
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="DoacaoFonte" id="DoacaoFonteDinheiro" value="D">
+                                        <i></i>Dinheiro
+                                    </label>
+                                </div>
+                            </section>
+                            <section class="col col-6 text-right">
+                                <label class="label">&nbsp;</label>
+                                <button type="button" class="btn btn-sm btn-success" onclick="IncluirDoacao(this);">Confirmar Doação</button>
+                            </section>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="tab-pane fade" id="pnlDoacaoRealizada">
+
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="dialogDoacao.dialog('close');" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+    </div>
+</div>
+<div id="myModalCancelarDoacao" title="SAL - Cancelar Doação" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalCancelarDoacao">
+        <span class="font-lg">O Cancelamento de Doação não pode ser desfeito<br> Deseja continuar ?</span>
+        <p>Motivo</p>
+        <input type="hidden" id="txtCancelarDoacaoId" />
+        <textarea cols="35" rows="7" id="txtCancelarDoacao" style="width:100%; text-transform:uppercase;"></textarea>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="dialogCancelarDoacao.dialog('close');" tabindex="-1">Não</button>
+        <button type="button" class="btn btn-success" id="btnCancelarDoacaoSim" onclick="ConfirmarCancelarDoacao(this);"><i class="fa fa-check"></i>&nbsp; SIM</button>
+    </div>
+</div>
+<div id="myModalFullFormaPagamento" title="Recebedoria - Forma de Pagamento" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalFullFormaPagamentoContent">
+
+    </div>
+    @*<div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="dialogFullFormaPagamento.dialog('close');"><i class="fa fa-rotate-left"></i> Voltar</button>
+        </div>*@
+</div>
+<script>
+    var dialogVisitante = null;
+    var dialogDoacao = null;
+    var dialogCancelarDoacao = null;
+
+    $(document).ready(function () {
+
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            var target = e.target.attributes.href.value;
+
+            switch (target) {
+                case "#pnlDoacaoRealizada":
+                    break;
+                case "#pnlDoacaoNova":
+                    break;
+            }
+        })
+
+        dialogDoacao = $("#myModalDoacao").dialog({
+            autoOpen: false,
+            width: (thisDevice == "mobile") ? parseInt($(window).width()) : parseInt($("#content").css("width")) / 2,
+            resizable: false,
+            modal: true,
+            closeOnEscape: true,
+            position: { my: "center top", at: "center top", of: $("#content") }
+        });
+
+        dialogCancelarDoacao = $("#myModalCancelarDoacao").dialog({
+            autoOpen: false,
+            width: (thisDevice == "mobile") ? parseInt($(window).width()) : parseInt($("#content").css("width")) / 2,
+            resizable: false,
+            modal: true,
+            closeOnEscape: true,
+            position: { my: "center top", at: "center top", of: $("#content") }
+        });
+
+        ConfiguraDialogVisitante();
+        GET_AssistenteComprador(true);
+
+        @if (Request["ret"] == null)
+        {
+        <text>
+        ConfirmarData('@SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual().ToString("dd/MM/yyyy")');
+        </text>
+        } else
+        {
+        <text>
+        $("#DataVenda").focus();
+        </text>
+        }
+    });
+
+    function AbrirDoacao() {
+        frmDoacao.reset();
+
+        $("a[href*=pnlDoacaoNova").click();
+        dialogDoacao.dialog("open");
+        dialogDoacao.dialog("moveToTop");
+
+        $("#DoacaoFonteDinheiro").click();
+
+        $("#txtDoacaoNomeRazaoSocial").focus();
+
+    }
+
+    function DoacaoEmitirRecibo(MovimentoId) {
+        $.ajax({
+            type: 'GET',
+            data: {
+                MovimentoId: MovimentoId
+            },
+            url: rootURL + 'Tesouraria/PagamentoRecebimento/EmitirRecibo',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success == undefined) {
+                    $("#myModalFullContent").html(data);
+                    OpenFullDialog();
+
+                    $("#btnPrintFullDialog").hide();
+                } else {
+                    ShowNotify('danger', 'Tesouraria - Emitir Recibo', data.msg);
+                }
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmarDataAtalho() {
+        ConfirmarData($('#DataVenda').val());
+    }
+
+    function IncluirDoacao(objButton) {
+        ClearNotify();
+
+        $("#DoacaoIdSelect").empty();
+        $("#DoacaoIdSelect").append("<option value=''>Selecione");
+        $(objButton).attr("disabled", "disabled");
+
+        ShowProgress('frmDoacao');
+        ClearNotify();
+
+        var DoacaoFonte = "";
+        if ($("#DoacaoFonteContaCorrente").is(":checked")) {
+            DoacaoFonte = "C";
+        } else {
+            DoacaoFonte = "D";
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Recebedoria/Recebimento/ConfirmarDoacao',
+            data: {
+                Data: $("#txtDoacaoData").val(),
+                NomeRazaoSocial: $("#txtDoacaoNomeRazaoSocial").val(),
+                CPFCNPJ: $("#txtDoacaoCPFCNPJ").val(),
+                GLP: $("#txtDoacaoGLP").val(),
+                Valor: $("#txtDoacaoValor").val(),
+                Fonte: DoacaoFonte
+            },
+            beforeSend: function () {
+
+            },
+            success: function (data) {
+                if (data.success == true) {
+                    ShowNotify('success', 'Recebedoria - Doação', 'Doação realizadas com sucesso!', 'frmDoacao');
+
+                    $("#frmDoacao")[0].reset();
+
+                    DoacaoEmitirRecibo(data.MovimentoId);
+                } else {
+                    ShowNotify('danger', 'Recebedoria - Doação', data.msg, 'frmDoacao');
+                }
+            },
+            error: function (xhr, st, str) {
+                ShowNotify('danger', 'Recebedoria - Doação', MsgNaoFoiPossivelCompletarOperacao, 'frmDoacao');
+            },
+            complete: function () {
+                $(objButton).removeAttr("disabled");
+                HideProgress();
+            }
+        });
+    }
+
+    function ListaDoacoes() {
+        ShowProgress('pnlDoacaoRealizada');
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Recebedoria/Recebimento/ListarDoacao',
+            beforeSend: function () {
+
+            },
+            success: function (data) {
+                $("#pnlDoacaoRealizada").html(data);
+            },
+            error: function (xhr, st, str) {
+                ShowNotify('danger', 'Recebedoria - Doação', MsgNaoFoiPossivelCompletarOperacao, 'frmDoacao');
+            },
+            complete: function () {
+                HideProgress();
+            }
+        });
+    }
+
+    function ConfirmarCancelarDoacao() {
+
+        ShowProgress('myModalCancelarDoacao');
+        $(".alert").remove();
+        $("#btnCancelarDoacaoSim").attr("disabled", "disabled");
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Tesouraria/PagamentoRecebimento/Cancelar',
+            data: { Id: $("#txtCancelarDoacaoId").val(), Motivo: encodeURIComponent($("#txtCancelarDoacao").val()) },
+            beforeSend: function () {
+
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Recebedoria', 'Doação cancelada com sucesso!', 'myModalDoacao');
+                    ListaDoacoes();
+                    dialogCancelarDoacao.dialog('close');
+                } else {
+                    ShowNotify('danger', 'Recebedoria', data.msg, 'myModalCancelarDoacao');
+                }
+            },
+            error: function (xhr, st, str) {
+                ShowNotify('danger', 'Recebedoria', MsgNaoFoiPossivelCompletarOperacao, 'myModalCancelarDoacao');
+            },
+            complete: function () {
+                $("#btnCancelarDoacaoSim").removeAttr("disabled");
+                HideProgress();
+            }
+        });
+    }
+
+    function DoacaoCancelar(Id) {
+        $("#txtCancelarDoacaoId").val(Id);
+
+        dialogCancelarDoacao.dialog("open");
+        dialogCancelarDoacao.dialog("moveToTop");
+    }
+</script>

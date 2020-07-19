@@ -1,0 +1,348 @@
+﻿@model SAL.MVC.Areas.Tesouraria.Models.FechamentoAnualModelView
+@{
+    ViewBag.Title = "Diario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-cut"></i>
+                    Tesouraria | Fechamento Anual
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <article class="col-sm-12 col-md-12 col-lg-12">
+                <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+                    <table id="datatable_tabletools" class="table table-striped table-bordered table-hover" width="100%" style="display:none;">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Ano</th>
+                                <th class="text-center">Saldo Inicial</th>
+                                <th class="text-center">Saldo Final</th>
+                                <th class="text-center">Membros Ano Anterior</th>
+                                <th class="text-center">Membros Ativos</th>
+                                <th class="text-center">Situação</th>
+                                <th class="text-center" style="width:85px;">&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ListaFechamento)
+                            {
+                                <tr id="linha_@item.Id">
+                                    @{Html.RenderPartial("ListaLinha", item);}
+                                </tr>
+                                        }
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+<div id="myModalFechamento" title="Fechamento do Ano" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalFechamentoContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogFechamento();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-primary" id="btnGravar" onclick="ConfirmDialogGravarDados();">Gravar Dados</button>
+        <button type="button" class="btn btn-success" id="btnReabrir" onclick="ConfirmDialogReabrir();">Reabrir o Ano</button>
+        <button type="button" class="btn btn-success" id="btnConferencia" onclick="ConfirmDialogConferencia();">Habilitar Conferência</button>
+        <button type="button" class="btn btn-warning" id="btnFechar" onclick="ConfirmDialogFechamento();">Fechar o Ano</button>
+    </div>
+</div>
+<script>
+    var dialogFechamento = null;
+
+    $(document).ready(function () {
+        FechamentoConfig();
+
+        $(window).resize(function () {
+            FechamentoConfig();
+        });
+
+        $('#datatable_tabletools').dataTable({
+            "ordering": false,
+            "preDrawCallback": function () {
+                // Initialize the responsive datatables helper once.
+                if (!responsiveHelper_datatable_tabletools) {
+                    responsiveHelper_datatable_tabletools = new ResponsiveDatatablesHelper($('#datatable_tabletools'), breakpointDefinition);
+                }
+            },
+            "rowCallback": function (nRow) {
+                try {
+                    responsiveHelper_datatable_tabletools.createExpandIcon(nRow);
+                } catch (e) {
+
+                }   
+            },
+            "drawCallback": function (oSettings) {
+                $("#datatable_tabletools").show();
+                responsiveHelper_datatable_tabletools.respond();
+            }
+        });
+    });
+
+
+    function FechamentoConfig() {
+        dialogFechamento = $("#myModalFechamento").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()),
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' })
+            }
+        });
+    }
+
+    function ConfirmDialogFechamento() {
+        $(".alert").remove();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Tesouraria/FechamentoAnual/Fechar',
+            data: { Id: $("#Id").val() },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                Detalhes($("#Id").val());
+                AtualizaLinha($("#Id").val());
+                $("#myModalFechamentoContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+                $("#AgendamentoContaAutoComplete").focus();
+            }
+        });
+    }
+
+    function ConfirmDialogGravarDados() {
+        ClearNotify();
+
+        $("#btnConferencia").attr("disabled", "disabled");
+        $("#btnGravar").attr("disabled", "disabled");
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Tesouraria/FechamentoAnual/Form',
+            data: $.param($("#frmFechamento").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                AtualizaLinha($("#Id").val());
+                if (data.Return.Status == 1) {
+                    ShowNotify('success', 'Fechamento', data.Return.Mensagem, 'frmFechamento');
+                } else {
+                    ShowNotify('danger', 'Fechamento', data.Return.Mensagem, 'frmFechamento');
+                }
+
+                $("#btnConferencia").removeAttr("disabled");
+                $("#btnGravar").removeAttr("disabled");
+
+                //Detalhes($("#Id").val());
+                //$("#myModalFechamentoContent").html("");
+                //$("#myModalFechamentoContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmDialogConferencia() {
+        ClearNotify();
+
+        $("#btnConferencia").attr("disabled", "disabled");
+        $("#btnGravar").attr("disabled", "disabled");
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Tesouraria/FechamentoAnual/HabilitarConferencia',
+            data: $.param($("#frmFechamento").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                AtualizaLinha($("#Id").val());
+                
+                if (data.Return.Status == 1) {
+                    ShowNotify('success', 'Fechamento', data.Return.Mensagem, 'frmFechamento');
+                } else {
+                    ShowNotify('danger', 'Fechamento', data.Return.Mensagem, 'frmFechamento');
+                }
+                
+                $("#frmFechamento input").attr("disabled", "disabled");
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfirmDialogReabrir() {
+        $(".alert").remove();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Tesouraria/FechamentoAnual/Reabrir',
+            data: { Id: $("#Id").val() },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                Detalhes($("#Id").val());
+                AtualizaLinha($("#Id").val());
+                $("#myModalFechamentoContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+                $("#AgendamentoContaAutoComplete").focus();
+            }
+        });
+    }
+
+    function CloseDialogFechamento() {
+        dialogFechamento.dialog("close");
+    }
+
+    function Detalhes(Id) {
+        $(".alert").remove();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Tesouraria/FechamentoAnual/Form',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("body").css({ overflow: 'hidden' });
+
+                $("#myModalFechamentoContent").html(data);
+
+                dialogFechamento.dialog("open");
+                dialogFechamento.dialog("moveToTop");
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+                $("#AgendamentoContaAutoComplete").focus();
+            }
+        });
+    }
+
+    function AtualizaLinha(Id) {
+        $(".alert").remove();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Tesouraria/FechamentoAnual/ListaLinha',
+            data: { Id: Id },
+            beforeSend: function () {
+
+            },
+            success: function (data) {
+
+                $("#linha_" + Id).html(data);
+
+            },
+            error: function (xhr, st, str) {
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                $("#AgendamentoContaAutoComplete").focus();
+            }
+        });
+    }
+
+    function CalculaSaldoProximoAno() {
+        var SomaEntradas = parseFloat($("#SomaEntradas").val());
+        var SaldoAnoAnterior = parseFloat($("#SaldoAnoAnterior").val().replace(",", "."));
+        var TotalEntradas = SomaEntradas + SaldoAnoAnterior;
+
+        var TotalSaidas = parseFloat($("#TotalSaidas").val().replace(".", "").replace(",", "."));
+        var SaldoProximoAno = TotalEntradas - TotalSaidas;
+
+
+        $("#TotalEntradas").val(TotalEntradas.toLocaleString('pt-BR'));
+        $("#SaldoProximoAno").val(SaldoProximoAno.toLocaleString('pt-BR'));
+    }
+
+    function CalculaSaldos() {
+        var AnoAnteriorSaldoCaixa = parseFloat($("#AnoAnteriorSaldoCaixa").val().replace(",", "."));
+        var SaldoCaixa = parseFloat($("#SaldoCaixa").val().replace(",", "."));
+        var SaldoCaixaCalculado = AnoAnteriorSaldoCaixa + SaldoCaixa;
+        $("#SaldoCaixaCalculado").val(SaldoCaixaCalculado.toLocaleString('pt-BR'));
+
+        var AnoAnteriorSaldoContaCorrente = parseFloat($("#AnoAnteriorSaldoContaCorrente").val().replace(",", "."));
+        var SaldoContaCorrente = parseFloat($("#SaldoContaCorrente").val().replace(",", "."));
+        var SaldoContaCorrenteCalculado = AnoAnteriorSaldoContaCorrente + SaldoContaCorrente;
+        $("#SaldoContaCorrenteCalculado").val(SaldoContaCorrenteCalculado.toLocaleString('pt-BR'));
+
+        var AnoAnteriorSaldoAplicacao = parseFloat($("#AnoAnteriorSaldoAplicacao").val().replace(",", "."));        
+        var SaldoAplicacao = parseFloat($("#SaldoAplicacao").val().replace(",", "."));
+        var SaldoAplicacaoCalculado = AnoAnteriorSaldoAplicacao + SaldoAplicacao;
+        $("#SaldoAplicacaoCalculado").val(SaldoAplicacaoCalculado.toLocaleString('pt-BR'));
+        $("#AnoAnteriorSaldoAplicacaoDeclaracao3").val(AnoAnteriorSaldoAplicacao.toLocaleString('pt-BR'));
+
+        var AnoAnteriorSaldoPoupanca = parseFloat($("#AnoAnteriorSaldoPoupanca").val().replace(",", "."));
+        var SaldoContaPoupanca = parseFloat($("#SaldoContaPoupanca").val().replace(",", "."));
+        var SaldoContaPoupancaCalculado = AnoAnteriorSaldoPoupanca + SaldoContaPoupanca;
+        $("#SaldoContaPoupancaCalculado").val(SaldoContaPoupancaCalculado.toLocaleString('pt-BR'));
+        $("#AnoAnteriorSaldoPoupancaDeclaracao3").val(AnoAnteriorSaldoPoupanca.toLocaleString('pt-BR'));
+
+        var TotalInvestimentos = SaldoAplicacaoCalculado + SaldoContaPoupancaCalculado;
+        $("#TotalInvestimentos").val(TotalInvestimentos.toLocaleString('pt-BR'));
+
+        CalculaPatrimonioLiquido();
+    }
+
+    function CalculaPatrimonioLiquido() {
+        var SaldoCaixaCalculado = parseFloat($("#SaldoCaixaCalculado").val().replace(".", "").replace(",", "."));
+        var SaldoContaCorrenteCalculado = parseFloat($("#SaldoContaCorrenteCalculado").val().replace(".", "").replace(",", "."));
+        var SaldoContaPoupancaCalculado = parseFloat($("#SaldoContaPoupancaCalculado").val().replace(".", "").replace(",", "."));
+        var SaldoAplicacaoCalculado = parseFloat($("#SaldoAplicacaoCalculado").val().replace(".", "").replace(",", "."));
+        var ValorInventarioCalculado = parseFloat($("#ValorInventarioCalculado").val().replace(".", "").replace(",", "."));
+        var ValorContasPagar = parseFloat($("#ValorContasPagar").val().replace(",", "."));
+        var ValorSuprimentos = parseFloat($("#ValorSuprimentos").val().replace(",", "."));
+        var ValorCartaConstitutiva = parseFloat($("#ValorCartaConstitutiva").val().replace(",", "."));
+        var ValorMensalidadesOutros = parseFloat($("#ValorMensalidadesOutros").val().replace(",", "."));
+
+        var ValorPatrimonioLiquido =
+            SaldoCaixaCalculado + SaldoContaCorrenteCalculado + SaldoContaPoupancaCalculado +
+            SaldoAplicacaoCalculado + ValorInventarioCalculado + ValorContasPagar +
+            ValorSuprimentos + ValorCartaConstitutiva + ValorMensalidadesOutros;
+
+        $("#ValorPatrimonioLiquido").val(ValorPatrimonioLiquido.toLocaleString('pt-BR'));
+    }   
+</script>

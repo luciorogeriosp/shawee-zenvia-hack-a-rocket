@@ -1,0 +1,398 @@
+﻿@model SAL.MVC.Models.RelatorioModel<SAL.MVC.Areas.Recebedoria.Models.RelatorioDiarioModel>
+@{
+    List<SAL.MVC.Areas.Recebedoria.Models.VendaFormaPagamentoModel> listaLeiAmra = Model.Dados.ListaFormaPagamento.Where(w => w.Detalhe == "APLICAÇÃO LEI DE AMRA").ToList();
+    decimal decAplicacaoLeiAmra = 0;
+    if (listaLeiAmra != null && listaLeiAmra.Any())
+    {
+        decAplicacaoLeiAmra = listaLeiAmra.Sum(s1 => s1.Valor);
+    }
+
+    List<SAL.MVC.Areas.Recebedoria.Models.RelatorioDiarioItemModel> listaDoacoes = Model.Dados.Lista.Where(w => w.ContaNome == "DOAÇÕES" || w.ContaNome == "RECEBIMENTO LEI AMRA").ToList();
+    decimal decDoacaoLeiAmra = 0;
+    if (listaDoacoes != null && listaDoacoes.Any())
+    {
+        decDoacaoLeiAmra = Convert.ToDecimal(listaDoacoes.Sum(s1 => s1.Valor));
+    }
+
+    string CompradorNome = string.Empty;
+
+    SAL.MVC.Models.UsuarioClientePerfilModel OrganismoAfiliado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    if (string.IsNullOrEmpty(OrganismoAfiliado.Cliente.Logotipo) == false)
+    {
+
+    }
+
+    string strColunas = string.Empty;
+    if (Model.Dados.DataInicial != Model.Dados.DataFinal)
+    {
+        strColunas = @"
+            0: {
+                halign: 'center',
+                columnWidth: 45,
+                fontSize: 7
+            },
+            1: {
+                halign: 'center',
+                columnWidth: 62,
+                fontSize: 7
+            },
+            2: {
+                halign: 'center',
+                columnWidth: 40
+            },
+            3: {
+                halign: 'left'
+            },
+            4: {
+                halign: 'left',
+                columnWidth: 62,
+                fontSize: 7
+            },
+            5: {
+                halign: 'left',
+                columnWidth: 135,
+            }
+            ,
+            6: {
+                halign: 'right',
+                columnWidth: 70,
+                fontSize: 10
+            }
+        ";
+    }
+    else
+    {
+        strColunas = @"
+            0: {
+                halign: 'center',
+                columnWidth: 62,
+                fontSize: 7
+            },
+            1: {
+                halign: 'center',
+                columnWidth: 40
+            },
+            2: {
+                halign: 'left'
+            },
+            3: {
+                halign: 'left',
+                columnWidth: 58
+            },
+            4: {
+                halign: 'left'
+            }
+            ,
+            5: {
+                halign: 'right',
+                columnWidth: 70
+            }
+        ";
+    }
+}
+<html>
+<body>
+    <meta name="viewport" content="width=device-width">
+
+    <!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script>
+        if (!window.jQuery) {
+            document.write('<script src="@Url.Content("~/js/libs/jquery-2.0.2.min.js")" ><\/script>');
+        }
+    </script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script>
+        if (!window.jQuery.ui) {
+            document.write('<script src="@Url.Content("~/js/libs/jquery-ui-1.10.3.min.js")" ><\/script>');
+        }
+    </script>
+
+    <link rel="stylesheet" href="@Url.Content("~/js/jsPDF-AutoTable-master/pure-min.css")">
+    <link rel="stylesheet" href="@Url.Content("~/js/jsPDF-AutoTable-master/grids-responsive-min.css")">
+
+
+    <script src="@Url.Content("~/js/jsPDF-AutoTable-master/jspdf.min.js")"></script>
+    <script>if (window.define) delete window.define.amd;</script>
+    <script src="@Url.Content("~/js/jsPDF-AutoTable-master/jspdf.plugin.autotable.src.js")"></script>
+    <div id="pnlTitle" style="display:none;">@Model.ReportTitle</div>
+    <div id="pnlSubTitle" style="display:none;">@Model.ReportSubitle</div>
+    <table id="pnlDadosItens" class="table table-striped" style="display:none;">
+        <thead>
+            <tr>
+                @if (Model.Dados.DataInicial != Model.Dados.DataFinal)
+                {
+                    <th>Data</th>
+                }
+                <th>Tipo</th>
+                <th>Chave</th>
+                <th>Comprador</th>
+                <th>Conta</th>
+                <th>Referência</th>
+                <th>Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Dados.Lista)
+            {
+                <tr>
+                    @if (Model.Dados.DataInicial != Model.Dados.DataFinal)
+                    {
+                        <td>@item.Data.ToString("dd/MM/yyyy")</td>
+                    }
+                    <td>@item.TipoNome.ToUpper()</td>
+                    <td>@(string.IsNullOrEmpty(item.Chave) ? "-" : item.Chave)</td>
+                    <td>
+                        @if (string.IsNullOrEmpty(item.Comprador) == false)
+                        {
+                            var arComprador = item.Comprador.Split(' ');
+                            if (arComprador.Length > 1)
+                            {
+                                CompradorNome = arComprador[0] + " " + arComprador[arComprador.Length - 1];
+                            }
+                            else
+                            {
+                                CompradorNome = item.Comprador;
+                            }
+                        }
+                        else
+                        {
+                            CompradorNome = "-";
+                        }
+                        @(CompradorNome.ToUpper())
+                    </td>
+                    <td>@item.ContaNome.ToUpper()</td>
+                    <td>@(string.IsNullOrEmpty(item.Referencia) ? "-" : item.Referencia.ToUpper())</td>
+                    <td>R$ @string.Format("{0:N}", item.Valor)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <table id="pnlDadosTotalDoacoes" class="table table-striped" style="display:none;">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>DOAÇÕES: </td>
+                <td>R$ @string.Format("{0:N}", decDoacaoLeiAmra) </td>
+            </tr>
+        </tbody>
+    </table>
+    <table id="pnlDadosTotal" class="table table-striped" style="display:none;">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Dados.ListaFormaPagamento.OrderBy(o => o.Detalhe))
+            {
+                <tr>
+                    <td>@item.Detalhe: </td>
+                    <td>R$ @string.Format("{0:N}", item.Valor) </td>
+                </tr>
+            }
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>VALOR FINAL: </td>
+                <td>R$ @string.Format("{0:N}", (Model.Dados.Lista.Sum(s => s.Valor) - Convert.ToDouble(decAplicacaoLeiAmra)))</td>
+            </tr>
+        </tbody>
+    </table>
+    <table id="pnlAssinatura" class="table table-striped" style="display:none;">
+        <tr>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>Assinatura do Responsável pelo Caixa</td>
+        </tr>
+        <tr>
+            <td>Impresso por: @Model.ReportResponsavel</td>
+        </tr>
+    </table>
+        <script type="text/javascript">
+        $(function () {
+
+            var doc = new jsPDF('P', 'pt', 'a4', true);
+            var HeaderOK = false;
+
+            doc.setProperties({
+                title: '@Model.ReportTitle',
+                subject: '@Model.ReportSubitle'
+            });
+
+            var header = function (data) {
+
+                if (!HeaderOK) {
+
+                    doc.setFontSize(20);
+                    doc.setTextColor(40);
+                    doc.setFontStyle('normal');
+                    doc.text($("#pnlTitle").html(), 40, 45);
+                    doc.setFontSize(12);
+                    doc.text($("#pnlSubTitle").html(), 40, 65);
+
+                    HeaderOK = true;
+                }
+            };
+
+            var totalPagesExp = "{total_pages_count_string}";
+            var footer = function (data) {
+                var str = "Página " + doc.internal.getCurrentPageInfo().pageNumber;
+                // Total page number plugin only available in jspdf v1.0+
+                if (typeof doc.putTotalPages === 'function') {
+                    str = str + " de " + totalPagesExp;
+                }
+
+                doc.setFontStyle('normal');
+                doc.setFontSize(10);
+                doc.setFillColor(255, 255, 255);
+                doc.rect(50, doc.internal.pageSize.height - 35, 200, 20, 'F');
+
+                doc.text(str, 50, doc.internal.pageSize.height - 30);
+            };
+
+            var options = {
+            };
+
+            var dataTipoSuprimento = '';
+            var contadorSpan = 0;
+
+            var dataTipoSuprimento = '';
+            var contadorSpan = 0;
+            var res;
+            var resItens;
+            var contadorRecebedoria = 0;
+
+            resItens = doc.autoTableHtmlToJson(document.getElementById("pnlDadosItens"));
+            doc.autoTable(resItens.columns, resItens.data, {
+                startY: (contadorRecebedoria == 0) ? 80 : doc.autoTableEndPosY() + 20,
+                margin: { left: 40, bottom: 60 },
+                pageBreak: 'auto',
+                tableWidth: 'auto',
+                styles: {
+                    font: 'Arial',
+                    fontSize: 8,
+                    fillStyle: 'DF',
+                    lineColor: [44, 62, 80],
+                    lineWidth: 1,
+                    overflow: 'linebreak'
+                },
+                headerStyles: { fontSize: 10, fontStyle: 'bold', halign: 'center', valign: 'middle' },
+                beforePageContent: header,
+                afterPageContent: footer,
+                columnStyles: {
+                    @Html.Raw(strColunas)
+                },
+            });
+
+            contadorRecebedoria++;
+
+            var initialTotal = doc.autoTableEndPosY();
+
+            resTotal = doc.autoTableHtmlToJson(document.getElementById("pnlDadosTotal"));
+            doc.autoTable(resTotal.columns, resTotal.data, {
+                startY: initialTotal + 30,
+                tableWidth: 205,
+                drawHeaderRow: function (row, data)
+                {
+                    return false;
+                },
+                margin: {left: 350},
+                styles: {
+                    font: 'Arial',
+                    fillStyle: 'DF',
+                    lineColor: [44, 62, 80],
+                    lineWidth: 1,
+                    overflow: 'linebreak'
+                },
+                columnStyles: {
+                    0: {
+                        halign: 'right',
+                        fontStyle: 'bold',
+                        fontSize: 10
+                    },
+                    1: {
+                        halign: 'right',
+                        columnWidth: 70,
+                        fontSize: 10
+                    }
+                },
+            });
+            /*
+            resTotalDoacoes = doc.autoTableHtmlToJson(document.getElementById("pnlDadosTotalDoacoes"));
+            doc.autoTable(resTotalDoacoes.columns, resTotalDoacoes.data, {
+                startY: (contadorRecebedoria == 0 ? initialTotal : doc.autoTableEndPosY()) + 30,
+                tableWidth: 205,
+                drawHeaderRow: function (row, data)
+                {
+                    return false;
+                },
+                margin: {left: 40},
+                styles: {
+                    font: 'Arial',
+                    fillStyle: 'DF',
+                    lineColor: [44, 62, 80],
+                    lineWidth: 1,
+                    overflow: 'linebreak'
+                },
+                columnStyles: {
+                    0: {
+                        halign: 'right',
+                        fontStyle: 'bold',
+                        fontSize: 10
+                    },
+                    1: {
+                        halign: 'right',
+                        columnWidth: 70,
+                        fontSize: 10
+                    }
+                },
+            });
+            */
+            resAssinatura = doc.autoTableHtmlToJson(document.getElementById("pnlAssinatura"));
+                doc.autoTable(resAssinatura.columns, resAssinatura.data, {
+                startY: doc.autoTableEndPosY() + 30,
+                drawHeaderRow: function (row, data) {
+                    return false;
+                },
+                styles: {
+                    font: 'Arial',
+                    fillStyle: 'DF',
+                    lineColor: [44, 62, 80],
+                    lineWidth: 1,
+                    overflow: 'linebreak'
+                },
+                columnStyles: {
+                    0: {
+                        halign: 'center',
+                        fontStyle: 'bold',
+                        fontSize: 10
+                    },
+                    1: {
+                        halign: 'center',
+                        fontSize: 10
+                    }
+                },
+            });
+
+            // Total page number plugin only available in jspdf v1.0+
+            if (typeof doc.putTotalPages === 'function') {
+                doc.putTotalPages(totalPagesExp);
+            }
+
+            parent.document.getElementById("iframeImprimir").src = doc.output('datauristring');
+        });
+        </script>
+</body>
+</html>

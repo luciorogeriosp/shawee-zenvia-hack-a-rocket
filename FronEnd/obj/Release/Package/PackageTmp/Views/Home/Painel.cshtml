@@ -1,0 +1,607 @@
+﻿@using SAL.MVC.Helpers;
+@model SAL.MVC.Models.PainelViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Tropical.Infrastructure.Model.User user = null;
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado") != null)
+    {
+        user = (Tropical.Infrastructure.Model.User)Tropical.Infrastructure.Util.SessionData.SessionReader("UsuarioLogado");
+    }
+
+    SAL.MVC.Models.UsuarioClientePerfilModel perfilItem = null;
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado") != null)
+    {
+        perfilItem = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    }
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark"><i class="fa-fw fa fa-home"></i>Home</h1>
+            </div>
+        </div>
+        <section id="widget-grid" class="">
+            <!-- row -->
+            <div class="row">
+                <article class="col-sm-12 col-md-12 col-lg-3">
+                    @*@(((perfilItem.Administrador || perfilItem.AdministradorOrganismo || perfilItem.AdministradorRegiao || perfilItem.AdministradorSegmento)) || perfilItem.PerfilId == Convert.ToInt32(Constantes.PerfilSistema.HeptadaArquivista) || perfilItem.PerfilId == Convert.ToInt32(Constantes.PerfilSistema.HeptadaMestre) || perfilItem.PerfilId == Convert.ToInt32(Constantes.PerfilSistema.HeptadaIniciado) || perfilItem.PerfilId == Convert.ToInt32(Constantes.PerfilSistema.HeptadaMonitor) || perfilItem.PerfilId == Convert.ToInt32(Constantes.PerfilSistema.HeptadaAssociado) ? "3" : "12")*@
+                    <div class="jarviswidget jarviswidget-color-blue" id="wid-oa" data-widget-editbutton="false" data-widget-colorbutton="false" role="widget" style="">
+
+                        <!-- widget options:
+                        usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                        data-widget-colorbutton="false"
+                        data-widget-editbutton="false"
+                        data-widget-togglebutton="false"
+                        data-widget-deletebutton="false"
+                        data-widget-fullscreenbutton="false"
+                        data-widget-custombutton="false"
+                        data-widget-collapsed="true"
+                        data-widget-sortable="false"
+
+                        -->
+
+                        <header role="heading">
+                            <div class="jarviswidget-ctrls" role="menu"><a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Fullscreen"><i class="fa fa-expand "></i></a></div>
+                            <span class="widget-icon"><i class="fa fa-check txt-color-white"></i></span>
+                            <h2>Dados do O.A. </h2>
+                            <!-- <div class="widget-toolbar">
+                            add: non-hidden - to disable auto hide
+
+                            </div>-->
+                            <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                        </header>
+
+                        <!-- widget div-->
+                        <div role="content">
+                            <div class="widget-body smart-form">
+                                <!-- content goes here -->
+                                <strong>@perfilItem.Cliente.Nome@(Html.Raw(string.IsNullOrEmpty(perfilItem.Cliente.NumeroAfiliacao) == false ? "<br />" + perfilItem.Cliente.NumeroAfiliacao : ""))</strong><br>
+                                @perfilItem.Cliente.Endereco, @perfilItem.Cliente.EnderecoNumero@(!string.IsNullOrEmpty(perfilItem.Cliente.EnderecoComplemento) ? " - " + perfilItem.Cliente.EnderecoComplemento : "") <br>
+                                @perfilItem.Cliente.EnderecoBairro@(string.IsNullOrEmpty(perfilItem.Cliente.EnderecoCEP) == false ? " - CEP: " + Convert.ToUInt64(perfilItem.Cliente.EnderecoCEP).ToString(@"00000-000") : "")<br>
+                                CNPJ: @(string.IsNullOrEmpty(perfilItem.Cliente.CNPJ) == false ? @Convert.ToUInt64(perfilItem.Cliente.CNPJ).ToString(@"00\.000\.000\/0000\-00") : "")<br>
+                                I.E.: @perfilItem.Cliente.IE<br>
+                                @if (string.IsNullOrEmpty(perfilItem.Cliente.CCM) == false)
+                                {
+                                    <text>
+                                        CCM: @perfilItem.Cliente.CCM<br>
+                                    </text>
+                                }
+                                @if ((string.IsNullOrEmpty(perfilItem.Cliente.Telefone1DDD) == false && string.IsNullOrEmpty(perfilItem.Cliente.Telefone1Numero) == false) || (string.IsNullOrEmpty(perfilItem.Cliente.Telefone2DDD) == false && string.IsNullOrEmpty(perfilItem.Cliente.Telefone2Numero) == false))
+                                {
+                                    <text>
+                                        <abbr title="Phone">F:</abbr>
+                                    </text>
+                                    if (string.IsNullOrEmpty(perfilItem.Cliente.Telefone1DDD) == false && string.IsNullOrEmpty(perfilItem.Cliente.Telefone1Numero) == false)
+                                    {
+                                        <text>
+                                            (@perfilItem.Cliente.Telefone1DDD) @Convert.ToUInt64(perfilItem.Cliente.Telefone1Numero).ToString(@"0000\-0000")<br>
+                                        </text>
+                                    }
+                                    if (string.IsNullOrEmpty(perfilItem.Cliente.Telefone2DDD) == false && string.IsNullOrEmpty(perfilItem.Cliente.Telefone2Numero) == false)
+                                    {
+                                        <text>
+                                            (@perfilItem.Cliente.Telefone2DDD) @Convert.ToUInt64(perfilItem.Cliente.Telefone2Numero).ToString(@"0000\-0000")<br>
+                                        </text>
+                                    }
+                                }
+                                <!-- end content -->
+                            </div>
+
+                        </div>
+                        <!-- end widget div -->
+                    </div>
+                    @if (perfilItem.Atendimento == false && ((Model.ListaSistema != null && Model.ListaSistema.Any())) && (Model.ListaRemessa != null && Model.ListaRemessa.Any()))
+                    {
+                        <div class="jarviswidget jarviswidget-color-blue" id="wid-tarefas" data-widget-editbutton="false" data-widget-colorbutton="false" role="widget" style="">
+
+                            <!-- widget options:
+                            usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                            data-widget-colorbutton="false"
+                            data-widget-editbutton="false"
+                            data-widget-togglebutton="false"
+                            data-widget-deletebutton="false"
+                            data-widget-fullscreenbutton="false"
+                            data-widget-custombutton="false"
+                            data-widget-collapsed="true"
+                            data-widget-sortable="false"
+
+                            -->
+
+                            <header role="heading">
+                                <div class="jarviswidget-ctrls" role="menu"><a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Fullscreen"><i class="fa fa-expand "></i></a></div>
+                                <span class="widget-icon"><i class="fa fa-check txt-color-white"></i></span>
+                                <h2>Lembretes </h2>
+                                <!-- <div class="widget-toolbar">
+                                add: non-hidden - to disable auto hide
+
+                                </div>-->
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                            </header>
+
+                            <!-- widget div-->
+                            <div role="content">
+                                <div class="widget-body no-padding smart-form">
+                                    @if (Model.ListaSistema != null && Model.ListaSistema.Any())
+                                    {
+                                        <h5 class="todo-group-title"><i class="fa fa-warning"></i> Notificações do sistema (<small class="num-of-tasks">@(Model.ListaSistema.Count)</small>)</h5>
+                                        <ul id="sortable1" class="todo ui-sortable">
+                                            @foreach (var item in Model.ListaSistema)
+                                            {
+                                                <li>
+                                                    <span class="handle">
+
+                                                    </span>
+                                                    <p>
+                                                        @Html.Raw(item.Text)
+                                                    </p>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                    @if (Model.ListaRemessa != null && Model.ListaRemessa.Any())
+                                    {
+                                        <h5 class="todo-group-title"><i class="fa fa-warning"></i> Notificações de remessa (<small class="num-of-tasks">@(Model.ListaRemessa != null && Model.ListaRemessa.Any() ? Model.ListaRemessa.Count : 0)</small>)</h5>
+                                        <ul id="sortable1" class="todo ui-sortable">
+                                            @foreach (var item in Model.ListaRemessa)
+                                            {
+                                                <li>
+                                                    <span class="handle">
+                                                        <label class="checkbox">
+                                                            <input type="checkbox" name="checkbox-inline" onclick="window.location.href = '@Url.Action("Index", "Remessa", new { Area = "Tesouraria" })';">
+                                                            <i></i>
+                                                        </label>
+                                                    </span>
+                                                    <p>
+                                                        A Remessa <strong>@item.Codigo.ToString("00") - @SAL.MVC.Helpers.Constantes.DescricaoMes(item.Mes) / @item.Ano</strong> está @item.SituacaoNome.<br />
+                                                        Quantidade de Recebedoria: @item.QuantidadeItens ite@(item.QuantidadeItens > 1 ? "ns" : "m")<br />
+                                                        Valor Total: R$ @item.ValorTotal.ToString("0.00")<br />
+                                                        [<a href="@Url.Action("Index", "Remessa", new { Area = "Tesouraria" })" class="font-xs">clique aqui</a>]
+                                                    </p>
+
+
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                    @if (Model.PossuiRoteiroAnual)
+                                    {
+                                        <h5 class="todo-group-title">
+                                            <i class="fa fa-retweet"></i> Roteiro Anual <select id="ddlRoteiroAnual" name="ddlRoteiroAnual" class="font-xs" style="float:right; margin-right:15px; margin-top:3px;" onchange="SelecionaRoteiroAnual();">
+                                                @foreach (var item in Model.Meses)
+                                                {
+                                                    <option value="@item.Id" @(Model.RoteiroAnual != null && item.Id == Model.RoteiroAnual.Mes ? " selected" : "")>@item.Text</option>
+                                                }
+                                            </select>
+                                        </h5>
+                                        <div style="padding:15px;" id="pnlRoteiroAnual">@(Html.Raw(Model.RoteiroAnual != null ? Model.RoteiroAnual.Roteiro : "(sem conteúdo)"))</div>
+                                    }
+                                    <!--
+                                    <h5 class="todo-group-title"><i class="fa fa-exclamation"></i>Important Tasks (<small class="num-of-tasks">3</small>)</h5>
+                                    <ul id="sortable2" class="todo ui-sortable">
+                                        <li>
+                                            <span class="handle">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="checkbox-inline">
+                                                    <i></i>
+                                                </label>
+                                            </span>
+                                            <p>
+                                                <strong>Ticket #1347</strong> - Inbox email is being sent twice <small>(bug fix)</small> [<a href="javascript:void(0);" class="font-xs">More Details</a>] <span class="date">Nov 22, 2013</span>
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <span class="handle">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="checkbox-inline">
+                                                    <i></i>
+                                                </label>
+                                            </span>
+                                            <p>
+                                                <strong>Ticket #1314</strong> - Call customer support re: Issue <a href="javascript:void(0);" class="font-xs">#6134</a><small>(code review)</small>
+                                                <span class="date">Nov 22, 2013</span>
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <span class="handle">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="checkbox-inline">
+                                                    <i></i>
+                                                </label>
+                                            </span>
+                                            <p>
+                                                <strong>Ticket #17643</strong> - Hotfix for WebApp interface issue [<a href="javascript:void(0);" class="font-xs">More Details</a>] <span class="text-muted">Sea deep blessed bearing under darkness from God air living isn't. </span>
+                                                <span class="date">Jan 1, 2014</span>
+                                            </p>
+                                        </li>
+                                    </ul>
+
+                                    <h5 class="todo-group-title"><i class="fa fa-check"></i>Completed Tasks (<small class="num-of-tasks">1</small>)</h5>
+                                    <ul id="sortable3" class="todo">
+                                        <li class="complete">
+                                            <span class="handle" style="display: none">
+                                                <label class="checkbox state-disabled">
+                                                    <input type="checkbox" name="checkbox-inline" checked="checked" disabled="disabled">
+                                                    <i></i>
+                                                </label>
+                                            </span>
+                                            <p>
+                                                <strong>Ticket #17643</strong> - Hotfix for WebApp interface issue [<a href="javascript:void(0);" class="font-xs">More Details</a>] <span class="text-muted">Sea deep blessed bearing under darkness from God air living isn't. </span>
+                                                <span class="date">Jan 1, 2014</span>
+                                            </p>
+                                        </li>
+                                    </ul>
+                                        -->
+                                    <!-- end content -->
+                                </div>
+
+                            </div>
+                            <!-- end widget div -->
+                        </div>
+                    }
+                </article>
+                <article class="col-sm-12 col-md-12 col-lg-9">
+                    <!-- new widget -->
+                    <div class="jarviswidget jarviswidget-color-blue" id="wid-atividades" data-widget-editbutton="false" data-widget-colorbutton="false" role="widget" style="">
+
+                        <!-- widget options:
+                        usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                        data-widget-colorbutton="false"
+                        data-widget-editbutton="false"
+                        data-widget-togglebutton="false"
+                        data-widget-deletebutton="false"
+                        data-widget-fullscreenbutton="false"
+                        data-widget-custombutton="false"
+                        data-widget-collapsed="true"
+                        data-widget-sortable="false"
+
+                        -->
+                        <header>
+                            <div class="jarviswidget-ctrls" role="menu">
+                                <a href="javascript:void(0);" class="button-icon jarviswidget-toggle-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Collapse"><i class="fa fa-minus "></i></a>
+                                <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Fullscreen"><i class="fa fa-expand "></i></a>
+                            </div>
+                            <span class="widget-icon"> <i class="glyphicon glyphicon-list-alt"></i> </span>
+                            <h2> Agenda de atividades </h2>
+                        </header>
+                        <!-- widget div-->
+                        <div role="content">
+                            <div class="widget-body no-padding" id="pnlAtividades">
+                                @{
+                                    Html.RenderAction("Filtrar", "Atividade", new { Area = "OrganismoAfiliado" });
+                                }
+                            </div>
+                        </div>
+                        <!-- end widget div -->
+                    </div>
+                    <!-- end widget -->
+                    @if (((perfilItem.Administrador || perfilItem.AdministradorOrganismo || perfilItem.AdministradorRegiao || perfilItem.AdministradorSegmento)) || perfilItem.PerfilId == Convert.ToInt32(Constantes.PerfilSistema.HeptadaArquivista) || perfilItem.PerfilId == Convert.ToInt32(Constantes.PerfilSistema.HeptadaMestre) || perfilItem.PerfilId == Convert.ToInt32(Constantes.PerfilSistema.HeptadaIniciado) || perfilItem.PerfilId == Convert.ToInt32(Constantes.PerfilSistema.HeptadaAssociado) || perfilItem.PerfilId == Convert.ToInt32(Constantes.PerfilSistema.HeptadaAssociado))
+                    {
+
+                        <!-- new widget -->
+                        <div class="jarviswidget jarviswidget-color-blue" id="wid-contas" data-widget-editbutton="false" data-widget-colorbutton="false" role="widget" style="">
+
+                            <!-- widget options:
+                            usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                            data-widget-colorbutton="false"
+                            data-widget-editbutton="false"
+                            data-widget-togglebutton="false"
+                            data-widget-deletebutton="false"
+                            data-widget-fullscreenbutton="false"
+                            data-widget-custombutton="false"
+                            data-widget-collapsed="true"
+                            data-widget-sortable="false"
+
+                            -->
+                            <header>
+                                <div class="jarviswidget-ctrls" role="menu">
+                                    <a href="javascript:void(0);" class="button-icon jarviswidget-toggle-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Collapse"><i class="fa fa-minus "></i></a>
+                                    <a href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Fullscreen"><i class="fa fa-expand "></i></a>
+                                </div>
+                                <span class="widget-icon"> <i class="fa fa-calendar"></i> </span>
+                                <h2> Agenda Financeira </h2>
+                                @*
+                                    <div class="widget-toolbar">
+                                        <!-- add: non-hidden - to disable auto hide -->
+                                        <div class="btn-group">
+                                            <button class="btn dropdown-toggle btn-xs btn-default" data-toggle="dropdown">
+                                                Showing <i class="fa fa-caret-down"></i>
+                                            </button>
+                                            <ul class="dropdown-menu js-status-update pull-right">
+                                                <li>
+                                                    <a href="javascript:void(0);" id="mt">Mensal</a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);" id="ag">Agenda</a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);" id="td">Today</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>*@
+                            </header>
+
+                            <!-- widget div-->
+                            <div role="content">
+
+                                <div class="widget-body no-padding">
+                                    <!-- content goes here -->
+                                    <div class="widget-body-toolbar">
+                                        <div id="calendar-buttons" style="display:none;">
+
+                                            <div class="btn-group">
+                                                <a href="javascript:void(0)" class="btn btn-default btn-xs" id="btn-prev"><i class="fa fa-chevron-left"></i></a>
+                                                <a href="javascript:void(0)" class="btn btn-default btn-xs" id="btn-next"><i class="fa fa-chevron-right"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="calendar_loading">
+                                        <fieldset>
+                                            <section>
+                                                <div class="progress">
+                                                    <div class="progress progress-striped">
+                                                        <div class="progress-bar bg-color-blue active" role="progressbar" style="width: 100%"></div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h4>Carregando, aguarde...</h4>
+                                                </div>
+                                            </section>
+                                        </fieldset>
+                                    </div>
+                                    <div id="calendar"></div>
+
+                                    <!-- end content -->
+                                </div>
+
+                            </div>
+                            <!-- end widget div -->
+                        </div>
+                        <!-- end widget -->
+                    }
+                </article>
+            </div>
+        </section>
+    </div>
+    <!-- END MAIN CONTENT -->
+</div>
+<!-- END MAIN PANEL -->
+<script>
+    var pDefaultDate = '@(ViewBag.DataAtual)';
+
+    $(document).ready(function () {
+
+        pageSetUp();
+
+
+        "use strict";
+
+        var date = new Date();
+        var d = date.getDate();
+        var m = date.getMonth();
+        var y = date.getFullYear();
+
+        var hdr = {
+            left: 'title',
+            center: 'month,agendaWeek,agendaDay',
+            right: 'prev,today,next'
+        };
+
+        var initDrag = function (e) {
+            // create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
+            // it doesn't need to have a start or end
+
+            var eventObject = {
+                title: $.trim(e.children().text()), // use the element's text as the event title
+                description: $.trim(e.children('span').attr('data-description')),
+                icon: $.trim(e.children('span').attr('data-icon')),
+                className: $.trim(e.children('span').attr('class')) // use the element's children as the event class
+            };
+            // store the Event Object in the DOM element so we can get to it later
+            e.data('eventObject', eventObject);
+
+            // make the event draggable using jQuery UI
+            e.draggable({
+                zIndex: 999,
+                revert: true, // will cause the event to go back to its
+                revertDuration: 0 //  original position after the drag
+            });
+        };
+
+        var addEvent = function (title, priority, description, icon) {
+            title = title.length === 0 ? "Untitled Event" : title;
+            description = description.length === 0 ? "No Description" : description;
+            icon = icon.length === 0 ? " " : icon;
+            priority = priority.length === 0 ? "label label-default" : priority;
+
+            var html = $('<li><span class="' + priority + '" data-description="' + description + '" data-icon="' +
+                icon + '">' + title + '</span></li>').prependTo('ul#external-events').hide().fadeIn();
+
+            $("#event-container").effect("highlight", 800);
+
+            initDrag(html);
+        };
+
+        /* initialize the external events
+         -----------------------------------------------------------------*/
+
+        $('#external-events > li').each(function () {
+            initDrag($(this));
+        });
+
+        $('#add-event').click(function () {
+            var title = $('#title').val(),
+                priority = $('input:radio[name=priority]:checked').val(),
+                description = $('#description').val(),
+                icon = $('input:radio[name=iconselect]:checked').val();
+
+            addEvent(title, priority, description, icon);
+        });
+
+        /* initialize the calendar
+         -----------------------------------------------------------------*/
+
+        $('#calendar').fullCalendar({
+
+            header: hdr,
+            buttonText: {
+                prev: '<i class="fa fa-chevron-left"></i>',
+                next: '<i class="fa fa-chevron-right"></i>'
+            },
+            editable: false,
+            droppable: false, // this allows things to be dropped onto the calendar !!!
+            defaultDate: pDefaultDate,
+            lang: "pt-br",
+            drop: function (date, allDay) { // this function is called when something is dropped
+
+                // retrieve the dropped element's stored Event Object
+                var originalEventObject = $(this).data('eventObject');
+
+                // we need to copy it, so that multiple events don't have a reference to the same object
+                var copiedEventObject = $.extend({}, originalEventObject);
+
+                // assign it the date that was reported
+                copiedEventObject.start = date;
+                copiedEventObject.allDay = allDay;
+
+                // render the event on the calendar
+                // the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
+                $('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
+
+                // is the "remove after drop" checkbox checked?
+                if ($('#drop-remove').is(':checked')) {
+                    // if so, remove the element from the "Draggable Events" list
+                    $(this).remove();
+                }
+
+            },
+
+            select: function (start, end, allDay) {
+                var title = prompt('Event Title:');
+                if (title) {
+                    calendar.fullCalendar('renderEvent', {
+                        title: title,
+                        start: start,
+                        end: end,
+                        allDay: allDay
+                    }, true // make the event "stick"
+                    );
+                }
+                calendar.fullCalendar('unselect');
+            },
+            loading: function (bool) {
+                if (bool) {
+                    $('#calendar-buttons').hide();
+                    $('#calendar').hide();
+                    $('#calendar_loading').show();
+                }
+                else {
+                    $('#calendar_loading').hide();
+                    $('#calendar').show();
+                    $('#calendar-buttons').show();
+                    $('#calendar').fullCalendar('render');
+                }
+
+                //Possibly call you feed loader to add the next feed in line
+            },
+            events: '@(Url.Action("CapturaAgendamento"))',
+            eventRender: function (event, element, icon) {
+                if (!event.description == "") {
+                    element.find('.fc-event-title').append("<br/><span class='ultra-light'>" + event.description +
+                        "</span>");
+                }
+                if (!event.icon == "") {
+                    element.find('.fc-event-title').append("<i class='air air-top-right fa " + event.icon +
+                        " '></i>");
+                }
+
+                if (event.lancado) {
+                    element.find('.fc-event-title').parent().removeClass("fc-event-skin");
+                    element.find('.fc-event-title').parent().parent().removeClass("fc-event-skin");
+                    element.find('.fc-event-title').css("cursor", "default");
+                    element.find('.fc-event-title').parent().css("color", "#fff");
+                    element.find('.fc-event-title').parent().parent().css("color", "#fff");
+                }
+            },
+            eventClick: function (calEvent, jsEvent, view) {
+                if (calEvent.lancado == false) {
+                    AbrirPagamentoRecebimento(calEvent.id, calEvent.remessa);
+                }
+            },
+            windowResize: function (event, ui) {
+                $('#calendar').fullCalendar('render');
+            }
+        });
+
+        /* hide default buttons */
+        $('.fc-header-right, .fc-header-center').hide();
+
+
+        $('#calendar-buttons #btn-prev').click(function () {
+            $('.fc-button-prev').click();
+            return false;
+        });
+
+        $('#calendar-buttons #btn-next').click(function () {
+            $('.fc-button-next').click();
+            return false;
+        });
+
+        $('#calendar-buttons #btn-today').click(function () {
+            $('.fc-button-today').click();
+            return false;
+        });
+
+        $('#mt').click(function () {
+            $('#calendar').fullCalendar('changeView', 'month');
+        });
+
+        $('#ag').click(function () {
+            $('#calendar').fullCalendar('changeView', 'agendaWeek');
+        });
+
+        $('#td').click(function () {
+            $('#calendar').fullCalendar('changeView', 'agendaDay');
+        });
+    })
+
+    function AbrirPagamentoRecebimento(id, remessa) {
+        @if (perfilItem.SomenteLeitura)
+        {
+            <text>ShowBloqueioPermissao();</text>
+        }
+        else
+        {
+            <text>window.location.href = '@Url.Action("Index", "PagamentoRecebimento", new { Area = "Tesouraria" })?Id=' + id + '&remessa=' + remessa;</text>
+        }
+    }
+
+    function SelecionaRoteiroAnual() {
+        $.ajax({
+            type: 'POST',
+            data: { mes: $("#ddlRoteiroAnual").val() },
+            url: rootURL + 'Home/CapturaRoteiroAnual',
+            beforeSend: function () {
+
+            },
+            success: function (data) {
+                $("#pnlRoteiroAnual").html(data);
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+
+            }
+        });
+    }
+</script>

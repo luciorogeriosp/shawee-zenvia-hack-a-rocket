@@ -1,0 +1,126 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<SAL.MVC.Models.UsuarioClientePerfilModel> perfilLista = new List<SAL.MVC.Models.UsuarioClientePerfilModel>();
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilLogado") != null)
+    {
+        perfilLista = (List<SAL.MVC.Models.UsuarioClientePerfilModel>)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilLogado");
+    }
+
+    SAL.MVC.Models.UsuarioClientePerfilModel perfilItem = null;
+    if (Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado") != null)
+    {
+        perfilItem = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    }
+
+    string dtAtual = DateTime.Now.ToString("yyyyMMddHHmmss");
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-key fa-fw "></i>
+                    Segurança
+                </h1>
+            </div>
+        </div>
+        <ul id="myTab1" class="nav nav-tabs bordered">
+            <li class="active">
+                <a href="#tabPerfil" data-toggle="tab"><i class="fa fa-fw fa-lg fa-cubes"></i> Perfil</a>
+            </li>
+            <li class="">
+                <a href="#tabDadosUsuario" data-toggle="tab"><i class="fa fa-fw fa-lg fa-user"></i> Dados do Usuário</a>
+            </li>
+        </ul>
+        <div id="myTabContent1" class="tab-content padding-10 bg-color-white">
+            <div class="tab-pane fade active in" id="tabPerfil">
+                @if (perfilLista.Count > 1 && perfilItem == null)
+                {
+                    <h4 class="alert alert-info"> O seu usuário possui mais de um perfil de acesso.<br /> <small>Clique no perfil que deseja utilizar, antes de continuar a navegação.</small></h4>
+                }
+                <div class="well">
+                    <div class="row">
+                        @foreach (var item in perfilLista)
+                        {
+                            string bgColorClass = "";
+                            if (perfilItem != null && item.PerfilId == perfilItem.PerfilId && item.Cliente.Id == perfilItem.Cliente.Id)
+                            {
+                                bgColorClass = " bg-color-lighten";
+                            }
+                            <div class="col-sm-3 dd-handle@(bgColorClass)" style="margin-right:10px; cursor:pointer;" onclick="SelecionaCliente(@item.PerfilId, @item.Cliente.Id);">
+                                <div style="text-align:center;">
+                                    <img src="~/img/upload/cliente/@(item.Cliente.Id).png?ts=@(dtAtual)" height="100" />
+                                </div>
+                                <div style="text-align:center;">
+                                    <address>
+                                        <strong>@item.Cliente.Nome</strong><br>
+                                        @*@item.Cliente.Endereco, @item.Cliente.EnderecoNumero@(!string.IsNullOrEmpty(item.Cliente.EnderecoComplemento) ? " - " + item.Cliente.EnderecoComplemento : "") <br>
+                                        @item.Cliente.EnderecoBairro, @item.Cliente.EnderecoCEP<br>
+                                        <abbr title="Phone">F:</abbr> (@item.Cliente.Telefone1DDD) @item.Cliente.Telefone1Numero<br>*@
+                                        Perfil: @item.PerfilNome<br />
+                                    </address>
+                                </div>
+                            </div>
+
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tabDadosUsuario">
+                @{Html.RenderAction("ProfileForm");}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END MAIN PANEL -->
+<script>
+    function SelecionaCliente(PerfilId, ClienteId) {
+        $.ajax(
+        {
+            url: '@Url.Action("SelecionaCliente", "Home")',
+            type: "POST",
+            data: { PerfilId: PerfilId, ClienteId: ClienteId },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data, textStatus, jqXHR) {
+                if (data.success) {
+                    OnBeginForm();
+                    window.location.href = '@Url.Action("Painel", "Home")';
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                OnCompleteForm();
+            },
+            complete: function () {
+                //OnCompleteForm();
+            }
+        });
+    }
+
+    function GravarDadosUsuario() {
+        $(".alert").remove();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Home/ProfileForm',
+            data: $.param($("#frmProfile").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#tabDadosUsuario").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+</script>

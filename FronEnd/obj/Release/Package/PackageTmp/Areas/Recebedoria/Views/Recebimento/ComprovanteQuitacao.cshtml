@@ -1,0 +1,162 @@
+﻿@model SAL.MVC.Util.GLP.Model.MembroModel
+@{    
+    SAL.MVC.Models.UsuarioClientePerfilModel OrganismoAfiliado = (SAL.MVC.Models.UsuarioClientePerfilModel)Tropical.Infrastructure.Util.SessionData.SessionReader("PerfilSelecionadoLogado");
+    string Data = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual().ToString("dd/MM/yyyy");
+}
+<html>
+<head>
+    <title>Recibo</title>
+    <base href="@Url.Content("~")">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script>
+        if (!window.jQuery) {
+            document.write('<script src="@Url.Content("~/js/libs/jquery-2.0.2.min.js")" ><\/script>');
+        }
+    </script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script>
+        if (!window.jQuery.ui) {
+            document.write('<script src="@Url.Content("~/js/libs/jquery-ui-1.10.3.min.js")" ><\/script>');
+        }
+
+        parent.OnCompleteForm();
+    </script>
+    <style>
+        @@page {
+            margin: 0;
+            padding: 0;
+            size: 80mm 0mm 5.5mm 4mm;
+            size: portrait;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .cabecalho {
+            font-family: Arial;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .texto {
+            font-family: Arial;
+            font-size: 9px;
+        }
+
+        .texto_orientacao {
+            font-family: Arial;
+            font-size: 16px;
+        }
+
+        .rodape {
+            font-family: Arial;
+            font-size: 8px;
+        }
+
+        .titulo {
+            font-family: Arial;
+            font-weight: bold;
+            font-size: 9px;
+        }
+
+        .total {
+            font-family: Arial;
+            font-weight: bold;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    @if (Model != null)
+    {<br /><br />
+    <table width="100%">
+        @if (string.IsNullOrEmpty(OrganismoAfiliado.Cliente.Logotipo) == false)
+        {
+            <tr>
+                <td align="center" colspan="2"><img src="@(OrganismoAfiliado.Cliente.Logotipo)" width="50" /></td>
+            </tr>
+        }
+        <tr>
+            <td align="center" colspan="2" class="cabecalho">@(OrganismoAfiliado.Cliente.Nome.ToUpper())</td>
+        </tr>
+        <tr>
+            <td align="left" class="texto">CNPJ @(String.Format(@"{0:00\.000\.000\/0000\-00}", Convert.ToInt64(OrganismoAfiliado.Cliente.CNPJ)))</td>
+            <td align="right" class="texto">@OrganismoAfiliado.Cliente.Email</td>
+        </tr>
+        <tr>
+            <td align="center" colspan="2" class="texto">@(OrganismoAfiliado.Cliente.Endereco), @(OrganismoAfiliado.Cliente.EnderecoNumero) @OrganismoAfiliado.Cliente.EnderecoBairro - (@OrganismoAfiliado.Cliente.Telefone1DDD) @OrganismoAfiliado.Cliente.Telefone1Numero</td>
+        </tr>
+        <tr>
+            <td align="center" colspan="2" class="texto">CEP @(String.Format(@"{0:00000-000}", Convert.ToInt64(OrganismoAfiliado.Cliente.EnderecoCEP)))@(string.IsNullOrEmpty(OrganismoAfiliado.Cliente.CaixaPostal) == false ? " - C.P. " + OrganismoAfiliado.Cliente.CaixaPostal : "")</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;">
+                <img src="img/spacer_print.png" style="height:10px; width:100%;" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center" class="cabecalho">
+                COMPROVANTE DE QUITAÇÃO
+            </td>
+        </tr>
+        <tr>
+            <td align="center" colspan="2" class="texto">DATA DA GERAÇÃO: @Data</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;">
+                <img src="img/spacer_print.png" style="height:10px; width:100%;" />
+            </td>
+        </tr>
+    </table>
+    <table width="100%">
+        <tr>
+            <td align="left" class="texto">GLP: @Model.Chave</td>
+            <td align="right" class="texto">Nome: @Model.Nome</td>
+        </tr>
+        <tr>
+            <td align="center" colspan="2" class="total">GLP Quitado até: @(Model.DataQuitacaoGLP.HasValue ? Model.DataQuitacaoGLP.Value.ToString("dd/MM/yyyy")  : "(não possui)" )</td>
+        </tr>
+        <tr>
+            <td align="center" colspan="2" class="total">TOM Quitado até: @(Model.DataQuitacaoTOM.HasValue ? Model.DataQuitacaoTOM.Value.ToString("dd/MM/yyyy") : "(não possui)" )</td>
+        </tr>
+        <tr>
+            <td align="center" colspan="2" class="total">O.A. Quitado até: @(Model.DataQuitacaoOAAnoMes.HasValue ? Model.DataQuitacaoOAAnoMes.Value.ToString("MM/yyyy") : "(não possui)" )</td>
+        </tr>
+        <tr>
+            <td colspan="4" style="height: 10px;">
+                <img src="img/spacer_print.png" style="height:10px; width:100%;" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" align="center" class="texto_orientacao">Os comprovantes de quitação, juntamente com as carteirinhas de afiliação, deverão ser apresentados sempre que comparecer a um organismo afiliado AMORC / TOM.</td>
+        </tr>
+    </table>
+    <script>
+        $(document).ready(function () {
+            try {
+                parent.OnCompleteForm();
+            } catch (e) {
+
+            }
+
+            window.print();
+
+            //try {
+            //    parent.CloseReciboDialog();
+            //} catch (e) {
+
+            //}
+        });
+    </script>
+    }
+    else
+    {
+    <script>
+        parent.ShowNotify('warning', 'Recebedoria', 'Não foi possível gerar o Comprovante de Quitação.');
+    </script>
+    }
+</body>
+</html>

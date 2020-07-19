@@ -1,0 +1,146 @@
+﻿@{
+    ViewBag.Title = "Diario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    DateTime dtAtual = SAL.Repository.Negocio.UtilNegocio.ObterDataHoraAtual();
+    DateTime dtSemana = dtAtual.AddDays(-7);
+    DateTime dtQuinzena = dtAtual.AddDays(-15);
+    DateTime dtMes = new DateTime(dtAtual.Year, dtAtual.Month, 1);
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-bar-chart-o fa-fw "></i>
+                    Suprimento | Relatórios | Vendas Por Fornecedor
+                </h1>
+            </div>
+            <div>
+                <article class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="jarviswidget " id="wid-id-3" data-widget-editbutton="false" data-widget-custombutton="false" role="widget" style="">
+                        <div role="content" style="border-width: 1px 1px 1px 1px; border-style: solid; border-top-color: #CCC!important;">
+                            <div class="widget-body no-padding">
+                                <form id="frmConsultaRemessa" class="smart-form" novalidate="novalidate" onsubmit="return false">
+                                    <header>
+                                        Defina o filtro
+                                    </header>
+                                    <fieldset>
+                                        <section>
+                                            <label for="cboFornecedor">Fornecedor</label>
+                                            <label class="select">
+                                                <select class="form-control" id="cboFornecedor" name="cboFornecedor">
+                                                    <option value="0">Selecione</option>
+                                                    @foreach (var item in ViewBag.Fornecedores)
+                                                    {
+                                                        <option value="@item.Id">@item.Text</option>
+                                                    }
+                                                </select>
+                                                <i></i>
+                                            </label>
+                                        </section>
+                                        <div class="row">
+                                            <section class="col col-6">
+                                                <label for="txtDataInicial">Data Inicial</label>
+                                                <label class="input">
+                                                    <i class="icon-append fa fa-calendar"></i>
+                                                    <input type="date" name="txtDataInicial" id="txtDataInicial" placeholder="Data Inicial" class="hasDatepicker" onkeypress="OnEnter(event, 'Imprimir')">
+
+                                                </label>
+                                            </section>
+                                            <section class="col col-6">
+                                                <label for="txtDataFinal">Data Final</label>
+                                                <label class="input">
+                                                    <i class="icon-append fa fa-calendar"></i>
+                                                    <input type="date" name="txtDataFinal" id="txtDataFinal" placeholder="Data Final" class="hasDatepicker" onkeypress="OnEnter(event, 'Imprimir')">
+                                                </label>
+                                            </section>
+                                        </div>
+                                    </fieldset>
+                                    <footer>
+                                        <button type="button" class="btn btn-success" onclick="Imprimir();">
+                                            Buscar
+                                        </button>
+                                        <button type="button" class="btn btn-default" onclick="FiltroMes();">
+                                            Este Mês
+                                        </button>
+                                        <button type="button" class="btn btn-default" onclick="FiltroQuizena();">
+                                            Esta Quinzena
+                                        </button>
+                                        <button type="button" class="btn btn-default" onclick="FiltroSemana();">
+                                            Esta Semana
+                                        </button>
+                                        <button type="button" class="btn btn-default" onclick="FiltroHoje();">
+                                            Hoje
+                                        </button>
+                                    </footer>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function FiltroMes() {
+        $("#txtDataInicial").val('@dtMes.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        Imprimir();
+    }
+
+    function FiltroQuizena() {
+        $("#txtDataInicial").val('@dtQuinzena.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        Imprimir();
+    }
+
+    function FiltroSemana() {
+        $("#txtDataInicial").val('@dtSemana.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        Imprimir();
+    }
+
+    function FiltroHoje() {
+        $("#txtDataInicial").val('@dtAtual.ToString("yyyy-MM-dd")');
+        $("#txtDataFinal").val('@dtAtual.ToString("yyyy-MM-dd")');
+
+        Imprimir();
+    }
+
+    function Imprimir() {
+        $(".alert").remove();
+
+        $.ajax({
+            type: 'POST',
+            data: {
+                FornecedorId: $("#cboFornecedor").val(),
+                DataInicial: $("#txtDataInicial").val(),
+                DataFinal: $("#txtDataFinal").val()
+            },
+            url: rootURL + 'Suprimento/Relatorio/VendasPorFornecedorImprimir',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success == undefined) {
+                    $("#myModalFullContent").html(data);
+                    OpenFullDialog();
+                } else {
+                    ShowNotify('danger', 'Suprimento - Relatório Lucro Real', data.msg);
+                }
+            },
+            error: function (xhr, st, str) {
+
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+</script>

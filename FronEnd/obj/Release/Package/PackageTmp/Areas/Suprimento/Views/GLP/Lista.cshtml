@@ -1,0 +1,42 @@
+﻿@model List<SAL.MVC.Areas.IntegracaoSuprimentos.Models.SuprimentoProdutoModel>
+@{ 
+    Layout = null;
+
+    var listaCategoria = Model.Select(s => new
+    {
+        s.Categoria.ID,
+        s.Categoria.MenuPai,
+        s.Categoria.Link,
+        s.Categoria.Nome
+    })
+    .Distinct()
+    .OrderBy(o => o.MenuPai)
+    .ThenBy(o => o.Nome)
+    .ToList();
+}
+<table class="table table-striped table-bordered table-hover" width="100%">
+    <caption>Lista de Produtos - Total: @Model.Count</caption>
+    @foreach (var itemCategoria in listaCategoria)
+    {
+        <tr>
+            <td colspan="6"><h2><a href="@itemCategoria.Link" target="_blank">@itemCategoria.MenuPai - @itemCategoria.Nome <span class="note">(@itemCategoria.ID)</span></a></h2></td>
+        </tr>
+                        <tr>
+                            <td class="text-center"><b>ID</b></td>
+                            <td width="100%"><b>Nome</b></td>
+                            <td class="text-center"><b>Variações</b></td>
+                            <td class="text-center"><b>Preço Compra</b></td>
+                            <td class="text-center"><b>Preço Venda</b></td>
+                            <td class="text-center"><b>Imagem</b></td>
+                        </tr>
+        foreach (var itemProduto in Model.Where(w => w.Categoria.ID == itemCategoria.ID))
+        {
+            <tr id="lineProdutoGLP_@itemProduto.ID">
+                @{
+                    Html.RenderPartial("ListaItem", itemProduto);
+                }
+            </tr>
+        }
+    }
+</table>
+<br /><br /><br /><br />

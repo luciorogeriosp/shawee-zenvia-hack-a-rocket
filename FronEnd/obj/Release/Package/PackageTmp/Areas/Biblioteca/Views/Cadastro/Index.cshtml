@@ -1,0 +1,271 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+    <div id="content">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1 class="page-title txt-color-blueDark">
+                    <i class="fa fa-fw fa-book"></i>
+                    Biblioteca | Cadastro
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:10px;">
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" onclick="AbrirModalItem();">
+                        Incluir Item
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="widget-body" id="ItemLista">
+
+        </div>
+    </div>
+</div>
+<div id="myModalItem" title="Formulário de Item" class="no-padding" style="display:none;">
+    <div class="modal-body" id="myModalItemContent">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="CloseDialogItem();" tabindex="-1"><i class="fa fa-rotate-left"></i> Voltar</button>
+        <button type="button" class="btn btn-success" onclick="ConfirmDialogItem();" id="btnConfirmar">Confirmar</button>
+    </div>
+</div>
+<script>
+    var dialogItem;
+
+    function CloseDialogItem() {
+        dialogItem.dialog("close");
+    }
+
+    function LoadList() {
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Biblioteca/Cadastro/Lista',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#ItemLista").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function CarregaHistorico(Id) {
+        if ($("#pnlHistorico").html().length == 0) {
+            $.ajax({
+                type: 'GET',
+                url: rootURL + 'Biblioteca/Cadastro/Historico',
+                data: { Id: Id },
+                beforeSend: function () {
+                    OnBeginForm();
+                },
+                success: function (data) {
+                    $("#pnlHistorico").html(data);
+                },
+                error: function (xhr, st, str) {
+                    OnCompleteForm();
+                    ShowError(MsgNaoFoiPossivelCompletarOperacao);
+                },
+                complete: function () {
+                    OnCompleteForm();
+                }
+            });
+        }
+    }
+
+    function ConfirmDialogItem() {
+        ClearNotify();
+        $("#btnConfirmar").attr("disabled", "disabled");
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Biblioteca/Cadastro/Form',
+            data: $.param($("#frmBiblioteca").serializeArray()),
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalItemContent").html("");
+                $("#myModalItemContent").html(data);
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function ConfigureDialogItem() {
+        dialogItem = $("#myModalItem").dialog({
+            autoOpen: false,
+            width: parseInt($(window).width()),
+            height: parseInt($(window).height()),
+            resizable: false,
+            draggable: false,
+            closeOnEscape: true,
+            modal: true,
+            position: { my: "top top", at: "top top", of: window },
+            beforeClose: function (event, ui) {
+                $("body").css({ overflow: 'inherit' })
+            }
+        });
+    }
+
+    function AbrirModalItem() {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Biblioteca/Cadastro/Form',
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalItemContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogItem.dialog("open");
+                dialogItem.dialog("moveToTop");
+
+                $("#myModalItemContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Editar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Biblioteca/Cadastro/Form',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                $("#myModalItemContent").html("");
+
+                $("body").css({ overflow: 'hidden' });
+                dialogItem.dialog("open");
+                dialogItem.dialog("moveToTop");
+
+                $("#myModalItemContent").html(data);
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function Apagar(Id, Nome) {
+        ClearNotify();
+        OpenDialogExcluir("Deseja realmente excluir o Item " + Nome + "?", "ApagarConfirmar(" + Id + ");")
+    }
+
+    function ApagarConfirmar(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'GET',
+            url: rootURL + 'Biblioteca/Cadastro/Excluir',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowNotify('success', 'Items | Item', data.msg);
+                    $("#line_" + Id).remove();
+                }
+                else {
+                    ShowNotify('danger', 'Items | Item', data.msg);
+                }
+                //LoadList();
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function DisponivelFisico(Id) {
+        ClearNotify();
+
+        $.ajax({
+            type: 'POST',
+            url: rootURL + 'Biblioteca/Cadastro/DisponivelFisico',
+            data: { Id: Id },
+            beforeSend: function () {
+                OnBeginForm();
+            },
+            success: function (data) {
+
+            },
+            error: function (xhr, st, str) {
+                OnCompleteForm();
+                ShowError(MsgNaoFoiPossivelCompletarOperacao);
+            },
+            complete: function () {
+                OnCompleteForm();
+            }
+        });
+    }
+
+    function HabilitaUrl(obj) {
+        if ($(obj).is(":checked")) {
+            $("#pnlDisponivelOnlineUrl").show();
+            $("#OnlineUrl").focus();
+        } else {
+            $("#pnlDisponivelOnlineUrl").hide();
+        }
+    }
+
+    function HabilitaAlterarCodigo(obj) {
+        if ($(obj).is(":checked")) {
+            $("#Codigo").removeAttr("disabled");
+        } else {
+            $("#Codigo").attr("disabled", "disabled");
+        }
+    }
+
+    $(window).resize(function () {
+        ConfigureDialogItem();
+    });
+
+    $(document).ready(function () {
+        ConfigureDialogItem();
+        LoadList();
+    });
+</script>
