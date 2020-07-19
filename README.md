@@ -1,35 +1,17 @@
 # May - Desafio Zenvia - Hack a Rocket
 
-May
+Solução de atendimento e venda via Whatsapp que proporciona uma fácil consolidação em um único lugar.
 
-Atualmente, estamos preocupados em consumir alimentos fora de casa com saúde e segurança, sem contar o engajamento para fortalecer os pequenos negócios do nosso bairro.
-
-Em uma pesquisa realizada pela Kantar, 65% dos consumidores desejam jantar fora de casa com outras pessoas assim que essa crise passar.
-
-Já, em nossa pesquisa, 82% dos consumidores esperam algum tipo de diferencial para voltar a frequentar esses locais.
-
-Entre os estabelecimentos, 75% estão preocupados em fornecer um ambiente higienizado e seguro. Os empresários, também sabem que diferenciais e inovações serão fundamentais para reconquistar a confiança do consumidor.
-
-Diante deste cenário, apresentamos o “Minha Esquina”.
-
-Um aplicativo que constrói a ponte entre os pequenos negócios e os seus consumidores.
-
-Nosso principal objetivo é sugerir locais seguros e uma nova experiência de consumo, onde o cliente pode previamente consultar a lotação, escolher seu local de preferência, fazer o pedido e reservar um horário, o pagamento será antecipado e sem contato. 
-
-Gerenciamos tudo isso através de um sistema de check-in. 
-
-Como diferencial, o consumidor poderá acompanhar as ações dos seus restaurantes favoritos, conhecer novos lugares e até contribuir com avaliações, e desta forma, obter acesso a um clube de benefícios. 
-
-**Consolidamos consumidores e estabelecimentos em uma plataforma única de comunicação, atração e conversão.**
+**Nunca foi tão fácil utilizar e consolidar suas vendas utilizando WhatApp.**
 
 ## Equipe 14 - Mega Hack:
 
-[Henrique Gomes](https://www.linkedin.com/in/henriquegomess/)
+[Henrique Gomes - Design](https://www.linkedin.com/in/henriquegomess/)
 
-[João Paulo](https://github.com/JPMouse)
+[Jeferson Romano - Business](linkedin.com/in/romanoiz/)
 
-[Lúcio Rogério](https://www.linkedin.com/in/luciorogeriosp/)
+[Lucio Rogerio - Dev Backend](https://www.linkedin.com/in/luciorogeriosp/)
 
-[Victória Julia](https://www.linkedin.com/in/jvictoriajulia/)
+[Jussara Mendonça - Marketing](linkedin.com/in/jussaramendonca/)
 
-[Thiago Nascimento](https://www.linkedin.com/in/thiagovnascimento/)
+[Marcos Filho](linkedin.com/in/marcos-f-b74774118/)
