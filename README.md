@@ -4,7 +4,7 @@ Solução de atendimento e venda via Whatsapp que proporciona uma fácil consoli
 
 **Nunca foi tão fácil utilizar e consolidar suas vendas utilizando WhatApp.**
 
-## Equipe 14 - Mega Hack:
+## Equipe 17:
 
 [Henrique Gomes - Design](https://www.linkedin.com/in/henriquegomess/)
 
