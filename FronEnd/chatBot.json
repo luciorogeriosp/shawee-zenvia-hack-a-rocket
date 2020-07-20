@@ -1,0 +1,477 @@
+﻿{
+  "alias": "May Marketplace",
+  "description": "",
+  "steps": [
+    {
+      "id": "idEventoInicial",
+      "type": "whatsappEvent",
+      "label": "Evento inicial",
+      "properties": {
+        "startEvent": "true",
+        "appId": "whatsapp_chatbot",
+        "appType": "chatbot"
+      },
+      "variables": {
+        "whatsappFrom": "empty"
+      },
+      "conditions": [
+        {
+          "type": "channelSourceCondition",
+          "values": [
+            ""
+          ]
+        }
+      ]
+    },
+    {
+      "id": "step0",
+      "type": "sendWhatsAppActivity",
+      "label": "Seja bem vindo",
+      "properties": {
+        "from": "#{session['whatsappFrom']}"
+      },
+      "contents": [
+        {
+          "type": "text/plain",
+          "payload": {
+            "text": "Olá, Bem Vinde!\nEu sou a May e vou te ajudar a realizar sua compra.\nPara começarmos informe o MayID de onde você deseja comprar hoje."
+          }
+        }
+      ]
+    },
+    {
+      "id": "idEventoFinal",
+      "type": "endEvent",
+      "label": "label 3",
+      "properties": {
+        "endEvent": "true"
+      }
+    },
+    {
+      "id": "step02",
+      "type": "whatsappEvent",
+      "label": "Código Estabelecimento",
+      "variables": {
+        "mayId": "payload"
+      }
+    },
+    {
+      "id": "step03",
+      "type": "apiActivity",
+      "label": "Chamada de API",
+      "properties": {
+        "from": "#{#random.randomAlphanumeric(12)}"
+      },
+      "variables": {
+        "response_store": "response",
+        "storeCount": "response.length"
+      },
+      "contents": [
+        {
+          "type": "application/json",
+          "payload": {
+            "json": {
+              "httpMethod": "GET",
+              "url": "https://hacktonzenvia.azurewebsites.net/v1/store/getByMayID",
+              "httpHeaders": {
+                "Content-Type": "application/json"
+              },
+              "queryParameters": {
+                "mayId": "#{mayId}"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "step04",
+      "type": "branch",
+      "label": "Loja existe"
+    },
+    {
+      "id": "step05",
+      "type": "apiActivity",
+      "label": "Categorias",
+      "properties": {
+        "from": "#{#random.randomAlphanumeric(12)}"
+      },
+      "variables": {
+        "categoryResponse": "response"
+      },
+      "contents": [
+        {
+          "type": "application/json",
+          "payload": {
+            "json": {
+              "httpMethod": "GET",
+              "url": "https://hacktonzenvia.azurewebsites.net/v1/category/getByStoreId",
+              "queryParameters": {
+                "storeId": "#{responseStore.id}"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "step06",
+      "type": "sendWhatsAppActivity",
+      "label": "Não encontrei o Estabeleciment",
+      "properties": {
+        "from": "#{session['whatsappFrom']}"
+      },
+      "contents": [
+        {
+          "type": "text/plain",
+          "payload": {
+            "text": "Oi, não encontrei o código informado, você pode verificar e informar novamente, por favor?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "step07",
+      "type": "sendWhatsAppActivity",
+      "label": "Confirma Estabelecimento",
+      "properties": {
+        "from": "#{session['whatsappFrom']}"
+      },
+      "contents": [
+        {
+          "type": "text/plain",
+          "payload": {
+            "text": "Pelo que estou vendo aqui, você deseja comprar no estabelecimento #{response_store[0].name}.\n\nDigite 1 para confirmar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "step08",
+      "type": "whatsappEvent",
+      "variables": {
+        "answer": "payload"
+      }
+    },
+    {
+      "id": "step09",
+      "type": "branch",
+      "label": "Usuário Confirma Estabelecimen"
+    },
+    {
+      "id": "step010",
+      "type": "sendWhatsAppActivity",
+      "contents": [
+        {
+          "type": "text/plain",
+          "payload": {
+            "text": "[Entrar conteúdo da mensagem de acordo com a seguinte condição: #{answer}]"
+          }
+        }
+      ]
+    },
+    {
+      "id": "step011",
+      "type": "sendWhatsAppActivity",
+      "contents": [
+        {
+          "type": "text/plain",
+          "payload": {
+            "text": "[Entrar conteúdo da mensagem de acordo com a seguinte condição: Inválido]"
+          }
+        }
+      ]
+    },
+    {
+      "id": "step012",
+      "type": "whatsappEvent",
+      "variables": {
+        "answer": "payload"
+      }
+    },
+    {
+      "id": "step062",
+      "type": "sendWhatsAppActivity",
+      "properties": {
+        "from": "#{session['whatsappFrom']}"
+      },
+      "contents": [
+        {
+          "type": "text/plain",
+          "payload": {
+            "text": "Opção 1:\nMarmita Tradicional.\nArroz, feijão, massa e carne\nR$ 9,90\n\n"
+          }
+        },
+        {
+          "type": "application/vnd.zenvia.v1.file+json",
+          "payload": {
+            "json": {
+              "fileUrl": "https://chat.zenvia.com/storage/folders/d7de5bfcf15b96051b3cc00e44ffff9560f31bc3044be5d04126dcdc738ab99f/files/09ccb52c7c31ca7ccf3fdc76895c514b4016ca7554d45cce72184cb195b5bb3a.bin",
+              "fileMimeType": "image/jpeg",
+              "fileName": "whatsapp-image-2020-04-05-at-8-02-07-pm-31-daf6fc8c044f681b5015862043042076-1024-1024.jpeg.jpg"
+            }
+          }
+        },
+        {
+          "type": "application/vnd.zenvia.v1.file+json",
+          "payload": {
+            "json": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "step063",
+      "type": "sendWhatsAppActivity",
+      "properties": {
+        "from": "#{session['whatsappFrom']}"
+      },
+      "contents": [
+        {
+          "type": "text/plain",
+          "payload": {
+            "text": "Opção 2:\nMarmita vegetariana Arroz, salada de cenoura, brócolis e grão de bico\nR$ 9,90"
+          }
+        },
+        {
+          "type": "application/vnd.zenvia.v1.file+json",
+          "payload": {
+            "json": {
+              "fileUrl": "https://chat.zenvia.com/storage/folders/d7de5bfcf15b96051b3cc00e44ffff9560f31bc3044be5d04126dcdc738ab99f/files/170a5140aaf6c99c641aa2c7fff41b4fd48d7ec2bcf01b1a3388376c0ca41e9d.bin",
+              "fileMimeType": "image/png",
+              "fileName": "cantina-do-duds.png"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "step013",
+      "type": "whatsappEvent",
+      "variables": {
+        "answer": "payload"
+      }
+    },
+    {
+      "id": "step064",
+      "type": "sendWhatsAppActivity",
+      "properties": {
+        "from": "#{session['whatsappFrom']}"
+      },
+      "contents": [
+        {
+          "type": "text/plain",
+          "payload": {
+            "text": "O valor é R$ 9,90.\nDigite 1 para realizar o pagamento online ou 2 para realizar o pagamento quando receber a entrega."
+          }
+        }
+      ]
+    },
+    {
+      "id": "step014",
+      "type": "whatsappEvent",
+      "variables": {
+        "answer": "payload"
+      }
+    },
+    {
+      "id": "step065",
+      "type": "sendWhatsAppActivity",
+      "properties": {
+        "from": "#{session['whatsappFrom']}"
+      },
+      "contents": [
+        {
+          "type": "text/plain",
+          "payload": {
+            "text": "Marmita Vegetariana . R$ 9,90. \nPor favor, pague com este link do Mercado Pago: http://mpago.la/2QPmQwc"
+          }
+        }
+      ]
+    },
+    {
+      "id": "step016",
+      "type": "timerEvent",
+      "properties": {
+        "expiresInMinutes": 2
+      },
+      "variables": {
+        "teste": "payload"
+      }
+    },
+    {
+      "id": "step066",
+      "type": "sendWhatsAppActivity",
+      "label": "Pagamento OK",
+      "properties": {
+        "from": "#{session['whatsappFrom']}"
+      },
+      "contents": [
+        {
+          "type": "text/plain",
+          "payload": {
+            "text": "Já registramos seu pagamento em nosso sistema.\nInforme o Endereço em que seu pedido deve ser entregue"
+          }
+        }
+      ]
+    },
+    {
+      "id": "step017",
+      "type": "whatsappEvent",
+      "variables": {
+        "answer": "payload"
+      }
+    },
+    {
+      "id": "step067",
+      "type": "sendWhatsAppActivity",
+      "properties": {
+        "from": "#{session['whatsappFrom']}"
+      },
+      "contents": [
+        {
+          "type": "text/plain",
+          "payload": {
+            "text": "Pedido enviado ao estabelecimento com sucesso."
+          }
+        }
+      ]
+    },
+    {
+      "id": "step015",
+      "type": "whatsappEvent",
+      "variables": {
+        "answer": "payload"
+      }
+    }
+  ],
+  "connections": [
+    {
+      "from": "step0",
+      "to": "step02"
+    },
+    {
+      "from": "idEventoInicial",
+      "to": "step0"
+    },
+    {
+      "from": "step02",
+      "to": "step03"
+    },
+    {
+      "from": "step03",
+      "to": "step04"
+    },
+    {
+      "from": "step04",
+      "to": "step06",
+      "label": "Inválido",
+      "isDefault": true
+    },
+    {
+      "from": "step04",
+      "to": "step07",
+      "label": "storeCount",
+      "conditions": [
+        {
+          "type": "keywordCondition",
+          "values": [
+            "> 0"
+          ]
+        }
+      ]
+    },
+    {
+      "from": "step07",
+      "to": "step08"
+    },
+    {
+      "from": "step08",
+      "to": "step09"
+    },
+    {
+      "from": "step09",
+      "to": "step010",
+      "label": "#{answer}",
+      "conditions": [
+        {
+          "type": "keywordCondition",
+          "values": [
+            "==1"
+          ]
+        }
+      ]
+    },
+    {
+      "from": "step010",
+      "to": "step05"
+    },
+    {
+      "from": "step09",
+      "to": "step011",
+      "label": "Inválido",
+      "isDefault": true
+    },
+    {
+      "from": "step011",
+      "to": "step08"
+    },
+    {
+      "from": "step06",
+      "to": "step012"
+    },
+    {
+      "from": "step012",
+      "to": "step02"
+    },
+    {
+      "from": "step05",
+      "to": "step062"
+    },
+    {
+      "from": "step062",
+      "to": "step063"
+    },
+    {
+      "from": "step063",
+      "to": "step013"
+    },
+    {
+      "from": "step013",
+      "to": "step064"
+    },
+    {
+      "from": "step064",
+      "to": "step014"
+    },
+    {
+      "from": "step014",
+      "to": "step065"
+    },
+    {
+      "from": "step065",
+      "to": "step016"
+    },
+    {
+      "from": "step016",
+      "to": "step066"
+    },
+    {
+      "from": "step066",
+      "to": "step017"
+    },
+    {
+      "from": "step017",
+      "to": "step067"
+    },
+    {
+      "from": "step067",
+      "to": "step015"
+    },
+    {
+      "from": "step015",
+      "to": "idEventoFinal"
+    }
+  ],
+  "defaultConversationalChannel": "WHATSAPP"
+}
